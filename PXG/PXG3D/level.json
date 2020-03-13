@@ -1,0 +1,113 @@
+{
+    "OtherObjects": [],
+    "tiles": [
+        {
+            "meta-data": {
+                "node": null
+            },
+            "model": "dirt.fbx",
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "texture": "dirt_and_grass.png"
+        },
+        {
+            "meta-data": {
+                "node": null
+            },
+            "model": "dirt.fbx",
+            "position": [
+                0.0,
+                0.0,
+                1.0
+            ],
+            "texture": "dirt_and_grass.png"
+        },
+        {
+            "meta-data": {
+                "node": null
+            },
+            "model": "dirt.fbx",
+            "position": [
+                1.0,
+                0.0,
+                0.0
+            ],
+            "texture": "dirt_and_grass.png"
+        },
+        {
+            "meta-data": {
+                "node": null
+            },
+            "model": "dirt.fbx",
+            "position": [
+                1.0,
+                0.0,
+                1.0
+            ],
+            "texture": "diffuse1.jpg"
+        },
+        {
+            "meta-data": {
+                "node": null
+            },
+            "model": "dirt.fbx",
+            "position": [
+                1.0,
+                0.0,
+                2.0
+            ],
+            "texture": "bricks.jpg"
+        },
+        {
+            "meta-data": {
+                "node": null
+            },
+            "model": "dirt.fbx",
+            "position": [
+                2.0,
+                0.0,
+                0.0
+            ],
+            "texture": "bricks.jpg"
+        },
+        {
+            "meta-data": {
+                "node": null
+            },
+            "model": "dirt.fbx",
+            "position": [
+                2.0,
+                0.0,
+                1.0
+            ],
+            "texture": "bricks.jpg"
+        },
+        {
+            "meta-data": {
+                "node": null
+            },
+            "model": "dirt.obj",
+            "position": [
+                2.0,
+                0.0,
+                2.0
+            ],
+            "texture": "bricks.jpg"
+        },
+        {
+            "meta-data": {
+                "node": null
+            },
+            "model": "dirt.obj",
+            "position": [
+                3.0,
+                0.0,
+                0.0
+            ],
+            "texture": "bricks.jpg"
+        }
+    ]
+}

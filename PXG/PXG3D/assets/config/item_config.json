@@ -1,0 +1,12 @@
+{
+    "items":[
+        {
+            "pretty_name":  "Wood",
+            "file_name":    "missing_texture"
+        },
+        {
+            "pretty_name":  "Screw",
+            "file_name":    "missing_texture"
+        }
+    ]
+}

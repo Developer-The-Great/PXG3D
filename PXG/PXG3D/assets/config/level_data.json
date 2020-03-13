@@ -1,0 +1,203 @@
+{
+    "tiles" : [
+        {
+            "position": [0,0,0],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+                "node":
+                {
+                }
+            }
+        },
+        {
+            "position": [1,0,0],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+                "node":
+                {
+                }
+            }
+        },
+        {
+            "position": [0,0,1],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+                "node":
+                {
+                }
+            }
+        },
+        {
+            "position": [1,0,1],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+                "node":
+                {
+                },
+                "is_trigger": "bridge_trigger_01"
+
+            }
+        },
+        {
+            "position": [1,0,2],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+                "node":
+                {
+                },
+                "is_trigger": "bridge_trigger_02"
+            }
+        },
+        {
+            "position": [2,0,1],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+                "node":
+                {
+                }
+            }
+        },
+        {
+            "position": [2,0,2],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+                "node":
+                {
+                }
+            }
+        }
+        ,
+        {
+            "position": [-1,0,1],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+                "node":
+                {
+                }
+            }
+        },
+
+        {
+            "position": [-1,1,1],
+            "model" : "SmallLadder.obj",
+            "texture": "ladder.png",
+            "meta-data":
+            {
+                "node":
+                {
+                    "ladder":
+                    {
+                        "direction"  : [-1,0,0]
+                    }
+                }
+            }
+        },
+
+        {
+            "position": [-1,2,1],
+            "model" : "SmallLadder.obj",
+            "texture": "ladder.png",
+            "meta-data":
+            {
+                "node":
+                {
+                    "ladder":
+                    {
+                        "direction"  : [-1,0,0]
+                    }
+                }
+            }
+        },
+
+        {
+            "position": [-2,1,1],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+            }
+        },
+        {
+            "position": [-2,2,1],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+                "node":
+                {
+                }
+            }
+        },
+        {
+            "position": [-3,2,1],
+            "model" : "grass.obj",
+            "texture": "dirt_and_grass.png",
+            "meta-data":
+            {
+                "node":
+                {
+                }
+            }
+        },
+        {
+            "position":[0,1,0],
+            "model" : "bridge-rot.obj",
+            "texture" : "bridge.png",
+            "meta-data" :{
+                "bridge" : {
+                    "trigger": "bridge_trigger_01",
+                    "orientation" : 0.0
+                }
+            }
+        },
+        {
+            "position":[1,1,0],
+            "model" : "bridge-rot.obj",
+            "texture" : "bridge.png",
+            "meta-data" :{
+                "bridge" : {
+                    "trigger": "bridge_trigger_02",
+                    "orientation" : 0.0
+                }
+            }
+        }
+    ],
+    "OtherObjects":
+    [
+        {
+            "position": [0,1,1],
+            "model" : "sheep.obj",
+            "texture": "SheepTexture.png",
+            "meta-data":
+            {
+                "behaviour": "followPlayer"
+            }
+        },
+        {
+            "position":[1,1,0],
+            "model" :  "Grandpa.obj",
+            "texture": "GrandpaTexture.png",
+            "meta-data":
+            {
+                "behaviour": "grandpa"
+            }
+        }
+
+    ]
+}

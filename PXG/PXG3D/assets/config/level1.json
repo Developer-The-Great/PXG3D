@@ -1,0 +1,1466 @@
+{
+    "tiles": [
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                3.0,
+                0.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                4.0,
+                0.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                5.0,
+                1.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                4.0,
+                1.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                4.0,
+                2.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                6.0,
+                1.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                0.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                5.0,
+                0.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                0.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                5.0,
+                0.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                1.0
+            ],
+            "texture": "RockTile3.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                1.0
+            ],
+            "texture": "RockTile3.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                5.0,
+                1.0
+            ],
+            "texture": "RockTile3.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                4.0,
+                4.0,
+                0.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                2.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                3.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "DecoRockTile.obj",
+            "position": [
+                1.0,
+                6.0,
+                1.0
+            ],
+            "texture": "DecoRockTile.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                3.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                4.0,
+                1.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                4.0,
+                4.0,
+                1.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                4.0,
+                2.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                4.0,
+                3.0
+            ],
+            "texture": "GrassHalf.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                1.0,
+                4.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                2.0,
+                4.0
+            ],
+            "texture": "Under2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                3.0,
+                4.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                4.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                1.0,
+                5.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                2.0,
+                5.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                3.0,
+                5.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                5.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                4.0,
+                0.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                3.0,
+                6.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                2.0,
+                6.0
+            ],
+            "texture": "Under2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                4.0,
+                2.0,
+                6.0
+            ],
+            "texture": "Under2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                6.0
+            ],
+            "texture": "RockTile4.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                4.0,
+                5.0
+            ],
+            "texture": "RockTile4.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                5.0
+            ],
+            "texture": "RockTile4.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                5.0,
+                5.0
+            ],
+            "texture": "RockTile4.png"
+        },
+        {
+            "meta-data": {
+                "node": {
+                    "ladder": {
+                    }
+                }
+            },
+            "model": "slope2.obj",
+            "position": [
+                1.0,
+                5.0,
+                5.0
+            ],
+            "texture": "Slope.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                5.0,
+                6.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                3.0,
+                6.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                4.0,
+                3.0,
+                6.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                4.0,
+                2.0,
+                7.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                4.0,
+                2.0,
+                8.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                4.0,
+                2.0,
+                9.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                3.0,
+                9.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                9.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {},
+                "is_trigger": "bridge_01"
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                5.0,
+                6.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "model": "lever-combined.obj",
+            "position": [1,6,6],
+            "texture": "lever.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                4.0,
+                8.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                4.0,
+                10.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                4.0,
+                9.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                6.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                5.0,
+                9.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                5.0,
+                10.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                5.0,
+                11.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                5.0,
+                11.0
+            ],
+            "texture": "RockTile3.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                5.0,
+                12.0
+            ],
+            "texture": "RockTile3.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                5.0,
+                13.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                5.0,
+                14.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                11.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "DecoRockTile.obj",
+            "position": [
+                1.0,
+                7.0,
+                13.0
+            ],
+            "texture": "DecoRockTile.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                12.0
+            ],
+            "texture": "DecoRockTile.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                12.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                4.0,
+                13.0
+            ],
+            "texture": "RockTile3.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                13.0
+            ],
+            "texture": "RockTile3.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                14.0
+            ],
+            "texture": "RockTile3.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                6.0,
+                14.0
+            ],
+            "texture": "RockTile3.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                5.0,
+                15.0
+            ],
+            "texture": "RockTile3.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                15.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                16.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                17.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                13.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                14.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                4.0,
+                14.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                15.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                16.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                17.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                4.0,
+                16.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                4.0,
+                17.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                4.0,
+                4.0,
+                16.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                4.0,
+                4.0,
+                17.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                4.0,
+                4.0,
+                15.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                1.0,
+                10.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                1.0,
+                11.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                1.0,
+                12.0
+            ],
+            "texture": "Under2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                1.0,
+                13.0
+            ],
+            "texture": "Under2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                1.0,
+                14.0
+            ],
+            "texture": "Under2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                2.0,
+                14.0
+            ],
+            "texture": "Under2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                2.0,
+                13.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                2.0,
+                9.0
+            ],
+            "texture": "Under2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                2.0,
+                9.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                2.0,
+                10.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                2.0,
+                11.0
+            ],
+            "texture": "RockTile2.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                2.0,
+                12.0
+            ],
+            "texture": "under.png"
+        },
+        {
+            "meta-data": {
+                "node": {
+                    "ladder": {
+
+                    }
+                }
+
+            },
+            "model": "SmallLader.obj",
+            "position": [
+                3.0,
+                4.0,
+                6.0
+            ],
+            "texture": "ladder.png"
+        },
+        {
+            "meta-data": {
+                "node": {   
+                     "ladder": {
+
+                    }
+                }
+            },
+            "model": "SmallLader.obj",
+            "position": [
+                2.0,
+                5.0,
+                12.0
+            ],
+            "texture": "ladder.png"
+        },
+        {
+            "meta-data": {
+                "node": {
+                    "ladder": {
+
+                    }
+                }
+            },
+            "model": "SmallLader.obj",
+            "position": [
+                3.0,
+                3.0,
+                9.0
+            ],
+            "texture": "ladder.png"
+        },
+        {
+            "meta-data": {
+                "node": {
+                    "ladder": {
+
+                    }
+                }
+            },
+            "model": "SmallLader.obj",
+            "position": [
+                3.0,
+                4.0,
+                9.0
+            ],
+            "texture": "ladder.png"
+        },
+        {
+            "meta-data": {
+                "node": {
+                    "ladder": {
+
+                    }
+                }
+            },
+            "model": "Slope2.obj",
+            "position": [
+                1.0,
+                5.0,
+                9.0
+            ],
+            "texture": "Slope.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                3.0,
+                4.0,
+                15.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "DecoRockTile.obj",
+            "position": [
+                2.0,
+                5.0,
+                14.0
+            ],
+            "texture": "DecoRockTile.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                6.0,
+                13.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {
+                    "ladder": {
+                        "direction" : [0,0,-1]
+                    }
+                }
+            },
+            "model": "Slope.obj",
+            "position": [
+                4.0,
+                3.0,
+                7.0
+            ],
+            "texture": "Slope.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                1.0,
+                4.0,
+                9.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                2.0,
+                4.0,
+                2.0
+            ],
+            "texture": "Grass.png"
+        },
+        {
+            "meta-data": {
+                "node": {
+                    "ladder": {
+                        "direction" : [0,0,-1]
+                    }
+                }
+            },
+            "model": "Slope.obj",
+            "position": [
+                2.0,
+                5.0,
+                1.0
+            ],
+            "texture": "Slope.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "Rocks.obj",
+            "position": [
+                0.0,
+                6.0,
+                2.0
+            ],
+            "texture": "Rocks.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "TileBasic.obj",
+            "position": [
+                0.0,
+                5.0,
+                2.0
+            ],
+            "texture": "RockTile1.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "Log_Small.obj",
+            "position": [
+                1.0,
+                5.0,
+                16.0
+            ],
+            "texture": "log_base_AO.png"
+        },
+        {
+            "meta-data": {
+                "node":  {}
+            },
+            "model": "Rocks.obj",
+            "position": [
+                1.0,
+                7.0,
+                14.0
+            ],
+            "texture": "Rocks.png"
+        },
+        {
+            "meta-data": {
+                "node": {}
+            },
+            "model": "Rocks.obj",
+            "position": [
+                2.0,
+                3.0,
+                10.0
+            ],
+            "texture": "Rocks.png"
+        },
+        {
+            "meta-data": {
+                "bridge":{
+                    "trigger": "bridge_01",
+                    "orientation": 180
+                }
+            },
+            "model": "bridge-rot.obj",
+            "position": [1,6,7],
+            "texture":"bridge.png"
+        },
+        {
+            "meta-data":
+             {
+                "node" :{},
+                "is_broken": "is_broken"
+            },
+
+            "model": "TileBasic.obj",
+            "position": [2,4,7],
+            "texture":"broken.png"
+        },
+        {
+            "meta-data": {
+                "bridge":{
+                    "trigger": "bridge_02",
+                    "orientation": 180
+                }
+            },
+            "model": "bridge-rot.obj",
+            "position": [3,5,10],
+            "texture":"bridge.png"
+        },
+        {
+            "meta-data": {
+                "node" :{},
+                "is_trigger": "bridge_02"
+            },
+            "model": "TileBasic.obj",
+            "position": [3,4,8],
+            "texture": "RockTile1.png"
+        },
+        {
+            "model": "lever-combined.obj",
+            "position": [3,5,8],
+            "texture": "lever.png"
+        },
+        {
+            "meta-data": {
+                "node" :{}
+            },
+            "model": "TileBasic.obj",
+            "position": [2,4,8],
+            "texture": "RockTile1.png"
+        }
+    ],
+    "OtherObjects":
+    [
+        {
+            "position": [3,5,17],
+            "model" : "newSheep.obj",
+            "texture": "SheepTexture.png",
+            "meta-data":
+            {
+                "behaviour": "followPlayer"
+            }
+        },
+        {
+            "position": [4,5,16],
+            "model" : "newSheep.obj",
+            "texture": "SheepTexture.png",
+            "meta-data":
+            {
+                "behaviour": "followPlayer"
+            }
+        },
+        {
+            "position": [2,5,16],
+            "model" : "newSheep.obj",
+            "texture": "SheepTexture.png",
+            "meta-data":
+            {
+                "behaviour": "followPlayer"
+            }
+        },
+        {
+            "position":[2,6,0],
+            "model" :  "Grandpa.obj",
+            "texture": "GrandpaTexture.png",
+            "meta-data":
+            {
+                "behaviour": "grandpa"
+            }
+        }
+
+    ]
+}

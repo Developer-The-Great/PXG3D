@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{5171BF73-E7C2-430E-8C37-60C4D2126BCD}</ProjectGuid>
+    <RootNamespace>PXG3D</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)bin-int\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+    <IncludePath>$(SolutionDir)deps/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)deps/libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>SOLOUD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;freetype.lib;assimp-vc141-mtd.lib;glfw3.lib;soloud_static_x64_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>SOLOUD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;freetype.lib;assimp-vc141-mtd.lib;glfw3.lib;soloud_static_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\deps\include\src\glad.c" />
+    <ClCompile Include="AudioLibrary.cpp" />
+    <ClCompile Include="AudioSource.cpp" />
+    <ClCompile Include="ButtonComponent.cpp" />
+    <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CameraRotator.cpp" />
+    <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="ColorMaterial.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="font.cpp" />
+    <ClCompile Include="FreeMovementComponent.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="imgui\examples\imgui_impl_glfw.cpp" />
+    <ClCompile Include="imgui\examples\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LightComponent.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mathf.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="PhysicsComponent.cpp" />
+    <ClCompile Include="PhysicsEngine.cpp" />
+    <ClCompile Include="PXGGame.cpp" />
+    <ClCompile Include="PXGWindow.cpp" />
+    <ClCompile Include="RayCastShooter.cpp" />
+    <ClCompile Include="RenderingEngine.cpp" />
+    <ClCompile Include="RotatorComponent.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="StandardLitMaterial.cpp" />
+    <ClCompile Include="Subject.cpp" />
+    <ClCompile Include="TextComponent.cpp" />
+    <ClCompile Include="TextureMaterial.cpp" />
+    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AbstractMaterial.h" />
+    <ClInclude Include="AudioClip.hpp" />
+    <ClInclude Include="AudioEngine.hpp" />
+    <ClInclude Include="AudioLibrary.h" />
+    <ClInclude Include="AudioSource.h" />
+    <ClInclude Include="AxisAngle.h" />
+    <ClInclude Include="ButtonComponent.h" />
+    <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CameraRotator.h" />
+    <ClInclude Include="Canvas.h" />
+    <ClInclude Include="CollisionCubeParams.h" />
+    <ClInclude Include="ColorMaterial.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="FileConfig.h" />
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="font.h" />
+    <ClInclude Include="FreeMovementComponent.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GLMHeaders.h" />
+    <ClInclude Include="HitInfo.h" />
+    <ClInclude Include="imgui\examples\imgui_impl_glfw.h" />
+    <ClInclude Include="imgui\examples\imgui_impl_opengl3.h" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\imstb_rectpack.h" />
+    <ClInclude Include="imgui\imstb_textedit.h" />
+    <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="KeyCode.h" />
+    <ClInclude Include="NodeClearComponent.h" />
+    <ClInclude Include="RasterizationMode.h" />
+    <ClInclude Include="ScreenSize.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Subject.h" />
+    <ClInclude Include="Subscriber.h" />
+    <ClInclude Include="TextComponent.h" />
+    <ClInclude Include="TileMetaData.h" />
+    <ClInclude Include="LightComponent.h" />
+    <ClInclude Include="Mat4.h" />
+    <ClInclude Include="Mathf.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshComponent.h" />
+    <ClInclude Include="PhysicsComponent.h" />
+    <ClInclude Include="PhysicsEngine.h" />
+    <ClInclude Include="PXGGame.h" />
+    <ClInclude Include="PXGWindow.h" />
+    <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="RayCastShooter.h" />
+    <ClInclude Include="RenderingEngine.h" />
+    <ClInclude Include="RotatorComponent.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="StandardLitMaterial.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureMaterial.h" />
+    <ClInclude Include="Tile.h" />
+    <ClInclude Include="Time.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="Trigger.h" />
+    <ClInclude Include="UIObject.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PXGColor.frag.glsl" />
+    <None Include="PXGColor.vert.glsl" />
+    <ClCompile Include="AxisAngle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="assimp-vc141-mtd.lib" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
