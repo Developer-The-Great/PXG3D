@@ -13,11 +13,14 @@ namespace PXG
 	class Mesh;
 	class AbstractMaterial;
 
-	//TODO MeshComponent manages the drawing of meshes. But it also imports them into the game. Make a seperate class that does the importing
+
 	class MeshComponent : public Component
 	{
 	public:
 
+		/**@brief : Loads the 3D Model in the file location of name
+		 * @param [in] name : the location of the 3D model you would like to load
+		*/
 		void Load3DModel(std::string name);
 
 		void SetMaterial(std::shared_ptr<AbstractMaterial> material);

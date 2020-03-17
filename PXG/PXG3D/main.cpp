@@ -85,7 +85,7 @@ int main()
 	//--------------------Initialize Game-----------------------//
 
 	auto gamePtr = std::make_shared<PXG:: GAME_INSTANCE >();
-	gamePtr->GetWorld()->SetPhysicsComponentDrawActive(false);
+	
 
 	//--------------------Initialize Rendering Engine-----------------------//
 
@@ -154,6 +154,8 @@ int main()
 		
 		renderingEngine->RenderCurrentlySetWorld();
 
+
+
 		glDisable(GL_DEPTH_TEST);
 		renderingEngine->RenderCanvas();
 		
@@ -164,6 +166,8 @@ int main()
 		glfwSwapBuffers(window);
 
 		Input::LateUpdateTrackedKeyStates();
+
+		//Debug::Log("FPS :{0}", time->GetFPS());
 
 		time->UpdateAverageTime();
 

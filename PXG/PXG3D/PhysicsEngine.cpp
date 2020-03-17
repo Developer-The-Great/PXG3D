@@ -125,7 +125,7 @@ namespace PXG
 			HitInfo triangleHitInfo;
 			triangleHitInfo.RayHit = false;
 
-			rayTriangleIntersection(
+			RayTriangleIntersection(
 				mesh->Vertices.at(v0Index).position,
 				mesh->Vertices.at(v1Index).position,
 				mesh->Vertices.at(v2Index).position,
@@ -145,23 +145,26 @@ namespace PXG
 
 	}
 
-	void PhysicsEngine::rayTriangleIntersection(Vector3 vec1, Vector3 vec2, Vector3 vec3, const Vector3& rayPosition, const Vector3& rayDirection, Mat4 objectTransform, HitInfo& hitInfo, std::shared_ptr<GameObject> owner)
+	void PhysicsEngine::RayTriangleIntersection(Vector3 vec1, Vector3 vec2, Vector3 vec3, const Vector3& rayPosition, const Vector3& rayDirection, Mat4 objectTransform, HitInfo& hitInfo, std::shared_ptr<GameObject> owner)
 	{
 		//-----find a point where the ray intersects the plane where the triangle lies-------//
 		HitInfo Result;
 
+
+
 		glm::vec4 rayOrigin(rayPosition.ToGLMVec3(), 1);
-		glm::vec4 rayDir(-rayDirection.Normalized().ToGLMVec3(), 0);
+		glm::vec4 rayDir(rayDirection.Normalized().ToGLMVec3(), 0);
 
 		//transform ray into the triangle's model space
 		rayOrigin =  glm::inverse(objectTransform.ToGLM()) * rayOrigin;
 		rayDir = glm::normalize(glm::inverse(objectTransform.ToGLM()) * rayDir);
 
+
 		Vector3 a(vec1.ToGLMVec3());
 		Vector3 b(vec2.ToGLMVec3());
 		Vector3 c(vec3.ToGLMVec3());
 
-		Vector3 ObjectSpaceNormal =  Mathf::Cross(a - b, c - b).Normalized()*-1;
+		Vector3 ObjectSpaceNormal =  Mathf::Cross(a - b, c - b).Normalized();
 
 
 		auto transformedNormal = glm::transpose(glm::inverse(objectTransform.ToGLM())) * glm::vec4(ObjectSpaceNormal.ToGLMVec3(), 0);
@@ -188,6 +191,8 @@ namespace PXG
 
 
 		glm::vec3 P = rayOrigin + rayDir * t;
+
+		Debug::Log("plane to ray position {0} " , glm::to_string(P));
 		//---------check if that point is inside the the triangle using barycentric coordinates--------//
 
 		Vector3 p(P.x, P.y, P.z);
@@ -314,11 +319,13 @@ namespace PXG
 		max = maxResult;
 	}
 
-	Vector3 PhysicsEngine::GetOrthographicCameraWorldPosition(float x, float y, float screenWidth, float screenHeight, std::shared_ptr<GameObject> object)
+	Vector3 PhysicsEngine::GetOrthographicCameraWorldPosition(float x, float y, float screenWidth, float screenHeight, std::shared_ptr<World> world)
 	{
-		auto  transform = object->GetTransform();
+		auto camera = world->GetCamera();
+		if (!camera) { return Vector3(); }
 
-		Vector3 position = transform->GetLocalPosition();
+		auto transform = camera->GetOwner()->GetTransform();
+		Vector3 position = transform->GetPosition();
 		Vector3 up = transform->GetUp();
 		Vector3 right = transform->GetRight();
 

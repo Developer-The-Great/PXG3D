@@ -33,8 +33,16 @@ namespace PXG
 		
 		PhysicsComponent();
 
+	   /**@brief Sets the material that will be used when the physics representation is drawn.
+		* @param [in] newPhysicsDrawingMaterial: the material that will be used to render the mesh
+	   */
 		void SetPhysicsDrawingMaterial(std::shared_ptr<AbstractMaterial> newPhysicsDrawingMaterial);
 
+	   /**@brief Draws the mesh in the physics Component
+		* @param [in] parentTransform: the transform of the GameObject that this GameObject is parented to
+		* @param [in] view: the view matrix of the camera that is currently used to render the world
+		* @param [in] projection: the projection matrix of the camera that is currently used to render the world
+	   */ 
 		void DrawPhysicsRepresentation(Mat4 parentTransform, Mat4 view, Mat4 projection);
 
 		std::vector<std::shared_ptr<Mesh>> GetPhysicsMeshes();

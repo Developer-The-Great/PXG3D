@@ -63,6 +63,7 @@ namespace PXG
 
 		static Quaternion ToQuaternion(AxisAngle axisAngle);
 
+		static float Tan(float x);
 
 	};
 

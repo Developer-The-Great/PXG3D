@@ -82,11 +82,13 @@
     <ClCompile Include="AudioSource.cpp" />
     <ClCompile Include="ButtonComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CameraMover.cpp" />
     <ClCompile Include="CameraRotator.cpp" />
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="ColorMaterial.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="DebugMeshObject.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="FreeMovementComponent.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -117,6 +119,7 @@
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -128,11 +131,13 @@
     <ClInclude Include="AxisAngle.h" />
     <ClInclude Include="ButtonComponent.h" />
     <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CameraMover.h" />
     <ClInclude Include="CameraRotator.h" />
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="CollisionCubeParams.h" />
     <ClInclude Include="ColorMaterial.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="DebugMeshObject.h" />
     <ClInclude Include="FileConfig.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="font.h" />

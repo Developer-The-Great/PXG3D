@@ -114,7 +114,7 @@ namespace PXG
 	}
 	Vector3 Transform::GetForward() const
 	{
-		auto result = GetWorldTransform().ToGLM() * glm::vec4(0,0,1,0) ;
+		auto result = GetWorldTransform().ToGLM() * glm::vec4(0,0,-1,0) ;
 		return Vector3(result.x,result.y,result.z).Normalized();
 	}
 

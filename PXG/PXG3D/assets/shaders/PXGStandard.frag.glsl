@@ -112,7 +112,7 @@ void main( void ) {
 	}
 
 
-	fragment_color = vec4(result ,1);
+	fragment_color = vec4( result ,1);
 
 
 

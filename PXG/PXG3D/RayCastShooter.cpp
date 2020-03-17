@@ -7,7 +7,7 @@
 #include "Input.h"
 #include "CameraComponent.h"
 #include "KeyCode.h"
-
+#include "HitInfo.h"
 #include "ScreenSize.h"
 
 namespace PXG
@@ -25,31 +25,30 @@ namespace PXG
 
 		Vector3 forward = transform->GetForward();
 
-		HitInfo info;
-
-
 		float x = Input::GetMouseX();
 		float y = Input::GetMouseY();
 
-		Vector3 position = PhysicsEngine::GetOrthographicCameraWorldPosition(x, y, ScreenSize::WIDTH, ScreenSize::HEIGHT, GetOwner());
-		if (isActive)
+		Vector3 PixelPosition = Utils::GetProjectionCameraScreenToWorld(x,y,GetOwner()->GetWorld().lock());
+		Vector3 ObjectPosition = transform->GetLocalPosition();
+
+		HitInfo hit;
+
+		PhysicsEngine::Raycast(ObjectPosition, (PixelPosition - ObjectPosition).Normalized(), hit, GetOwner()->GetWorld().lock(), true);
+		if(hit.RayHit)
 		{
-			PhysicsEngine::Raycast(position, forward, info, GetOwner()->GetWorld().lock());
+			Debug::Log("Hit");
 
-			if (info.RayHit)
-			{
-				Debug::Log("raycast hit {0} ", info.GameObjectHit->name);
-				Debug::Log("normal found ", info.Normal.ToString());
-				lastHit = info;
-				notify(ON_RAYCAST_HIT);
-
-				
-
-			}
-			else {
-				Debug::Log("oof ");
-			}
+			//transform->SetLocalPosition(hit.Position);
 		}
+		else
+		{
+			Debug::Log("Miss");
+		}
+
+		
+		
+
+
 	}
 }
 

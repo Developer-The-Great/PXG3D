@@ -100,6 +100,11 @@ namespace PXG
 
 	}
 
+	float Mathf::Tan(float x)
+	{
+		return glm::tan(x);
+	}
+
 	//TODO implement quat angle difference
 	float Mathf::GetQuaternionAngleDifference(Quaternion a, Quaternion b)
 	{

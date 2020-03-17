@@ -16,7 +16,7 @@ namespace PXG
 	{
 
 	}
-	//TODO [Medium Priority] refactor RenderCurrentlySetWorld() and RenderDebugDrawingForSetWorld()
+
 	void RenderingEngine::RenderCurrentlySetWorld() const
 	{
 
@@ -36,6 +36,7 @@ namespace PXG
 		{
 			meshComponent->Draw(Mat4(), camera->GetView(), camera->GetProjection());
 		}
+
 		glDisable(GL_DEPTH_TEST);
 		Mesh::SetRasterizationMode(RasterizationMode::LINE);
 		//render physics components if necessary
