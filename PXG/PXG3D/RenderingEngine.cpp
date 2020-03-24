@@ -29,6 +29,8 @@ namespace PXG
 		if (!camera) return;
 		glEnable(GL_DEPTH_TEST);
 		Mesh::SetRasterizationMode(RasterizationMode::FILL);
+		Mesh::SetPrimitiveDrawingMode(PrimitiveDrawingMode::TRIANGLE);
+
 		auto meshComponent = world->GetMeshComponent();
 
 		//render mesh if it exists

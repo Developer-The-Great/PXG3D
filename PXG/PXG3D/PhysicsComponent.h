@@ -23,18 +23,18 @@ namespace PXG
 	   */
 		void ConstructPhysicsRepresentationFromMeshComponent();
 
-	   /**@brief creates a mesh that will encompass all the vertices of the meshes in MeshComponent
-	    * @param [in] CubeParams: a set of parameters that you would like to use instead of using the min/max vertex
-	    * Note: not all parameters of CubeParams need to be specified, If a certain parameter is not specified,
-	    * the function will instead use the default min max of the mesh (From PhysicsEngine::GetMinMaxPositionOfMeshes).
+	    /**@brief creates a mesh that will encompass all the vertices of the meshes in MeshComponent
+	     * @param [in] CubeParams: a set of parameters that you would like to use instead of using the min/max vertex
+	     * Note: not all parameters of CubeParams need to be specified, If a certain parameter is not specified,
+	     * the function will instead use the default min max of the mesh (From PhysicsEngine::GetMinMaxPositionOfMeshes).
 	   */
 		void ConstructCollisionCube(const CollisionCubeParams& CubeParams);
 		void ConstructCollisionCube();
 		
 		PhysicsComponent();
 
-	   /**@brief Sets the material that will be used when the physics representation is drawn.
-		* @param [in] newPhysicsDrawingMaterial: the material that will be used to render the mesh
+	    /**@brief Sets the material that will be used when the physics representation is drawn.
+		 * @param [in] newPhysicsDrawingMaterial: the material that will be used to render the mesh
 	   */
 		void SetPhysicsDrawingMaterial(std::shared_ptr<AbstractMaterial> newPhysicsDrawingMaterial);
 

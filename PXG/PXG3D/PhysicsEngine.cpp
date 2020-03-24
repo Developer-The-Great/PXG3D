@@ -147,7 +147,7 @@ namespace PXG
 
 	void PhysicsEngine::RayTriangleIntersection(Vector3 vec1, Vector3 vec2, Vector3 vec3, const Vector3& rayPosition, const Vector3& rayDirection, Mat4 objectTransform, HitInfo& hitInfo, std::shared_ptr<GameObject> owner)
 	{
-		//-----find a point where the ray intersects the plane where the triangle lies-------//
+		//-----------find a point where the ray intersects the plane where the triangle lies-------//
 		HitInfo Result;
 
 
@@ -192,7 +192,6 @@ namespace PXG
 
 		glm::vec3 P = rayOrigin + rayDir * t;
 
-		Debug::Log("plane to ray position {0} " , glm::to_string(P));
 		//---------check if that point is inside the the triangle using barycentric coordinates--------//
 
 		Vector3 p(P.x, P.y, P.z);
@@ -243,7 +242,10 @@ namespace PXG
 		}
 
 		//ray hits triangle
-		Result.Position = p;
+
+		glm::vec4 finalPosition = objectTransform.ToGLM() * glm::vec4(p.x, p.y, p.z, 1.0);
+
+		Result.Position = Vector3(finalPosition.x,finalPosition.y,finalPosition.z);
 		Result.GameObjectHit = owner;
 		Result.RayHit = true;
 		Result.T = t;

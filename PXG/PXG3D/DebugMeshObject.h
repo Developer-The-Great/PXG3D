@@ -1,40 +1,50 @@
 #pragma once
 #include <memory>
+#include "Mat4.h"
 
-#define PXG_THIS_FRAME_ONLY 0.0f
 
 namespace PXG
 {
+
+	
 	class AbstractMaterial;
-	struct Vector3;
 	class Mesh;
-	struct Mat4;
+	class World;
+	enum class PrimitiveDrawingMode;
 
 
-	enum class DebugPrimitive
-	{
-		LINE,
-		CUBE,
-
-	};
+	
 
 
 	class DebugMeshObject
 	{
 	public:
 
-		void Draw(Mat4 parentTransform, Mat4 view, Mat4 projection);
+		DebugMeshObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<AbstractMaterial> material, Mat4 transform, float lifespan,PrimitiveDrawingMode drawMode);
 
+		void Draw(std::weak_ptr<World> world, Mat4 parentTransform, Mat4 view, Mat4 projection);
+
+		bool IsLifeSpanOver() const;
+
+		void DecreaseLifeSpan(float tick);
+
+		PrimitiveDrawingMode GetDrawMode() const;
+
+		//static std::shared_ptr<DebugMeshObject> InstantiateMeshObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<AbstractMaterial> material, Mat4 transform, float lifespan);
 
 
 	private:
 
-		DebugMeshObject(std::shared_ptr<Mesh> mesh, Mat4 transform, float lifespan = PXG_THIS_FRAME_ONLY);
+		
 
 		std::shared_ptr<AbstractMaterial> material;
+		std::shared_ptr<Mesh> mesh;
 
+		Mat4 transform;
 
+		float lifespan;
 
+		PrimitiveDrawingMode drawMode;
 			
 	};
 }

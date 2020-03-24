@@ -31,14 +31,19 @@ namespace PXG
 	{
 		return lights.size();
 	}
+	std::shared_ptr<DebugDrawingManager> World::GetDebugDrawingManager()
+	{
+		return debugDrawingManager;
+	}
+	void World::SetDebugDrawingManager(std::shared_ptr<DebugDrawingManager> debugDrawingManager)
+	{
+		this->debugDrawingManager = debugDrawingManager;
+	}
 	bool World::IsDrawPhysicsComponentMeshNeeded()
 	{
 		return needToDrawPhysicsComponentMesh;
 	}
-	void World::SetDrawPhysicsComponentMeshDraw(bool newPhysicsComponentDrawState)
-	{
-		needToDrawPhysicsComponentMesh = newPhysicsComponentDrawState;
-	}
+
 	void World::SetPhysicsComponentDrawActive(bool newState)
 	{
 		needToDrawPhysicsComponentMesh = newState;
