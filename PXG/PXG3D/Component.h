@@ -27,6 +27,7 @@ namespace PXG
 		std::shared_ptr<GameObject> GetOwner() const;
 		void SetActive(bool condition) { isActive = condition; };
 		bool IsActive() { return isActive; };
+
 	protected:
 
 		std::weak_ptr<GameObject> owner;

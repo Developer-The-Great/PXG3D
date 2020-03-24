@@ -18,6 +18,7 @@
 
 #include "PXGWindow.h"
 #include <iostream>
+#include <memory>
 
 #include "Mathf.h"
 #include "Vector3.h"
@@ -39,12 +40,18 @@
 #include "imgui/examples/imgui_impl_opengl3.h"
 #include "ScreenSize.h"
 
+#include "DebugDrawingManager.h"
+
 constexpr int width = PXG::ScreenSize::WIDTH;
 constexpr int height = PXG::ScreenSize::HEIGHT;
 
+
+#include <iostream>
+#include <string>
+#include <unordered_map>
+using namespace std;
 int main()
 {
-
 	Debug::SetDebugState(true);
 
 	Debug::Log(Verbosity::Info, "PXG is running");
@@ -113,6 +120,12 @@ int main()
 	Debug::Log("children in world {0}", gamePtr->GetWorld()->GetImmediateChildrenCount());
 	Debug::Log("children in Canvas {0}", gamePtr->GetCanvas()->GetImmediateChildrenCount());
 
+	//--------------------------------- Initialize Debug Mesh Object------------------------------//
+
+	std::shared_ptr<PXG::DebugDrawingManager> debugDrawingManager = std::make_shared<PXG::DebugDrawingManager>();
+	debugDrawingManager->SetWorld(gamePtr->GetWorld());
+	gamePtr->GetWorld()->SetDebugDrawingManager(debugDrawingManager);
+
 
 	//-------------------------------------- GAME LOOP ------------------------------------//
 	glEnable(GL_DEPTH_TEST);
@@ -157,7 +170,14 @@ int main()
 
 
 		glDisable(GL_DEPTH_TEST);
+		debugDrawingManager->DrawDebugObjects();
+
+		debugDrawingManager->DecreaseLifespan(time->GetAverageDeltaTime());
+		debugDrawingManager->RemoveDeadDebugMeshes();
+
 		renderingEngine->RenderCanvas();
+
+
 		
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -39,9 +39,13 @@ namespace PXG
 			void AddComponent(std::shared_ptr<T> component)
 		{
 			components.push_back(component);
-			componentTable.insert(componentTable.begin(),
-				{ typeid(T),std::static_pointer_cast<Component>(component) }
-			);
+
+			componentTable.insert(
+				{ typeid(T),std::static_pointer_cast<Component>(component) });
+
+			//componentTable.insert(typeid(T), std::static_pointer_cast<Component>(component));
+
+			
 			component->SetOwner(shared_from_this());
 		}
 
@@ -64,7 +68,7 @@ namespace PXG
 			if (componentTable.find(typeid(T)) != componentTable.end())
 			{
 				auto[start, end] = componentTable.equal_range(typeid(T));
-
+				
 				if (offs > std::distance(start, end))
 				{
 					throw std::out_of_range("component subscript out of range!");

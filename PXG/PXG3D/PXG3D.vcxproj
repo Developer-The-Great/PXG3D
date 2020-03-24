@@ -88,6 +88,7 @@
     <ClCompile Include="ColorMaterial.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="DebugDrawingManager.cpp" />
     <ClCompile Include="DebugMeshObject.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="FreeMovementComponent.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="CollisionCubeParams.h" />
     <ClInclude Include="ColorMaterial.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="DebugDrawingManager.h" />
     <ClInclude Include="DebugMeshObject.h" />
     <ClInclude Include="FileConfig.h" />
     <ClInclude Include="Debug.h" />

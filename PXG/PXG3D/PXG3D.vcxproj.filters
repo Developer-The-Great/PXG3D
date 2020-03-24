@@ -126,6 +126,7 @@
       <Filter>core\components</Filter>
     </ClCompile>
     <ClCompile Include="DebugMeshObject.cpp" />
+    <ClCompile Include="DebugDrawingManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ScreenSize.h" />
@@ -309,6 +310,7 @@
       <Filter>core\components</Filter>
     </ClInclude>
     <ClInclude Include="DebugMeshObject.h" />
+    <ClInclude Include="DebugDrawingManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PXGColor.vert.glsl" />
