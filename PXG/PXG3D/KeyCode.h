@@ -64,7 +64,7 @@ enum class KeyCode
 	KeyRight = GLFW_KEY_RIGHT,
 	KeyLeft = GLFW_KEY_LEFT,
 	KeyDown = GLFW_KEY_DOWN,
-	Up = GLFW_KEY_UP,
+	KeyUp = GLFW_KEY_UP,
 	PageUp = GLFW_KEY_PAGE_UP,
 	PageDown = GLFW_KEY_PAGE_DOWN,
 	Home = GLFW_KEY_HOME,

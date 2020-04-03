@@ -10,11 +10,18 @@
 #include "GameObject.h"
 #include "Math.h"
 #include "CameraComponent.h"
+#include "PhysicsSceneGraphIterationInfo.h"
+#include "PhysicsComponentContainer.h"
 
 namespace PXG
 {
-
+	std::function<void(const std::vector<PhysicsSceneGraphIterationInfo>&, std::vector<PhysicsComponentContainer>&)> PhysicsEngine::OptimizeBroadPhase = nullptr;
 	double PhysicsEngine::gravity = -19.85;
+
+	PhysicsEngine::PhysicsEngine()
+	{
+		OptimizeBroadPhase = std::bind(&PhysicsEngine::BruteForceBroadPhase,std::placeholders::_1,std::placeholders::_2);
+	}
 
 	void PhysicsEngine::AddPhysicsComponent(std::shared_ptr<PhysicsComponent> physicsComponent)
 	{
@@ -70,6 +77,66 @@ namespace PXG
 		}
 	}
 
+	void PhysicsEngine::CheckCollisions()
+	{
+		//iterate through the scene graph to get all colliders and their transforms
+		std::vector<PhysicsSceneGraphIterationInfo> iterationResult;
+		Mat4 transform = world->GetTransform()->GetWorldTransform();
+
+		recursiveRetrievePhysicsComponent(world, iterationResult, transform);
+
+		Debug::Log("Found {0} physicsComponents with colliders",iterationResult.size());
+
+		std::vector<PhysicsComponentContainer> physicsComponentContainers;
+
+		//broad phase optimization
+		OptimizeBroadPhase(iterationResult, physicsComponentContainers);
+
+
+
+		Debug::Log("All PhysicsComponents have been grouped into {0} groups ", physicsComponentContainers.size());
+
+		for (const auto& physicsComponentContainer : physicsComponentContainers)
+		{
+
+			for (int i = 0; i < physicsComponentContainer.PSGIIContainer.size(); i++)
+			{
+
+				for (int j = i+1; j < physicsComponentContainer.PSGIIContainer.size(); j++)
+				{
+					Manifold m;
+
+					//for now, assume that each physicsComponent only has 1 collider
+					auto PSGIIA = physicsComponentContainer.PSGIIContainer.at(i);
+					auto PSGIIB = physicsComponentContainer.PSGIIContainer.at(j);
+
+					m.physicsComponentA = PSGIIA.physicsComponent;
+					m.physicsComponentB = PSGIIB.physicsComponent;
+					m.transformA = PSGIIA.transform;
+					m.transformB = PSGIIB.transform;
+
+					auto colliderA = PSGIIA.physicsComponent->GetCollider();
+					auto colliderB = PSGIIA.physicsComponent->GetCollider();
+
+					colliderA->CheckCollision(colliderB, m);
+
+
+
+
+
+
+				}
+			}
+
+
+		}
+
+
+		//Call check collision on each of them
+
+
+	}
+
 	double PhysicsEngine::GetGravity()
 	{
 		return gravity;
@@ -89,6 +156,49 @@ namespace PXG
 		recursiveGameObjectRaytrace(position, direction, hitInfo, world, Mat4(),usePhysicsComponent);
 
 		return hitInfo.RayHit;
+	}
+
+	void PhysicsEngine::recursiveRetrievePhysicsComponent(std::shared_ptr<GameObject> rootObj, std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, Mat4 transform)
+	{
+		Mat4 rootObjTransform = rootObj->GetTransform()->GetLocalTransform() * transform;
+
+		//all gameObjects have a physicsComponent but may not have coliders. we are only interested in those that do have colliders
+		if (rootObj->GetPhysicsComponent()->GetColliderCount() > 0)
+		{
+			PhysicsSceneGraphIterationInfo psgii;
+			psgii.physicsComponent = rootObj->GetPhysicsComponent();
+			
+			psgii.transform = rootObjTransform;
+
+			physicsComponents.push_back(psgii);
+
+		}
+
+		for (const auto& child : rootObj->GetChildren())
+		{
+			recursiveRetrievePhysicsComponent(child, physicsComponents, rootObjTransform);
+		}
+
+	}
+
+	void PhysicsEngine::BruteForceBroadPhase(const std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, std::vector<PhysicsComponentContainer>& physicsComponentContainers)
+	{
+		PhysicsComponentContainer physicsComponentGroupContainer;
+
+		for (const auto& psgii : physicsComponents)
+		{
+			physicsComponentGroupContainer.PSGIIContainer.push_back(psgii);
+		}
+		physicsComponentContainers.push_back(physicsComponentGroupContainer);
+
+
+
+
+	}
+
+	void PhysicsEngine::BroadPhaseOctreeOptimization(const std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, std::vector<PhysicsComponentContainer>& physicsComponentContainers)
+	{
+		
 	}
 
 	void PhysicsEngine::recursiveGameObjectRaytrace(const Vector3& position, const Vector3& direction, HitInfo & hitInfo, std::shared_ptr<GameObject> gameObject, Mat4 parentTransform, bool isUsingPhysicsComponent)
@@ -180,7 +290,7 @@ namespace PXG
 
 		float t = (normalDotPoint - OriginDotNormal) / normalDotDirection;
 
-		//triangle is behind ray
+		//check if triangle is behind ray
 		if (t < 0)
 		{
 			Result.RayHit = false;
@@ -212,7 +322,7 @@ namespace PXG
 		// apply cramers rule
 		float v = (d20* d11 - d21 * d10) / denom;
 
-		//---- P is in triangle if u + v + w = 1 ------
+		//---- P is in triangle if u + v + w = 1 ------//
 		if (v < 0 || v > 1)
 		{
 			Result.RayHit = false;
@@ -252,6 +362,30 @@ namespace PXG
 
 		hitInfo = Result;
 
+	}
+
+	void PhysicsEngine::GetSupportPoint(std::shared_ptr<Mesh> mesh, Mat4 meshTransform,  Vector3 position, Vector3 direction, unsigned int & index,Vector3& vertexWorldPosition)
+	{
+		float largestProjection = -FLT_MAX;
+		index = -1;
+
+		for (int i = 0; i < mesh->Vertices.size(); i++)
+		{
+
+			glm::vec3 objectSpaceVertexToPosition = (mesh->Vertices.at(i).position - position).ToGLMVec3();
+			glm::vec3 worldSpaceVertexToPosition = meshTransform.ToGLM() * glm::vec4(objectSpaceVertexToPosition, 0);
+
+			float dotResult = Mathf::Dot(worldSpaceVertexToPosition, direction);
+
+			if (dotResult > largestProjection)
+			{
+				largestProjection = dotResult;
+				index = i;
+				
+			}
+		}
+
+		vertexWorldPosition = meshTransform.ToGLM() * glm::vec4(mesh->Vertices.at(index).position.ToGLMVec3(),1);
 	}
 
 	void PhysicsEngine::recursiveGetMeshComponents(std::vector<std::shared_ptr<MeshComponent>>& MeshComponentList, std::shared_ptr<GameObject> gameObject)

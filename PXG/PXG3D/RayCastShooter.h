@@ -19,6 +19,8 @@ namespace PXG
 
 		virtual void FixedUpdate(float tick) override;
 
+		virtual void Update() override;
+
 		void SetActive(bool condition) { isActive = condition; };
 		virtual const HitInfo& GetLastHit() const
 		{
@@ -26,6 +28,12 @@ namespace PXG
 		}
 
 	private:
+
+		std::shared_ptr<GameObject> possessedGameObject;
+		float speed = 0.1f;
+
+
+
 		HitInfo lastHit;
 		bool isActive = false;
 	};

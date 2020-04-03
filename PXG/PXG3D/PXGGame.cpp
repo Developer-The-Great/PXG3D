@@ -34,6 +34,11 @@
 #include "CameraMover.h"
 #include "StandardLitMaterial.h"
 
+#include "ConvexCollider.h"
+#include "PhysicsCollider.h"
+
+
+
 namespace PXG
 {
 
@@ -52,11 +57,14 @@ namespace PXG
 
 		Input::AddKeysToTrack(
 			KeyCode::A, KeyCode::W, KeyCode::S, KeyCode::D, KeyCode::Q, KeyCode::E, KeyCode::K, KeyCode::J, KeyCode::Z,
-			KeyCode::LeftMouse, KeyCode::RightMouse, KeyCode::MiddleMouse, KeyCode::Enter);
+			KeyCode::LeftMouse, KeyCode::RightMouse, KeyCode::MiddleMouse
+			, KeyCode::Enter
+			,KeyCode::KeyUp,KeyCode::KeyRight,KeyCode::KeyDown,KeyCode::KeyLeft);
 
 
 		//---------------------------Initialize Textures---------------------------------------//
 		std::shared_ptr<ColorMaterial> bluetColorMat = std::make_shared<ColorMaterial>(Vector3(0, 0, 1));
+		std::shared_ptr<ColorMaterial> redColorMat = std::make_shared<ColorMaterial>(Vector3(1, 0, 0));
 		std::shared_ptr<TextureMaterial> textureMaterial = std::make_shared<TextureMaterial>();
 		auto diamondMaterial = std::make_shared<StandardLitMaterial>();
 		auto brickMaterial = std::make_shared<StandardLitMaterial>();
@@ -98,6 +106,8 @@ namespace PXG
 		cameraObj->GetTransform()->rotate(Vector3(1, 0, 0), -45.0f);
 		cameraObj->AddComponent(std::make_shared<CameraRotator>());
 
+		/*
+		
 
 		//--------------------------SetUp bottomFloor--------------------------------//
 
@@ -206,9 +216,6 @@ namespace PXG
 		topSpotlight->GetTransform()->Scale(Vector3(0.5, 0.5, 0.5));
 		world->AddToChildren(topSpotlight);
 
-
-
-
 		auto leftlightComp = std::make_shared<LightComponent>();
 		leftlightComp->SetIntensity(150.0f);
 		GameObj leftPonintLight = Instantiate();
@@ -232,9 +239,43 @@ namespace PXG
 		rightPonintLight->GetTransform()->Scale(Vector3(0.5, 0.5, 0.5));
 		world->AddToChildren(rightPonintLight);
 
+		//std::shared_ptr<PhysicsCollider> physicsCollider = std::make_shared<ConvexCollider>();
+		//std::shared_ptr<PhysicsCollider> physicsCollider2 = std::make_shared<ConvexCollider>();
+
+		//Manifold mdgsa;
+		//physicsCollider->CheckCollision(physicsCollider2);
+		//PhysicsCollider 
+
+		*/
 
 
-		world->SetPhysicsComponentDrawActive(false);
+
+		//--------------------Physics Test --------------------------//
+
+		GameObj firstObj = Instantiate();
+		firstObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		firstObj->GetMeshComponent()->SetMaterial(redColorMat);
+		firstObj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		firstObj->name = "firstObj";
+		
+		firstObj->GetTransform()->SetLocalPosition(Vector3(0.0, 0.0, 0.0));
+		firstObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+		world->AddToChildren(firstObj);
+
+		GameObj secondObj = Instantiate();
+		secondObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		secondObj->GetMeshComponent()->SetMaterial(bluetColorMat);
+		secondObj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		secondObj->name = "secondObj";
+
+		secondObj->GetTransform()->SetLocalPosition(Vector3(3.0, 0.0, 0.0));
+		secondObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+		world->AddToChildren(secondObj);
+
+
+		world->SetPhysicsComponentDrawActive(true);
+
+
 	}
 
 	GameObj PXGGame::MakeChild(const std::string& name)
@@ -253,6 +294,8 @@ namespace PXG
 
 	void PXGGame::Update()
 	{
+		world->Update();
+
 	}
 
 	void PXGGame::FixedUpdate(float tick)

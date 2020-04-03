@@ -121,7 +121,8 @@ namespace PXG
 	protected:
 
 
-
+		//TODO there are 2 containers maintaining a list of components, we will use 'componentTable' and remove
+		//'components' later
 		std::unordered_multimap<std::type_index, std::shared_ptr<Component>> componentTable;
 		std::vector< std::shared_ptr<Component>> components;
 		std::vector<std::shared_ptr<GameObject>> children;
