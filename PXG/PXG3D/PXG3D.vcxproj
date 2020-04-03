@@ -87,6 +87,8 @@
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="ColorMaterial.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ConvexCollider.cpp" />
+    <ClCompile Include="CubeCollider.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="DebugDrawingManager.cpp" />
     <ClCompile Include="DebugMeshObject.cpp" />
@@ -105,6 +107,7 @@
     <ClCompile Include="Mathf.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="PhysicsCollider.cpp" />
     <ClCompile Include="PhysicsComponent.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="PXGGame.cpp" />
@@ -113,6 +116,7 @@
     <ClCompile Include="RenderingEngine.cpp" />
     <ClCompile Include="RotatorComponent.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="StandardLitMaterial.cpp" />
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="TextComponent.cpp" />
@@ -138,6 +142,8 @@
     <ClInclude Include="CollisionCubeParams.h" />
     <ClInclude Include="ColorMaterial.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ConvexCollider.h" />
+    <ClInclude Include="CubeCollider.h" />
     <ClInclude Include="DebugDrawingManager.h" />
     <ClInclude Include="DebugMeshObject.h" />
     <ClInclude Include="FileConfig.h" />
@@ -158,8 +164,12 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="KeyCode.h" />
     <ClInclude Include="NodeClearComponent.h" />
+    <ClInclude Include="PhysicsCollider.h" />
+    <ClInclude Include="PhysicsComponentContainer.h" />
+    <ClInclude Include="PhysicsSceneGraphIterationInfo.h" />
     <ClInclude Include="RasterizationMode.h" />
     <ClInclude Include="ScreenSize.h" />
+    <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="Subscriber.h" />

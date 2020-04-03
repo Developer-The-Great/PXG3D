@@ -95,6 +95,8 @@ namespace PXG
 			vertex.position = Vector3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 			vertex.normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
 
+			Debug::Log("normal at {0} is : {1} ", i, vertex.normal.ToString());
+
 			if (mesh->mTextureCoords[0])
 			{
 				float x = mesh->mTextureCoords[0][i].x;

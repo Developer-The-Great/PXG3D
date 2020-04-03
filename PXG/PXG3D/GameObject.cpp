@@ -35,6 +35,16 @@ namespace PXG
 	}
 	void GameObject::Update()
 	{
+		for (auto const& child : children)
+		{
+			child->Update();
+		}
+
+		for (auto const& typeToComponentPair : componentTable)
+		{
+			typeToComponentPair.second->Update();
+		}
+
 	}
 
 	void GameObject::FixedUpdate(float tick)

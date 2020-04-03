@@ -125,8 +125,24 @@
     <ClCompile Include="CameraMover.cpp">
       <Filter>core\components</Filter>
     </ClCompile>
-    <ClCompile Include="DebugMeshObject.cpp" />
-    <ClCompile Include="DebugDrawingManager.cpp" />
+    <ClCompile Include="PhysicsCollider.cpp">
+      <Filter>core\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvexCollider.cpp">
+      <Filter>core\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereCollider.cpp">
+      <Filter>core\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeCollider.cpp">
+      <Filter>core\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugDrawingManager.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugMeshObject.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ScreenSize.h" />
@@ -310,7 +326,27 @@
       <Filter>core\components</Filter>
     </ClInclude>
     <ClInclude Include="DebugMeshObject.h" />
-    <ClInclude Include="DebugDrawingManager.h" />
+    <ClInclude Include="PhysicsCollider.h">
+      <Filter>core\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvexCollider.h">
+      <Filter>core\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCollider.h">
+      <Filter>core\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeCollider.h">
+      <Filter>core\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSceneGraphIterationInfo.h">
+      <Filter>core\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDrawingManager.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsComponentContainer.h">
+      <Filter>core\physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="PXGColor.vert.glsl" />

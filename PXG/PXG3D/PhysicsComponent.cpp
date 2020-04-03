@@ -6,6 +6,10 @@
 #include "Mesh.h"
 #include "PhysicsEngine.h"
 #include "CollisionCubeParams.h"
+#include "PhysicsCollider.h"
+#include "CubeCollider.h"
+#include "ConvexCollider.h"
+#include "SphereCollider.h"
 
 namespace PXG
 {
@@ -31,7 +35,14 @@ namespace PXG
 	void PhysicsComponent::ConstructPhysicsRepresentationFromMeshComponent()
 	{
 		auto meshComponentMeshes = GetOwner()->GetMeshComponent()->GetMeshes();
-		meshes = meshComponentMeshes;
+
+		for (const auto& mesh : meshComponentMeshes)
+		{
+			std::shared_ptr<ConvexCollider> convexCollider = std::make_shared<ConvexCollider>();
+			convexCollider->SetMesh(mesh);
+			physicsColliders.push_back(convexCollider);
+
+		}
 	}
 
 	//TODO this looks pretty similar to how mesh component draws things, find a way to refactor it
@@ -47,9 +58,9 @@ namespace PXG
 		{
 			physicsRenderingMaterial->SendUniforms(owner->GetWorld(), currentTransform, view, projection);
 
-			for (auto const& mesh : meshes)
+			for (auto const& physicsCollider : physicsColliders)
 			{
-				mesh->Draw(physicsRenderingMaterial->GetShader());
+				physicsCollider->GetMesh()->Draw(physicsRenderingMaterial->GetShader());
 			}
 		}
 
@@ -62,9 +73,39 @@ namespace PXG
 
 
 	}
+
+	void PhysicsComponent::SetIsTrigger(bool newTriggerState)
+	{
+		isTrigger = newTriggerState;
+	}
+
+	bool PhysicsComponent::IsTrigger() const
+	{
+		return isTrigger;
+	}
+
 	std::vector<std::shared_ptr<Mesh>> PhysicsComponent::GetPhysicsMeshes()
 	{
+		std::vector<std::shared_ptr<Mesh>> meshes;
+
+
+		for (const auto& collider : physicsColliders)
+		{
+			meshes.push_back(collider->GetMesh());
+		}
+
+
 		return meshes;
+	}
+
+	std::shared_ptr<PhysicsCollider> PhysicsComponent::GetCollider(int i)
+	{
+		return physicsColliders.at(i);
+	}
+
+	int PhysicsComponent::GetColliderCount() const
+	{
+		return physicsColliders.size();
 	}
 
 	void PhysicsComponent::ConstructCollisionCube(const CollisionCubeParams& CubeParams)
@@ -105,7 +146,11 @@ namespace PXG
 		Vector3 upperV2 = upperV0 + zAdd;
 		Vector3 upperV3 = upperV0 + xAdd + zAdd;
 
-		meshes.push_back(Mesh::InstantiateCubeMesh(lowerV0,lowerV1,lowerV2,lowerV3,upperV0,upperV1,upperV2,upperV3));
+		auto cubeCollider = std::make_shared<CubeCollider>();
+		cubeCollider->SetMesh(Mesh::InstantiateCubeMesh(lowerV0, lowerV1, lowerV2, lowerV3, upperV0, upperV1, upperV2, upperV3));
+
+
+		physicsColliders.push_back(cubeCollider);
 
 	}
 	void PhysicsComponent::ConstructCollisionCube()

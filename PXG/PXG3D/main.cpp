@@ -52,6 +52,8 @@ constexpr int height = PXG::ScreenSize::HEIGHT;
 using namespace std;
 int main()
 {
+
+
 	Debug::SetDebugState(true);
 
 	Debug::Log(Verbosity::Info, "PXG is running");
@@ -154,12 +156,16 @@ int main()
 
 		physicsEngine->SetTickRemaining(time->GetAverageDeltaTime());
 
+		gamePtr->Update();
+
 		while (physicsEngine->IsTicking())
 		{
 			
 			float tick = physicsEngine->DecreaseRemainingTickTime();
 			//fixed update on game
 			gamePtr->FixedUpdate(tick);
+
+			physicsEngine->CheckCollisions();
 			
 		}
 
