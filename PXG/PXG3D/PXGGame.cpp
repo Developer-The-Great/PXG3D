@@ -65,6 +65,9 @@ namespace PXG
 		//---------------------------Initialize Textures---------------------------------------//
 		std::shared_ptr<ColorMaterial> bluetColorMat = std::make_shared<ColorMaterial>(Vector3(0, 0, 1));
 		std::shared_ptr<ColorMaterial> redColorMat = std::make_shared<ColorMaterial>(Vector3(1, 0, 0));
+		std::shared_ptr<ColorMaterial> purpleColorMat = std::make_shared<ColorMaterial>(Vector3(1, 0, 1));
+		std::shared_ptr<ColorMaterial> greenColorMat = std::make_shared<ColorMaterial>(Vector3(0, 1, 0));
+
 		std::shared_ptr<TextureMaterial> textureMaterial = std::make_shared<TextureMaterial>();
 		auto diamondMaterial = std::make_shared<StandardLitMaterial>();
 		auto brickMaterial = std::make_shared<StandardLitMaterial>();
@@ -247,11 +250,43 @@ namespace PXG
 		//PhysicsCollider 
 
 		*/
+		
 
 
 
-		//--------------------Physics Test --------------------------//
+		//--------------------Physics Test OBB  --------------------------//
+		
 
+		///*
+		
+		GameObj OBBTestObjectPurple = Instantiate();
+		OBBTestObjectPurple->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		OBBTestObjectPurple->GetMeshComponent()->SetMaterial(purpleColorMat);
+		OBBTestObjectPurple->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		OBBTestObjectPurple->name = "OBBTestObjectPurple";
+		
+		OBBTestObjectPurple->GetTransform()->SetLocalPosition(Vector3(0.0, 0.0, -3.0));
+		OBBTestObjectPurple->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+		world->AddToChildren(OBBTestObjectPurple);
+
+		GameObj OBBTestObjectGreen = Instantiate();
+		OBBTestObjectGreen->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		OBBTestObjectGreen->GetMeshComponent()->SetMaterial(greenColorMat);
+		OBBTestObjectGreen->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		OBBTestObjectGreen->name = "OBBTestObjectGreen";
+
+		OBBTestObjectGreen->GetTransform()->SetLocalPosition(Vector3(3.0, 0.0, -3.0));
+		OBBTestObjectGreen->GetTransform()->rotate(Vector3(1, 0, 0), 45.0f);
+		OBBTestObjectGreen->GetTransform()->rotate(Vector3(0, 1, 0), 45.0f);
+		OBBTestObjectGreen->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+		world->AddToChildren(OBBTestObjectGreen);
+
+		//*/
+
+		//--------------------Physics Test AABB --------------------------//
+
+		///*
+		
 		GameObj firstObj = Instantiate();
 		firstObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
 		firstObj->GetMeshComponent()->SetMaterial(redColorMat);
@@ -271,6 +306,17 @@ namespace PXG
 		secondObj->GetTransform()->SetLocalPosition(Vector3(3.0, 0.0, 0.0));
 		secondObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
 		world->AddToChildren(secondObj);
+
+		//*/
+
+		
+
+
+
+
+
+
+
 
 
 		world->SetPhysicsComponentDrawActive(true);

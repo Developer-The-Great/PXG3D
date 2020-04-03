@@ -116,15 +116,9 @@ namespace PXG
 					m.transformB = PSGIIB.transform;
 
 					auto colliderA = PSGIIA.physicsComponent->GetCollider();
-					auto colliderB = PSGIIA.physicsComponent->GetCollider();
+					auto colliderB = PSGIIB.physicsComponent->GetCollider();
 
 					colliderA->CheckCollision(colliderB, m);
-
-
-
-
-
-
 				}
 			}
 

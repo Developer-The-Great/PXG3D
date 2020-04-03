@@ -30,7 +30,7 @@ namespace PXG
 	private:
 
 		std::shared_ptr<GameObject> possessedGameObject;
-		float speed = 0.1f;
+		float speed = 0.05f;
 
 
 

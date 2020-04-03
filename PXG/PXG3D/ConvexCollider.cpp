@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "Mesh.h"
 #include "PhysicsEngine.h"
+#include "GameObject.h"
 
 namespace PXG
 {
@@ -40,6 +41,12 @@ namespace PXG
 		//Debug::SetDebugState(false);
 		//do bounding volume check and exit if bounding volumes do not intersect 
 
+		
+		//TODO Implement Bounding Volumes
+
+
+		//Since we have reached this point, the bounding volumes do intersect.
+
 		Debug::Log("checking collision with convexCollider and convexCollider");
 
 		Vector3 positionA = glm::vec3(manifold.transformA.Matrix[3]);
@@ -47,49 +54,33 @@ namespace PXG
 
 
 
-		//Since we have reached this point, the bounding volumes do intersect.
-
 		auto meshA = this->GetMesh();
 		auto meshB = convexCollider->GetMesh();
 
 
 		Vector3 aToB = positionB - positionA;
-		Vector3 directionCheckA = (aToB).Normalized();
-		Vector3 directionCheckB = directionCheckA * -1;
 
-
-		
-		unsigned int indexA = 0;
-		Vector3 supportPointA;
-		
-		PhysicsEngine::GetSupportPoint(meshA, manifold.transformA,positionA, directionCheckA, indexA,supportPointA);
-
-		Vector3 CenterAToSupportPointA = supportPointA - positionA;
-		
-		//Debug::Log("positionA {0}", positionA.ToString());
-		//Debug::Log("CenterAToSupportPointA {0}", CenterAToSupportPointA.ToString());
-		//Debug::Log("SupportPointA {0}", supportPointA.ToString());
-
-		unsigned int indexB = 0;
-		Vector3 supportPointB;
-		
-		PhysicsEngine::GetSupportPoint(meshB, manifold.transformB, positionB, directionCheckB, indexB,supportPointB);
-
-		Vector3 CenterBToSupportPointB = supportPointB - positionB;
-
-		//Debug::Log("SupportPointB {0}", supportPointB.ToString());
-		//Debug::Log("positionB {0}", positionB.ToString());
-		//Debug::Log("CenterBToSupportPointB {0}", CenterBToSupportPointB.ToString());
-		
-
-
-
-
+		//Test all axes parallel to face normals of meshA
 		for (int index = 0; index < meshA->Indices.size(); index += 3)
 		{
 			int v0Index = meshA->Indices.at(index);
 
 			glm::vec3 l =  manifold.transformA.ToGLM() * glm::vec4(meshA->Vertices.at(v0Index).normal.ToGLMVec3(),0);
+			l = glm::normalize(l);
+
+
+			Vector3 directionA = Mathf::Dot(aToB, l) > Mathf::Dot(aToB * -1, l) ? (l) : (-l);
+			Vector3 directionB = directionA * -1;
+
+
+			unsigned int indexA = -1, indexB = -1;
+			Vector3 supportPointA, supportPointB;
+
+			PhysicsEngine::GetSupportPoint(meshA, manifold.transformA, positionA, directionA, indexA, supportPointA);
+			PhysicsEngine::GetSupportPoint(meshB, manifold.transformB, positionB, directionB, indexB, supportPointB);
+
+			Vector3 CenterAToSupportPointA = supportPointA - positionA;
+			Vector3 CenterBToSupportPointB = supportPointB - positionB;
 
 			//Debug::Log("manifold A {0} ", manifold.transformA.ToString());
 			//Debug::Log("testing normal {0} ",meshA->Vertices.at(v0Index).normal.ToString());
@@ -103,25 +94,51 @@ namespace PXG
 			//rb is the distance from the center of ColliderB to the vertex nearest vertex to A, projected into 'l'
 			float rb = Mathf::Abs(Mathf::Dot(l, CenterBToSupportPointB));
 
-			//Debug::Log("ra {0}", ra);
-			//Debug::Log("rb {0}", rb);
-			//Debug::Log("d {0}", d);
+			
 
 			if (d > ra + rb)
 			{
-				Debug::Log("Axis of seperation found! It is perpendicular to {0}", glm::to_string(l));
+
+				/*Debug::Log("CenterAToSupportPointA {0}", CenterAToSupportPointA.ToString());
+				Debug::Log("CenterBToSupportPointB {0}", CenterBToSupportPointB.ToString()); 
+
+				Debug::Log("ra {0}", ra);
+				Debug::Log("rb {0}", rb);
+				Debug::Log("d {0}", d);
+				Debug::Log("ra + rb {0}", (ra + rb));
+				Debug::Log("Axis of seperation found! It is perpendicular to {0}", glm::to_string(l));*/
+
+				//Debug::Log("No Collision found between gameObject: {0} and gameObject: {1}"
+					//, manifold.physicsComponentA->GetOwner()->name
+					//, manifold.physicsComponentB->GetOwner()->name);
+
 				return;
 			}
 
 		}
 
-
+		//Test all axes parallel to face normals of meshB
 		for (int index = 0; index < meshB->Indices.size(); index += 3)
 		{
 			int v0Index = meshB->Indices.at(index);
 
 
 			glm::vec3 l = manifold.transformB.ToGLM() * glm::vec4(meshB->Vertices.at(v0Index).normal.ToGLMVec3(), 0);
+			l = glm::normalize(l);
+
+
+			Vector3 directionA = Mathf::Dot(aToB, l) > Mathf::Dot(aToB * -1, l) ? (l) : (-l);
+			Vector3 directionB = directionA * -1;
+
+
+			unsigned int indexA = -1, indexB = -1;
+			Vector3 supportPointA, supportPointB;
+
+			PhysicsEngine::GetSupportPoint(meshA, manifold.transformA, positionA, directionA, indexA, supportPointA);
+			PhysicsEngine::GetSupportPoint(meshB, manifold.transformB, positionB, directionB, indexB, supportPointB);
+
+			Vector3 CenterAToSupportPointA = supportPointA - positionA;
+			Vector3 CenterBToSupportPointB = supportPointB - positionB;
 
 			//Debug::Log("manifold B {0} ", manifold.transformB.ToString());
 			//Debug::Log("testing normal {0} ", glm::to_string(glm::vec4(meshB->Vertices.at(v0Index).normal.ToGLMVec3(), 0)));
@@ -135,16 +152,43 @@ namespace PXG
 			//rb is the distance from the center of ColliderB to the vertex nearest vertex to A, projected into 'l'
 			float rb = Mathf::Abs(Mathf::Dot(l, CenterBToSupportPointB));
 
+			
+
 
 			if (d > ra + rb)
 			{
-				Debug::Log("Axis of seperation found! It is perpendicular to {0}", glm::to_string(l));
+
+				/*Debug::Log("CenterAToSupportPointA {0}", CenterAToSupportPointA.ToString());
+				Debug::Log("CenterBToSupportPointB {0}", CenterBToSupportPointB.ToString());
+
+				Debug::Log("ra {0}", ra);
+				Debug::Log("rb {0}", rb);
+				Debug::Log("ra + rb {0}", (ra+rb));
+				Debug::Log("d {0}", d);
+				Debug::Log("Axis of seperation found! It is perpendicular to {0}", glm::to_string(l));*/
+
+				//Debug::Log("No Collision found between gameObject: {0} and gameObject: {1}"
+					//, manifold.physicsComponentA->GetOwner()->name
+					//, manifold.physicsComponentB->GetOwner()->name);
+
 				return;
 			}
 
 		}
 
+
+		//edge-to-edge Collision Detection
+
+
+
+
+
+
 		manifold.isColliding = true;
+
+		Debug::Log("Collision found between gameObject: {0} and gameObject: {1}"
+			, manifold.physicsComponentA->GetOwner()->name
+			, manifold.physicsComponentB->GetOwner()->name);
 		Debug::Log("No Seperating Axis was found");
 
 	}
