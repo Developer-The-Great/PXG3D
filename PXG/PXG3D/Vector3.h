@@ -74,6 +74,7 @@ namespace PXG
 		{
 			return { -lhs.x,-lhs.y,-lhs.z };
 		}
+
 		Vector3 operator* (float scalar) const
 		{
 			float newX = x * scalar;
@@ -83,6 +84,11 @@ namespace PXG
 			return Vector3(newX, newY, newZ);
 		}
 
+		/*Vector3 operator* (Mat4& mat) const
+		{
+			return glm::vec3(mat.Matrix * glm::vec4(x, y, z, 0));
+		}
+*/
 		Vector3 operator/ (float scalar) const
 		{
 			float newX = x / scalar;

@@ -10,6 +10,7 @@ namespace PXG
 	class Mesh;
 	class PhysicsCollider;
 	struct CollisionCubeParams;
+	struct AABBBox;
 	//struct Vector3;
 
 	class PhysicsComponent : public Component
@@ -46,11 +47,14 @@ namespace PXG
 	   */ 
 		void DrawPhysicsRepresentation(Mat4 parentTransform, Mat4 view, Mat4 projection);
 
+		std::shared_ptr<AABBBox> CreateAABBFromTransformedColliders(Mat4& transform);
+
+
 		void SetIsTrigger(bool newTriggerState);
 
 		bool IsTrigger() const;
 
-		std::vector<std::shared_ptr<Mesh>> GetPhysicsMeshes();
+		std::vector<std::shared_ptr<Mesh>> GetPhysicsMeshes() const;
 
 		std::shared_ptr<PhysicsCollider> GetCollider(int i = 0);
 

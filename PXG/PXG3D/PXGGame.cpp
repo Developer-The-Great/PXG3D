@@ -37,7 +37,8 @@
 #include "ConvexCollider.h"
 #include "PhysicsCollider.h"
 
-
+#include "AABBBox.h"
+#include "DebugDrawingManager.h"
 
 namespace PXG
 {
@@ -59,14 +60,22 @@ namespace PXG
 			KeyCode::A, KeyCode::W, KeyCode::S, KeyCode::D, KeyCode::Q, KeyCode::E, KeyCode::K, KeyCode::J, KeyCode::Z,
 			KeyCode::LeftMouse, KeyCode::RightMouse, KeyCode::MiddleMouse
 			, KeyCode::Enter
-			,KeyCode::KeyUp,KeyCode::KeyRight,KeyCode::KeyDown,KeyCode::KeyLeft);
+			,KeyCode::KeyUp,KeyCode::KeyRight,KeyCode::KeyDown,KeyCode::KeyLeft
 
+			,KeyCode::KP0, KeyCode::KP2);
 
 		//---------------------------Initialize Textures---------------------------------------//
 		std::shared_ptr<ColorMaterial> bluetColorMat = std::make_shared<ColorMaterial>(Vector3(0, 0, 1));
 		std::shared_ptr<ColorMaterial> redColorMat = std::make_shared<ColorMaterial>(Vector3(1, 0, 0));
 		std::shared_ptr<ColorMaterial> purpleColorMat = std::make_shared<ColorMaterial>(Vector3(1, 0, 1));
 		std::shared_ptr<ColorMaterial> greenColorMat = std::make_shared<ColorMaterial>(Vector3(0, 1, 0));
+		std::shared_ptr<ColorMaterial> yellowColorMat = std::make_shared<ColorMaterial>(Vector3(0.8, 0.8, 0));
+		std::shared_ptr<ColorMaterial> orangeColorMat = std::make_shared<ColorMaterial>(Vector3(1, 69.0f/255.0f, 0));
+		std::shared_ptr<ColorMaterial> cremeColorMat = std::make_shared<ColorMaterial>(Vector3(1.0, 253.0f / 255.0f, 208.0f/ 255.0f));
+		std::shared_ptr<ColorMaterial> magentaColorMat = std::make_shared<ColorMaterial>(Vector3(139.0f / 255.0f, 0.0f / 255.0f, 138.0f / 255.0f));
+		std::shared_ptr<ColorMaterial> slateGrayColorMat = std::make_shared<ColorMaterial>(Vector3(112.0f / 255.0f, 128.0f / 255.0f, 144.0f / 255.0f));
+		//255, 253, 208
+		//129
 
 		std::shared_ptr<TextureMaterial> textureMaterial = std::make_shared<TextureMaterial>();
 		auto diamondMaterial = std::make_shared<StandardLitMaterial>();
@@ -107,7 +116,7 @@ namespace PXG
 
 		cameraObj->GetTransform()->SetLocalPosition(Vector3(0, 8, 4));
 		cameraObj->GetTransform()->rotate(Vector3(1, 0, 0), -45.0f);
-		cameraObj->AddComponent(std::make_shared<CameraRotator>());
+		
 
 		/*
 		
@@ -250,14 +259,49 @@ namespace PXG
 		//PhysicsCollider 
 
 		*/
+
+
+		//----------------------------------------------------------------- PHYSICS TEST -------------------------------------------------//
+
+		//
+		////--------------------Physics Test OBB EdgeToEdge --------------------------//
+
+
+		//*
+		
+		GameObj yellowObject = Instantiate();
+		yellowObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		yellowObject->GetMeshComponent()->SetMaterial(yellowColorMat);
+		yellowObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		yellowObject->name = "yellowObject";
+
+		yellowObject->GetTransform()->SetLocalPosition(Vector3(0.0, -2.0, -6.0));
+		yellowObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+
+		//yellowObject->GetTransform()->rotate(Vector3(1, 0, 0), 45.0f);
+		yellowObject->GetTransform()->rotate(Vector3(0, 1, 0),45.0f);
 		
 
+		world->AddToChildren(yellowObject);
 
+		GameObj orangeObject = Instantiate();
+		orangeObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		orangeObject->GetMeshComponent()->SetMaterial(orangeColorMat);
+		orangeObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		orangeObject->name = "orangeObj";
+
+		orangeObject->GetTransform()->SetLocalPosition(Vector3(2.0, -2.0, -6.0));
+		orangeObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+		orangeObject->GetTransform()->rotate(Vector3(0, 1, 0), 45.0f);
+		orangeObject->GetTransform()->rotate(Vector3(1, 0, 0), 90.0f);
+
+		world->AddToChildren(orangeObject);
+		//*/
 
 		//--------------------Physics Test OBB  --------------------------//
 		
 
-		///*
+		//*
 		
 		GameObj OBBTestObjectPurple = Instantiate();
 		OBBTestObjectPurple->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -275,7 +319,7 @@ namespace PXG
 		OBBTestObjectGreen->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 		OBBTestObjectGreen->name = "OBBTestObjectGreen";
 
-		OBBTestObjectGreen->GetTransform()->SetLocalPosition(Vector3(3.0, 0.0, -3.0));
+		OBBTestObjectGreen->GetTransform()->SetLocalPosition(Vector3(3.0, -0.5, -2.0));
 		OBBTestObjectGreen->GetTransform()->rotate(Vector3(1, 0, 0), 45.0f);
 		OBBTestObjectGreen->GetTransform()->rotate(Vector3(0, 1, 0), 45.0f);
 		OBBTestObjectGreen->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
@@ -283,7 +327,7 @@ namespace PXG
 
 		//*/
 
-		//--------------------Physics Test AABB --------------------------//
+		////--------------------Physics Test AABB --------------------------//
 
 		///*
 		
@@ -291,9 +335,9 @@ namespace PXG
 		firstObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
 		firstObj->GetMeshComponent()->SetMaterial(redColorMat);
 		firstObj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
-		firstObj->name = "firstObj";
+		firstObj->name = "redObj";
 		
-		firstObj->GetTransform()->SetLocalPosition(Vector3(0.0, 0.0, 0.0));
+		firstObj->GetTransform()->SetLocalPosition(Vector3(1.0, 0.5, 1.5));
 		firstObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
 		world->AddToChildren(firstObj);
 
@@ -301,22 +345,47 @@ namespace PXG
 		secondObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
 		secondObj->GetMeshComponent()->SetMaterial(bluetColorMat);
 		secondObj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
-		secondObj->name = "secondObj";
+		secondObj->name = "blueObj";
 
-		secondObj->GetTransform()->SetLocalPosition(Vector3(3.0, 0.0, 0.0));
+		secondObj->GetTransform()->SetLocalPosition(Vector3(3.0, 0.0, 2.0));
 		secondObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
 		world->AddToChildren(secondObj);
 
+
 		//*/
-
 		
+		
+		/// More Objects
+
+
+		GameObj slategrayObject = Instantiate();
+		slategrayObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		slategrayObject->GetMeshComponent()->SetMaterial(slateGrayColorMat);
+		slategrayObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		slategrayObject->name = "slategrayObjectObj ";
+
+		slategrayObject->GetTransform()->SetLocalPosition(Vector3(-2.5, 1.5, 0.0));
+		slategrayObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+		slategrayObject->GetTransform()->rotate(Vector3(1.0, 1.0, 0.0), 80.0f);
+		world->AddToChildren(slategrayObject);
+
+
+		GameObj cremeObj = Instantiate();
+		cremeObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		cremeObj->GetMeshComponent()->SetMaterial(cremeColorMat);
+		cremeObj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		cremeObj->name = "cremeObj ";
+
+		cremeObj->GetTransform()->SetLocalPosition(Vector3(2.0, 1.5, 0.0));
+		cremeObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+		cremeObj->GetTransform()->rotate(Vector3(1.0, 1.0, 1.0), 45.0f);
+		world->AddToChildren(cremeObj);
 
 
 
-
-
-
-
+		//world->GetDebugDrawingManager()
+		
+		
 
 
 		world->SetPhysicsComponentDrawActive(true);

@@ -347,6 +347,9 @@
     <ClInclude Include="PhysicsComponentContainer.h">
       <Filter>core\physics</Filter>
     </ClInclude>
+    <ClInclude Include="AABBBox.h">
+      <Filter>core\physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="PXGColor.vert.glsl" />

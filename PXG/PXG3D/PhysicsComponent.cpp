@@ -10,6 +10,8 @@
 #include "CubeCollider.h"
 #include "ConvexCollider.h"
 #include "SphereCollider.h"
+#include "AABBBox.h"
+#include <memory>
 
 namespace PXG
 {
@@ -45,7 +47,7 @@ namespace PXG
 		}
 	}
 
-	//TODO this looks pretty similar to how mesh component draws things, find a way to refactor it
+
 	void PhysicsComponent::DrawPhysicsRepresentation(Mat4 parentTransform, Mat4 view, Mat4 projection)
 	{
 
@@ -74,6 +76,48 @@ namespace PXG
 
 	}
 
+	std::shared_ptr<AABBBox> PhysicsComponent::CreateAABBFromTransformedColliders(Mat4 & transform)
+	{
+		Vector3 objectSpaceMin, objectSpaceMax;
+
+		PhysicsEngine::GetMinMaxPositionOfMeshes(objectSpaceMin, objectSpaceMax, GetPhysicsMeshes());
+
+		Vector3 forward = Vector3(0, 0, objectSpaceMax.z - objectSpaceMax.z);
+		Vector3 Up = Vector3(0, objectSpaceMax.y - objectSpaceMax.y,0);
+		Vector3 Right = Vector3(objectSpaceMax.x - objectSpaceMax.x, 0, 0);
+
+		glm::vec3 min = transform.ToGLM() * glm::vec4(objectSpaceMin.ToGLMVec3(), 1);
+		glm::vec3 minPlusForward = transform.ToGLM() * glm::vec4((objectSpaceMin + forward).ToGLMVec3(), 1);
+		glm::vec3 minPlusUp = transform.ToGLM() * glm::vec4((objectSpaceMin + Up).ToGLMVec3(), 1);
+		glm::vec3 minPlusRight = transform.ToGLM() * glm::vec4((objectSpaceMin + Right).ToGLMVec3(), 1);
+		
+		glm::vec3 max = transform.ToGLM() * glm::vec4(objectSpaceMax.ToGLMVec3(), 0);
+		glm::vec3 maxMinusBackward = transform.ToGLM() * glm::vec4((objectSpaceMin - forward).ToGLMVec3(), 1); 
+		glm::vec3 maxMinusDown = transform.ToGLM() * glm::vec4((objectSpaceMin - Up).ToGLMVec3(), 1);
+		glm::vec3 minMinusRight = transform.ToGLM() * glm::vec4((objectSpaceMin - Right).ToGLMVec3(), 1);
+
+		std::vector<Vector3> verticesContainer;
+
+		verticesContainer.push_back(min);
+		verticesContainer.push_back(minPlusForward);
+		verticesContainer.push_back(minPlusUp);
+		verticesContainer.push_back(minPlusRight);
+
+		verticesContainer.push_back(max);
+		verticesContainer.push_back(maxMinusBackward);
+		verticesContainer.push_back(maxMinusDown);
+		verticesContainer.push_back(minMinusRight);
+
+		Vector3 worldSpaceMin, worldSpaceMax;
+
+		PhysicsEngine::GetMinMaxPositionOfVertices(worldSpaceMin, worldSpaceMax, verticesContainer);
+
+		Vector3 halfWidth = (worldSpaceMax - worldSpaceMin) * 0.5f;
+
+		return std::make_shared<AABBBox>(glm::vec3(transform.Matrix[3]), halfWidth);
+
+	}
+
 	void PhysicsComponent::SetIsTrigger(bool newTriggerState)
 	{
 		isTrigger = newTriggerState;
@@ -84,7 +128,7 @@ namespace PXG
 		return isTrigger;
 	}
 
-	std::vector<std::shared_ptr<Mesh>> PhysicsComponent::GetPhysicsMeshes()
+	std::vector<std::shared_ptr<Mesh>> PhysicsComponent::GetPhysicsMeshes() const
 	{
 		std::vector<std::shared_ptr<Mesh>> meshes;
 

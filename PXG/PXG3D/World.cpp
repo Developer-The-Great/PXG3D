@@ -48,5 +48,13 @@ namespace PXG
 	{
 		needToDrawPhysicsComponentMesh = newState;
 	}
+	std::shared_ptr<Time> World::GetTimeSystem()
+	{
+		return time;
+	}
+	void World::SetTimeSystem(std::shared_ptr<Time> newTimeSystem)
+	{
+		this->time = newTimeSystem;
+	}
 }
 

@@ -9,14 +9,15 @@ void PXG::CameraRotator::Start()
 	oldY = Input::GetMouseY();
 }
 
-void PXG::CameraRotator::FixedUpdate(float tick)
+void PXG::CameraRotator::Update()
 {
-
+	//Debug::Log("Update() by {0} ", GetOwner()->name);
 	if (Input::GetKeyDown(KeyCode::MiddleMouse))
 	{
+		//Debug::Log("Movement State Changed");
 		rotateUsed = !rotateUsed;
 	}
-	
+
 	float currentX = Input::GetMouseX();
 	float currentY = Input::GetMouseY();
 
@@ -27,17 +28,23 @@ void PXG::CameraRotator::FixedUpdate(float tick)
 
 		if (Mathf::Abs(diffX))
 		{
-			GetOwner()->GetTransform()->rotate(Vector3(0, -1, 0), diffX * speedMultiplier * tick);
+			GetOwner()->GetTransform()->rotate(Vector3(0, -1, 0), diffX * speedMultiplier );
 		}
 
 		if (Mathf::Abs(diffY))
 		{
-			GetOwner()->GetTransform()->rotate(-GetOwner()->GetTransform()->GetRight(), diffY * speedMultiplier  * tick);
+			GetOwner()->GetTransform()->rotate(-GetOwner()->GetTransform()->GetRight(), diffY * speedMultiplier);
 		}
 	}
 
 	oldX = Input::GetMouseX();
 	oldY = Input::GetMouseY();
+}
+
+void PXG::CameraRotator::FixedUpdate(float tick)
+{
+
+	
 
 
 }

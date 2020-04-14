@@ -12,15 +12,16 @@
 #include "CameraComponent.h"
 #include "PhysicsSceneGraphIterationInfo.h"
 #include "PhysicsComponentContainer.h"
+#include <array>
 
 namespace PXG
 {
-	std::function<void(const std::vector<PhysicsSceneGraphIterationInfo>&, std::vector<PhysicsComponentContainer>&)> PhysicsEngine::OptimizeBroadPhase = nullptr;
+	//std::function<void(const std::vector<PhysicsSceneGraphIterationInfo>&, std::vector<PhysicsComponentContainer>&)> PhysicsEngine::OptimizeBroadPhase = nullptr;
 	double PhysicsEngine::gravity = -19.85;
 
 	PhysicsEngine::PhysicsEngine()
 	{
-		OptimizeBroadPhase = std::bind(&PhysicsEngine::BruteForceBroadPhase,std::placeholders::_1,std::placeholders::_2);
+		OptimizeBroadPhase = std::bind(&PhysicsEngine::BruteForceBroadPhase,this,std::placeholders::_1,std::placeholders::_2);
 	}
 
 	void PhysicsEngine::AddPhysicsComponent(std::shared_ptr<PhysicsComponent> physicsComponent)
@@ -85,7 +86,7 @@ namespace PXG
 
 		recursiveRetrievePhysicsComponent(world, iterationResult, transform);
 
-		Debug::Log("Found {0} physicsComponents with colliders",iterationResult.size());
+		//Debug::Log("Found {0} physicsComponents with colliders",iterationResult.size());
 
 		std::vector<PhysicsComponentContainer> physicsComponentContainers;
 
@@ -93,8 +94,8 @@ namespace PXG
 		OptimizeBroadPhase(iterationResult, physicsComponentContainers);
 
 
-
-		Debug::Log("All PhysicsComponents have been grouped into {0} groups ", physicsComponentContainers.size());
+		std::vector<Manifold> resultingManifolds;
+		//Debug::Log("All PhysicsComponents have been grouped into {0} groups ", physicsComponentContainers.size());
 
 		for (const auto& physicsComponentContainer : physicsComponentContainers)
 		{
@@ -119,12 +120,20 @@ namespace PXG
 					auto colliderB = PSGIIB.physicsComponent->GetCollider();
 
 					colliderA->CheckCollision(colliderB, m);
+					resultingManifolds.push_back(m);
+
 				}
 			}
 
 
 		}
 
+		for (const auto& manifold : resultingManifolds)
+		{
+			//if its a collision between triggers
+			//if(manifold)
+
+		}
 
 		//Call check collision on each of them
 
@@ -185,14 +194,202 @@ namespace PXG
 		}
 		physicsComponentContainers.push_back(physicsComponentGroupContainer);
 
+	}
+
+	void PhysicsEngine::BroadPhaseOctreeOptimization(const std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, std::vector<PhysicsComponentContainer>& physicsComponentContainers)
+	{
+		//TODO Implement BroadPhaseOctreeOptimization
+
+		//create AABB Box for all transformed physicsComponents
+
+		//create an AABB Box that encompasses all physicsComponent Colliders
+
+		//std::vector<PhysicsComponentContainer>& physicsComponentContainers
+
+		//RecursiveBoxDivide
+
+		//if Node has more than x amount of objects
+
+			//divide boxes
+			
+			
+			//for each divided box
+				
+		        //if box has more than componentMax || bigger than minDivisionCount
+					//Recursive box divide 
+				//suggest add to physicsComponentContainer
+
+
+
+
+
 
 
 
 	}
 
-	void PhysicsEngine::BroadPhaseOctreeOptimization(const std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, std::vector<PhysicsComponentContainer>& physicsComponentContainers)
+	bool PhysicsEngine:: FindSeperatingAxisByProjectingMeshAandBToFaceNormals(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
+		const Mat4 & transformA, const Mat4 & transformB, const Vector3& positionA, const Vector3& positionB,  float & seperationFound)
 	{
-		
+
+		Vector3 vecAToB = positionB - positionA;
+
+
+		int gsCount = 0;
+
+		//Test all axes parallel to face normals of meshB
+		for (int index = 0; index < collisionMeshB->Indices.size(); index += 3)
+		{
+			int v0Index = collisionMeshB->Indices.at(index);
+
+
+			glm::vec3 axis = transformB.ToGLM() * glm::vec4(collisionMeshB->Vertices.at(v0Index).normal.ToGLMVec3(), 0);
+			axis = glm::normalize(axis);
+
+			gsCount += 2;
+
+			if (TestAxisDirection(axis, collisionMeshA, collisionMeshB, transformA, transformB, positionA, positionB, seperationFound))
+			{
+				Debug::Log("Get Support Point Called {0} ", gsCount);
+				return true;
+			}
+
+		}
+
+
+		Debug::Log("Get Support Point Called {0} ", gsCount);
+		return false;
+
+	}
+
+	bool PhysicsEngine::FindSeperatingAxisByExtremePointProjection(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB, 
+		const Mat4 & transformA, const Mat4 & transformB, const Vector3 & positionA, const Vector3 & positionB, int& index)
+	{
+		index = -1;
+		float greatestSeperation = -FLT_MAX;
+
+		for (int i = 0; i < collisionMeshA->Indices.size(); i += 3)
+		{
+			int v0Index = collisionMeshA->Indices.at(i);
+
+			//get face normal
+			glm::vec3 axis = transformA.ToGLM() * glm::vec4(collisionMeshA->Vertices.at(v0Index).normal.ToGLMVec3(), 0);
+
+
+			//triangleAPos is the position of one on
+			glm::vec3 triangleAPos = transformA.ToGLM() * glm::vec4(collisionMeshA->Vertices.at(v0Index).position.ToGLMVec3(), 1);
+
+			unsigned int supportIndexB = -1;
+			Vector3 supportPoint;
+			PhysicsEngine::GetSupportPoint(collisionMeshB, transformB, positionB, -axis, supportIndexB, supportPoint);
+
+			Vector3 extremePointDirection = supportPoint - triangleAPos;
+
+			float seperation = Mathf::Dot(extremePointDirection, axis);
+
+			if (seperation > greatestSeperation)
+			{
+				greatestSeperation = seperation;
+				index = i;
+			}
+
+			if (seperation > 0)
+			{
+				//Debug::Log("Get Support Point Called {0} ", gsCount);
+				return true;
+			}
+
+
+		}
+		//Debug::Log("Get Support Point Called {0} ", gsCount);
+		return false;
+	}
+
+
+	bool PhysicsEngine::FindSeperatingAxisByBruteForceEdgeToEdgeCheck(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
+		const Mat4& transformA, const Mat4& transformB, const Vector3& positionA,  const Vector3& positionB, float& seperationFound)
+	{
+
+		std::vector<Vector3> axisesTested;
+
+
+		Vector3 vecAToB = positionB - positionA;
+
+		Debug::Log("ColA {0} ", collisionMeshA->Indices.size());
+		Debug::Log("ColB {0} ", collisionMeshB->Indices.size());
+
+		//for a each triangleA in mesh A
+		for (int i = 0; i < collisionMeshA->Indices.size(); i += 3)
+		{
+			std::array<Vector3, 3> triangleA =
+			{
+				collisionMeshA->Vertices.at(i).position,
+				collisionMeshA->Vertices.at(i + 1).position,
+				collisionMeshA->Vertices.at(i + 2).position,
+			};
+			//for a each triangleB in mesh B
+			for (int j = 0; j < collisionMeshB->Indices.size(); j += 3)
+			{
+				std::array<Vector3, 3> triangleB =
+				{
+					collisionMeshB->Vertices.at(j).position,
+					collisionMeshB->Vertices.at(j + 1).position,
+					collisionMeshB->Vertices.at(j + 2).position,
+				};
+
+				for (int k = 0; k < triangleA.size(); k++)
+				{
+					Vector3 startEdgeA = triangleA[k];
+					Vector3 endEdgeA = k + 1 >= triangleA.size() ? triangleA[0] : triangleA[k + 1];
+					//get one of the edges of triangleA
+					Vector3 edgeAObjectSpace = endEdgeA - startEdgeA;
+					glm::vec3 edgeA = transformA.ToGLM() * glm::vec4(edgeAObjectSpace.ToGLMVec3(), 0);
+
+					//glm::vec
+
+					for (int l = 0; l < triangleB.size(); l++)
+					{
+						Vector3 startEdgeB = triangleB[l];
+						Vector3 endEdgeB = l + 1 >= triangleB.size() ? triangleB[0] : triangleB[l + 1];
+						//get one of the edges of triangleB
+						Vector3 edgeBObjectSpace = endEdgeB - startEdgeB;
+						glm::vec3 edgeB = transformB.ToGLM() * glm::vec4(edgeBObjectSpace.ToGLMVec3(), 0);
+
+						//the cross product between them is the new axis
+						Vector3 axis = Mathf::Cross(edgeA, edgeB);
+
+						bool isAxisAlreadyChecked = false;
+
+						for (const Vector3& vec : axisesTested)
+						{
+							if (Mathf::FloatVectorCompare(axis, vec))
+							{
+								isAxisAlreadyChecked = true;
+								break;
+							}
+						}
+
+						if (Mathf::FloatCompare(axis.Length(), 0.0f) || isAxisAlreadyChecked) 
+						{ 
+							continue; 
+						}
+
+						axisesTested.push_back(axis);
+
+						if (TestAxisDirection(axis, collisionMeshA, collisionMeshB, transformA, transformB, positionA, positionB, seperationFound))
+						{
+							return true;
+						}
+
+
+					}
+
+				}
+
+			}
+		}
+
+		return false;
 	}
 
 	void PhysicsEngine::recursiveGameObjectRaytrace(const Vector3& position, const Vector3& direction, HitInfo & hitInfo, std::shared_ptr<GameObject> gameObject, Mat4 parentTransform, bool isUsingPhysicsComponent)
@@ -253,8 +450,6 @@ namespace PXG
 	{
 		//-----------find a point where the ray intersects the plane where the triangle lies-------//
 		HitInfo Result;
-
-
 
 		glm::vec4 rayOrigin(rayPosition.ToGLMVec3(), 1);
 		glm::vec4 rayDir(rayDirection.Normalized().ToGLMVec3(), 0);
@@ -337,7 +532,7 @@ namespace PXG
 
 		float u = 1 - w - v;
 
-		if (u < 0 || u > 1 && (u + v +w) <= 1.0f)
+		if (u < 0 || u > 1 && (u + v + w) <= 1.0f)
 		{
 			Result.RayHit = false;
 			Result.T = t;
@@ -358,7 +553,7 @@ namespace PXG
 
 	}
 
-	void PhysicsEngine::GetSupportPoint(std::shared_ptr<Mesh> mesh, Mat4 meshTransform,  Vector3 position, Vector3 direction, unsigned int & index,Vector3& vertexWorldPosition)
+	void PhysicsEngine::GetSupportPoint(std::shared_ptr<Mesh> mesh, const Mat4& meshTransform,  const Vector3& position, const Vector3& direction, unsigned int & index,Vector3& vertexWorldPosition)
 	{
 		float largestProjection = -FLT_MAX;
 		index = -1;
@@ -380,6 +575,94 @@ namespace PXG
 		}
 
 		vertexWorldPosition = meshTransform.ToGLM() * glm::vec4(mesh->Vertices.at(index).position.ToGLMVec3(),1);
+	}
+
+	void PhysicsEngine::GetSupportPointMinMax(std::shared_ptr<Mesh> mesh, const Mat4 & meshTransform, const Vector3 & position, const Vector3 & direction,
+		unsigned int & indexMin, Vector3 & vertexWorldPositionMin, unsigned int & indexMax, Vector3 & vertexWorldPositionMax)
+	{
+		float largestProjection = -FLT_MAX;
+		float smallestProjection = FLT_MAX;
+
+		indexMin = -1;
+		indexMax = -1;
+
+		for (int i = 0; i < mesh->Vertices.size(); i++)
+		{
+
+			glm::vec3 objectSpaceVertexToPosition = (mesh->Vertices.at(i).position - position).ToGLMVec3();
+			glm::vec3 worldSpaceVertexToPosition = meshTransform.ToGLM() * glm::vec4(objectSpaceVertexToPosition, 0);
+
+			float dotResult = Mathf::Dot(worldSpaceVertexToPosition, direction);
+
+			if (dotResult > largestProjection)
+			{
+				largestProjection = dotResult;
+				indexMax = i;
+
+			}
+
+			if (dotResult < smallestProjection)
+			{
+				smallestProjection = dotResult;
+				indexMax = i;
+			}
+
+
+		}
+
+		vertexWorldPositionMin = meshTransform.ToGLM() * glm::vec4(mesh->Vertices.at(indexMin).position.ToGLMVec3(), 1);
+		vertexWorldPositionMax = meshTransform.ToGLM() * glm::vec4(mesh->Vertices.at(indexMax).position.ToGLMVec3(), 1);
+
+
+	}
+
+	bool PhysicsEngine::TestAxisDirection(const Vector3& axis,std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
+		const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound)
+	{
+		Vector3 vecAToB = positionB - positionA;
+
+		Vector3 directionA = Mathf::Dot(vecAToB, axis) > Mathf::Dot(-vecAToB, axis) ? (axis) : (-axis);
+		Vector3 directionB = -directionA;
+
+		unsigned int indexA = -1, indexB = -1;
+		Vector3 supportPointA, supportPointB;
+
+		PhysicsEngine::GetSupportPoint(collisionMeshA, transformA, positionA, directionA, indexA, supportPointA);
+		PhysicsEngine::GetSupportPoint(collisionMeshB, transformB, positionB, directionB, indexB, supportPointB);
+
+		Vector3 CenterAToSupportPointA = supportPointA - positionA;
+		Vector3 CenterBToSupportPointB = supportPointB - positionB;
+
+
+		//d is the distance between the centers of ColliderA and ColliderB, projected into 'axis'
+		float d = Mathf::Abs(Mathf::Dot(axis, vecAToB));
+
+		//ra is the distance from the center of ColliderA to the vertex nearest vertex to B, projected into 'axis'
+		float ra = Mathf::Abs(Mathf::Dot(axis, CenterAToSupportPointA));
+
+		//rb is the distance from the center of ColliderB to the vertex nearest vertex to A, projected into 'axis'
+		float rb = Mathf::Abs(Mathf::Dot(axis, CenterBToSupportPointB));
+
+		if (d > ra + rb)
+		{
+
+			/*Debug::Log("CenterAToSupportPointA {0}", CenterAToSupportPointA.ToString());
+			Debug::Log("CenterBToSupportPointB {0}", CenterBToSupportPointB.ToString());
+
+			Debug::Log("ra {0}", ra);
+			Debug::Log("rb {0}", rb);
+			Debug::Log("ra + rb {0}", (ra+rb));
+			Debug::Log("d {0}", d);
+			Debug::Log("Axis of seperation found! It is perpendicular to {0}", glm::to_string(l));*/
+
+			//Debug::Log("No Collision found between gameObject: {0} and gameObject: {1}"
+				//, manifold.physicsComponentA->GetOwner()->name
+				//, manifold.physicsComponentB->GetOwner()->name);
+			seperationFound = d - ra + rb;
+
+			return true;
+		}
+		return false;
 	}
 
 	void PhysicsEngine::recursiveGetMeshComponents(std::vector<std::shared_ptr<MeshComponent>>& MeshComponentList, std::shared_ptr<GameObject> gameObject)
@@ -404,7 +687,7 @@ namespace PXG
 		for (const auto& mesh : meshes)
 		{
 			auto vertices = mesh->Vertices;
-		 
+			//TODO refactor with GetMinMaxPositionOfVerticess
 			for (const auto& vertex : vertices)
 			{
 				Vector3 vertexPosition = vertex.position;
@@ -447,6 +730,56 @@ namespace PXG
 
 		min = minResult;
 		max = maxResult;
+	}
+
+	
+	void PhysicsEngine::GetMinMaxPositionOfVertices(Vector3 & min, Vector3 & max, const std::vector<Vector3> vertices)
+	{
+		float minVal = FLT_MAX;
+		float maxVal = -FLT_MAX;
+
+		Vector3 minResult = Vector3(minVal, minVal, minVal);
+		Vector3 maxResult = Vector3(maxVal, maxVal, maxVal);
+
+		for (const auto& vertex : vertices)
+		{
+			//check for minResult
+			if (vertex.x < minResult.x)
+			{
+				minResult.x = vertex.x;
+			}
+
+			if (vertex.y < minResult.y)
+			{
+				minResult.y = vertex.y;
+			}
+
+			if (vertex.z < minResult.z)
+			{
+				minResult.z = vertex.z;
+			}
+
+			//check for maxResult
+			if (vertex.x > maxResult.x)
+			{
+				maxResult.x = vertex.x;
+			}
+
+			if (vertex.y > maxResult.y)
+			{
+				maxResult.y = vertex.y;
+			}
+
+			if (vertex.z > maxResult.z)
+			{
+				maxResult.z = vertex.z;
+			}
+
+		}
+
+		min = minResult;
+		max = maxResult;
+
 	}
 
 	Vector3 PhysicsEngine::GetOrthographicCameraWorldPosition(float x, float y, float screenWidth, float screenHeight, std::shared_ptr<World> world)

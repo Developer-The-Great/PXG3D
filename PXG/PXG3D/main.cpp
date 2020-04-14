@@ -45,6 +45,8 @@
 constexpr int width = PXG::ScreenSize::WIDTH;
 constexpr int height = PXG::ScreenSize::HEIGHT;
 
+#include "AABBBox.h"
+#include "DebugDrawingManager.h"
 
 #include <iostream>
 #include <string>
@@ -129,6 +131,31 @@ int main()
 	gamePtr->GetWorld()->SetDebugDrawingManager(debugDrawingManager);
 
 
+
+
+	gamePtr->GetWorld()->SetTimeSystem(time);
+	
+	auto aabbTest = std::make_shared<PXG::AABBBox>(PXG::Vector3(0.0, 0.0, 0.0), PXG::Vector3(0.5, 0.5, 0.5));
+
+	gamePtr->GetWorld()->GetDebugDrawingManager()->InstantiateCube(aabbTest->position, PXG::Vector3(0.0, -0.0, 0.0), aabbTest->halfWidths * 2.0f, PXG::Vector3(1, 0, 1), 30.0f, -aabbTest->halfWidths);
+
+	std::vector<std::shared_ptr<PXG::AABBBox>> splitBoxes;
+	aabbTest->OctreeBoxSplit(splitBoxes);
+
+	auto aabbTest2 = std::make_shared<PXG::AABBBox>(PXG::Vector3(2.75, 0.5, 0.5), PXG::Vector3(0.5, 0.5, 0.5));
+	gamePtr->GetWorld()->GetDebugDrawingManager()->InstantiateCube(aabbTest2->position, PXG::Vector3(), aabbTest2->halfWidths * 2.0f, PXG::Vector3(1, 0, 0), 30.0f, -aabbTest2->halfWidths);
+
+	if (aabbTest->CheckCollisionWithAABB(aabbTest2.get()))
+	{
+		Debug::Log("Collision");
+	}
+
+	/*for(const auto& box : splitBoxes)
+	{
+		gamePtr->GetWorld()->GetDebugDrawingManager()->InstantiateCube(box->position, PXG::Vector3(0.0, -0.0, 0.0), box->halfWidths * 2.0f, PXG::Vector3(1, 1, 1), 30.0f, -box->halfWidths);
+	}*/
+
+
 	//-------------------------------------- GAME LOOP ------------------------------------//
 	glEnable(GL_DEPTH_TEST);
 
@@ -162,14 +189,21 @@ int main()
 		{
 			
 			float tick = physicsEngine->DecreaseRemainingTickTime();
+
 			//fixed update on game
 			gamePtr->FixedUpdate(tick);
 
-			physicsEngine->CheckCollisions();
-			
+			float currentTime = time->GetTime();
+
 		}
 
-		gamePtr->Update();
+		float beforeCol = time->GetTime();
+		physicsEngine->CheckCollisions();
+		Debug::Log("Collision check time {0}", time->GetTime() - beforeCol);
+
+
+
+		//gamePtr->Update();
 		
 		renderingEngine->RenderCurrentlySetWorld();
 
@@ -193,7 +227,7 @@ int main()
 
 		Input::LateUpdateTrackedKeyStates();
 
-		//Debug::Log("FPS :{0}", time->GetFPS());
+		Debug::Log("FPS :{0}", time->GetFPS());
 
 		time->UpdateAverageTime();
 

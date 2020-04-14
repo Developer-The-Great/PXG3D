@@ -38,14 +38,10 @@ namespace PXG
 			typename = std::enable_if_t<std::is_base_of_v<Component, T>>>
 			void AddComponent(std::shared_ptr<T> component)
 		{
-			components.push_back(component);
-
 			componentTable.insert(
 				{ typeid(T),std::static_pointer_cast<Component>(component) });
 
 			//componentTable.insert(typeid(T), std::static_pointer_cast<Component>(component));
-
-			
 			component->SetOwner(shared_from_this());
 		}
 
@@ -111,7 +107,18 @@ namespace PXG
 
 		std::weak_ptr<World> GetWorld() const;
 		void SetWorld(std::shared_ptr<World> world);
-		std::vector< std::shared_ptr<Component>> GetComponents() { return components; };
+
+		std::vector< std::shared_ptr<Component>> GetComponents() 
+		{ 
+			std::vector< std::shared_ptr<Component>> components;
+
+			for (auto it = componentTable.begin(); it != componentTable.end(); ++it)
+			{
+				components.push_back(it->second);
+			}
+
+			return components; 
+		};
 		Transform* GetTransform();
 		void RemoveChildren(std::shared_ptr<GameObject> obj);
 
@@ -124,7 +131,7 @@ namespace PXG
 		//TODO there are 2 containers maintaining a list of components, we will use 'componentTable' and remove
 		//'components' later
 		std::unordered_multimap<std::type_index, std::shared_ptr<Component>> componentTable;
-		std::vector< std::shared_ptr<Component>> components;
+		//std::vector< std::shared_ptr<Component>> components;
 		std::vector<std::shared_ptr<GameObject>> children;
 
 		std::weak_ptr<GameObject> parent;

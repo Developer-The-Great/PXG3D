@@ -48,12 +48,22 @@ namespace PXG
 
 			if (Input::GetKey(KeyCode::KeyUp))
 			{
-				possessedGameObject->GetTransform()->translate(Vector3(0, 0, 1) * speed);
+				possessedGameObject->GetTransform()->translate(Vector3(0, 0, -1) * speed);
 			}
 
 			if (Input::GetKey(KeyCode::KeyDown))
 			{
-				possessedGameObject->GetTransform()->translate(Vector3(0, 0, -1) * speed);
+				possessedGameObject->GetTransform()->translate(Vector3(0, 0, 1) * speed);
+			}
+
+			if (Input::GetKey(KeyCode::KP2))
+			{
+				possessedGameObject->GetTransform()->translate(Vector3(0, 1, 0) * speed);
+			}
+
+			if (Input::GetKey(KeyCode::KP0))
+			{
+				possessedGameObject->GetTransform()->translate(Vector3(0, -1, 0) * speed);
 			}
 
 
