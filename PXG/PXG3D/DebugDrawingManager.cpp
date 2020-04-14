@@ -63,7 +63,7 @@ namespace PXG
 		Vector3 lowerV2 = lowerV0 + zAdd;
 		Vector3 lowerV3 = lowerV0 + xAdd + zAdd;
 
-		Vector3 upperV0 = min + yAdd;
+		Vector3 upperV0 = min + vertexOffset + yAdd;
 		Vector3 upperV1 = upperV0 + xAdd;
 		Vector3 upperV2 = upperV0 + zAdd;
 		Vector3 upperV3 = upperV0 + xAdd + zAdd;

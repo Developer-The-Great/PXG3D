@@ -8,6 +8,7 @@ namespace PXG
 	public:
 
 		virtual void Start() override;
+		virtual void Update() override;
 		virtual void FixedUpdate(float tick) override;
 		virtual void SetRotateUsed(bool newRotateUsedState);
 
@@ -18,7 +19,7 @@ namespace PXG
 		float oldX = 0;
 		float oldY = 0;
 
-		float speedMultiplier = 5.0f;
+		float speedMultiplier = 0.2f;
 
 
 	};

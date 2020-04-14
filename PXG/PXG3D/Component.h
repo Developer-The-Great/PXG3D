@@ -16,6 +16,10 @@ namespace PXG
 
 		virtual void FixedUpdate(float tick) {}
 
+		virtual void Update() {}
+
+		virtual void OnTriggerStay() {}
+
 		Component() = default;
 
 		virtual ~Component() = default;

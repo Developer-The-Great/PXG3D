@@ -7,6 +7,7 @@ namespace PXG
 	class CameraComponent;
 	class DebugDrawingManager;
 	class LightComponent;
+	class Time;
 
 	class World : public GameObject
 	{
@@ -33,6 +34,9 @@ namespace PXG
 
 		static void SetPhysicsComponentDrawActive(bool newState);
 
+		std::shared_ptr<Time> GetTimeSystem();
+		void SetTimeSystem(std::shared_ptr<Time> newTimeSystem);
+
 	protected:
 
 	private:
@@ -45,6 +49,9 @@ namespace PXG
 		std::shared_ptr<CameraComponent> cameraComponent;
 
 		std::list<std::shared_ptr<LightComponent>> lights;
+
+		std::shared_ptr<Time> time;
+
 
 	};
 }

@@ -11,7 +11,6 @@ namespace PXG
 		Debug::Log("init {0}", name);
 		physicsComponent = std::make_shared<PhysicsComponent>();
 		meshComponent = std::make_shared<MeshComponent>();
-
 	}
 
 	GameObject::~GameObject()
@@ -27,14 +26,24 @@ namespace PXG
 			child->Start();
 		}
 
-		for (auto const& component : components)
+		for (auto const& componentIter : componentTable)
 		{
-			component->Start();
+			componentIter.second->Start();
 		}
 
 	}
 	void GameObject::Update()
 	{
+		for (auto const& child : children)
+		{
+			child->Update();
+		}
+
+		for (auto const& typeToComponentPair : componentTable)
+		{
+			typeToComponentPair.second->Update();
+		}
+
 	}
 
 	void GameObject::FixedUpdate(float tick)
@@ -45,13 +54,14 @@ namespace PXG
 			child->FixedUpdate(tick);
 		}
 
-		for (auto const& component : components)
+		for (auto const& componentIter : componentTable)
 		{
-			if(component->IsActive())
+			if(componentIter.second->IsActive())
 			{
-				component->FixedUpdate(tick);
+				componentIter.second->FixedUpdate(tick);
 			}
 		}
+
 	}
 
 	void GameObject::AddToChildren(GOSharedPtr gameObj)

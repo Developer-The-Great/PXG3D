@@ -8,7 +8,9 @@ namespace PXG
 	struct Mat4;
 	class AbstractMaterial;
 	class Mesh;
+	class PhysicsCollider;
 	struct CollisionCubeParams;
+	struct AABBBox;
 	//struct Vector3;
 
 	class PhysicsComponent : public Component
@@ -23,7 +25,7 @@ namespace PXG
 	   */
 		void ConstructPhysicsRepresentationFromMeshComponent();
 
-	    /**@brief creates a mesh that will encompass all the vertices of the meshes in MeshComponent
+	    /**@brief creates a cube that will encompass all the vertices of the meshes in MeshComponent
 	     * @param [in] CubeParams: a set of parameters that you would like to use instead of using the min/max vertex
 	     * Note: not all parameters of CubeParams need to be specified, If a certain parameter is not specified,
 	     * the function will instead use the default min max of the mesh (From PhysicsEngine::GetMinMaxPositionOfMeshes).
@@ -45,12 +47,26 @@ namespace PXG
 	   */ 
 		void DrawPhysicsRepresentation(Mat4 parentTransform, Mat4 view, Mat4 projection);
 
-		std::vector<std::shared_ptr<Mesh>> GetPhysicsMeshes();
+		std::shared_ptr<AABBBox> CreateAABBFromTransformedColliders(Mat4& transform);
+
+
+		void SetIsTrigger(bool newTriggerState);
+
+		bool IsTrigger() const;
+
+		std::vector<std::shared_ptr<Mesh>> GetPhysicsMeshes() const;
+
+		std::shared_ptr<PhysicsCollider> GetCollider(int i = 0);
+
+		int GetColliderCount() const;
 
 	private:
 		std::shared_ptr<AbstractMaterial> physicsRenderingMaterial;
 
-		std::vector<std::shared_ptr<Mesh>> meshes;
+		std::vector <std::shared_ptr<PhysicsCollider>> physicsColliders;
+
+		bool isTrigger = false;
+
 
 	};
 }

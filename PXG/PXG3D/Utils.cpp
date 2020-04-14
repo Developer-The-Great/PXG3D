@@ -31,19 +31,28 @@ namespace PXG
 		float kAlpha = (i - halfScreenWidth) / halfScreenWidth;
 		float kBeta = ( halfScreenHeight - j) / halfScreenHeight;
 
-		Debug::Log("kAlpha {0} ", kAlpha);
-		Debug::Log("kBeta {0} ", kBeta);
-
 		float alpha = alphaMax * kAlpha;
 		float beta = betaMax * kBeta;
-
-
-
-		Debug::Log("transform->GetPosition() {0} ", transform->GetPosition().ToString());
 
 		Vector3 result = transform->GetPosition() + (cameraRight * alpha + cameraUp * beta + cameraForward);
 
 		return result;
+	}
+	Vector3 Utils::GetOrthographicCameraWorldPosition(float i, float j, float screenWidth, float screenHeight, std::shared_ptr<World> world)
+	{
+		auto camera = world->GetCamera();
+		if (!camera) { return Vector3(); }
+
+		auto transform = camera->GetOwner()->GetTransform();
+		Vector3 position = transform->GetPosition();
+		Vector3 up = transform->GetUp();
+		Vector3 right = transform->GetRight();
+
+		Vector3 topLeftPosition = position - (right * float(screenWidth / 2.0f)) + (up * screenHeight / 2.0f);
+
+		topLeftPosition = topLeftPosition + right * (i / screenWidth)*screenWidth - up * (j / screenHeight)*screenHeight;
+
+		return topLeftPosition;
 	}
 }
 
