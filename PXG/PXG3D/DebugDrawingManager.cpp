@@ -8,6 +8,7 @@
 #include "CameraComponent.h"
 #include "Mesh.h"
 #include "RasterizationMode.h"
+#include "AABBBox.h"
 namespace PXG
 {
 	void DebugDrawingManager::InstantiateLine(Vector3 start, Vector3 end, Vector3 color, float lifetime)
@@ -82,6 +83,11 @@ namespace PXG
 		
 		debugMeshObjects.push_back(std::make_shared<DebugMeshObject>(cube, abstractMaterial, mat4Position, lifetime,PrimitiveDrawingMode::TRIANGLE));
 
+	}
+
+	void DebugDrawingManager::InstantiateAABBRepresentation(AABBBox * box, Vector3 color, float lifetime)
+	{
+		InstantiateCube(box->position, Vector3(), box->halfWidths * 2.0f, color, lifetime,-box->halfWidths);
 	}
 
 	void DebugDrawingManager::DrawDebugObjects()

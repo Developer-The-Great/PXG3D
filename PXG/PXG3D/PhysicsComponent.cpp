@@ -82,19 +82,19 @@ namespace PXG
 
 		PhysicsEngine::GetMinMaxPositionOfMeshes(objectSpaceMin, objectSpaceMax, GetPhysicsMeshes());
 
-		Vector3 forward = Vector3(0, 0, objectSpaceMax.z - objectSpaceMax.z);
-		Vector3 Up = Vector3(0, objectSpaceMax.y - objectSpaceMax.y,0);
-		Vector3 Right = Vector3(objectSpaceMax.x - objectSpaceMax.x, 0, 0);
+		Vector3 forward = Vector3(0, 0, objectSpaceMax.z - objectSpaceMin.z);
+		Vector3 Up = Vector3(0, objectSpaceMax.y - objectSpaceMin.y,0);
+		Vector3 Right = Vector3(objectSpaceMax.x - objectSpaceMin.x, 0, 0);
 
-		glm::vec3 min = transform.ToGLM() * glm::vec4(objectSpaceMin.ToGLMVec3(), 1);
-		glm::vec3 minPlusForward = transform.ToGLM() * glm::vec4((objectSpaceMin + forward).ToGLMVec3(), 1);
-		glm::vec3 minPlusUp = transform.ToGLM() * glm::vec4((objectSpaceMin + Up).ToGLMVec3(), 1);
-		glm::vec3 minPlusRight = transform.ToGLM() * glm::vec4((objectSpaceMin + Right).ToGLMVec3(), 1);
+		glm::vec3 min = transform.ToGLM() * glm::vec4(objectSpaceMin.ToGLMVec3(), 0);
+		glm::vec3 minPlusForward = transform.ToGLM() * glm::vec4(min + forward.ToGLMVec3(), 0);
+		glm::vec3 minPlusUp = transform.ToGLM() * glm::vec4(min + Up.ToGLMVec3(), 0);
+		glm::vec3 minPlusRight = transform.ToGLM() * glm::vec4(min + Right.ToGLMVec3(), 0);
 		
 		glm::vec3 max = transform.ToGLM() * glm::vec4(objectSpaceMax.ToGLMVec3(), 0);
-		glm::vec3 maxMinusBackward = transform.ToGLM() * glm::vec4((objectSpaceMin - forward).ToGLMVec3(), 1); 
-		glm::vec3 maxMinusDown = transform.ToGLM() * glm::vec4((objectSpaceMin - Up).ToGLMVec3(), 1);
-		glm::vec3 minMinusRight = transform.ToGLM() * glm::vec4((objectSpaceMin - Right).ToGLMVec3(), 1);
+		glm::vec3 maxMinusBackward = transform.ToGLM() * glm::vec4(max - forward.ToGLMVec3(), 0); 
+		glm::vec3 maxMinusDown = transform.ToGLM() * glm::vec4(max - Up.ToGLMVec3(), 0);
+		glm::vec3 minMinusRight = transform.ToGLM() * glm::vec4(max - Right.ToGLMVec3(), 0);
 
 		std::vector<Vector3> verticesContainer;
 

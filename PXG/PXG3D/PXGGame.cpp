@@ -382,8 +382,11 @@ namespace PXG
 		world->AddToChildren(cremeObj);
 
 
+		auto cremeWorldTransform = cremeObj->GetTransform()->GetWorldTransform();
+		auto aabbTest = cremeObj->GetPhysicsComponent()->CreateAABBFromTransformedColliders(cremeWorldTransform);
 
-		//world->GetDebugDrawingManager()
+
+		world->GetDebugDrawingManager()->InstantiateAABBRepresentation(aabbTest.get(), Vector3(1, 0, 0), 30.0f);
 		
 		
 

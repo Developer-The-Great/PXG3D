@@ -10,6 +10,7 @@ namespace PXG
 
 	class Mesh;
 	class World;
+	struct AABBBox;
 
 	enum class DebugPrimitive
 	{
@@ -38,6 +39,8 @@ namespace PXG
 		 * @param [in] vertexOffset: the offset in which the vertex positions of the cube will be shifted towards.
 		*/
 		void InstantiateCube(Vector3 position, Vector3 min, Vector3 max, Vector3 color, float lifetime = PXG_THIS_FRAME_ONLY, Vector3 vertexOffset = Vector3(0, 0, 0));
+
+		void InstantiateAABBRepresentation(AABBBox* box, Vector3 color, float lifetime = PXG_THIS_FRAME_ONLY);
 
 		void DrawDebugObjects();
 
