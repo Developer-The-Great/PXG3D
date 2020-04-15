@@ -52,8 +52,13 @@ namespace PXG
 
 		std::weak_ptr<World> GetWorld();
 		
+		void SetShouldDraw(bool shouldDrawState);
+
+		bool GetShouldDraw();
 
 	private:
+
+		bool shouldDraw = true;
 		
 		std::weak_ptr<World> world;
 		std::list<std::shared_ptr<DebugMeshObject>> debugMeshObjects;

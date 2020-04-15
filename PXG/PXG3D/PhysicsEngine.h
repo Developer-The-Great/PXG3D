@@ -15,6 +15,7 @@ namespace PXG
 	class World;
 	class Mesh;
 	struct Mat4;
+	struct OctreeNode;
 
 	class PhysicsEngine
 	{
@@ -185,6 +186,12 @@ namespace PXG
 		*/
 		void BruteForceBroadPhase(const std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, std::vector<PhysicsComponentContainer>& physicsComponentContainers);
 		void BroadPhaseOctreeOptimization(const std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, std::vector<PhysicsComponentContainer>& physicsComponentContainers);
+
+
+		//----------------------------------------------- Octree Helper Function --------------------------------------------------------------------------//
+
+		void recursiveOctreeSplit(std::shared_ptr<OctreeNode> node, std::vector<std::shared_ptr<OctreeNode>>& finalNodes, int currentdepthCount, const int minObjectCount = 3, const int maxDepthCount = 6);
+
 
 		//-------------------------------------------------- Raycasting -----------------------------------------------------------//
 

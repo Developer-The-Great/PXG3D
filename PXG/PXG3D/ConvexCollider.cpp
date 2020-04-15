@@ -59,7 +59,7 @@ namespace PXG
 
 		float seperationAB;
 
-		/*
+		//*
 		if (PhysicsEngine::FindSeperatingAxisByProjectingMeshAandBToFaceNormals(meshA, meshB, manifold.transformA, manifold.transformB, positionA, 
 			positionB, seperationAB))
 		{
@@ -75,7 +75,7 @@ namespace PXG
 		}
 		//*/
 
-		//*
+		/*
 		int indexA = -1;
 		if (PhysicsEngine::FindSeperatingAxisByExtremePointProjection(meshA, meshB, manifold.transformA, manifold.transformB, positionA,
 			positionB, indexA))

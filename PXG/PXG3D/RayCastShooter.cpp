@@ -66,7 +66,20 @@ namespace PXG
 				possessedGameObject->GetTransform()->translate(Vector3(0, -1, 0) * speed);
 			}
 
+			if (Input::GetKey(KeyCode::X))
+			{
+				possessedGameObject->GetTransform()->rotate(Vector3(1, 0, 0), 1.0f);
+			}
 
+			if (Input::GetKey(KeyCode::Y))
+			{
+				possessedGameObject->GetTransform()->rotate(Vector3(0, 1, 0), 1.0f);
+			}
+
+			if (Input::GetKey(KeyCode::Z))
+			{
+				possessedGameObject->GetTransform()->rotate(Vector3(0, 0, 1), 1.0f);
+			}
 
 
 
@@ -103,7 +116,7 @@ namespace PXG
 				{
 					Debug::Log("hit at {0}", hit.Position.ToString());
 					debugDrawer->InstantiateLine(ObjectPosition, hit.Position, Vector3(1, 0, 0), 5.0f);
-					debugDrawer->InstantiateCube(hit.Position, Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(0, 1, 0), 5.0f);
+					debugDrawer->InstantiateCube(hit.Position, Vector3(0, 0, 0), Vector3(0.5, 0.5, 0.5), Vector3(0, 1, 0), 5.0f);
 
 					Debug::Log("Now possessing GameObject with name: {0}", hit.GameObjectHit->name);
 					possessedGameObject = hit.GameObjectHit;

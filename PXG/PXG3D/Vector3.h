@@ -46,6 +46,13 @@ namespace PXG
 			return *this;
 		}
 
+		Vector3& Abs()
+		{
+			*this = Vector3(Mathf::Abs(x), Mathf::Abs(y), Mathf::Abs(z));
+
+			return *this;
+		}
+
 		Vector3 operator+ (const Vector3 &vec3) const
 		{
 			float newX = x + vec3.x;

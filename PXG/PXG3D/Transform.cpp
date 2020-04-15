@@ -44,7 +44,10 @@ namespace PXG
 
 	void Transform::rotate(Vector3 axis, float angle)
 	{
-		rotation = Mathf::ToQuaternion(AxisAngle(angle, axis.x, axis.y, axis.z)) * rotation;
+		Vector3 normAxis = axis.Normalized();
+		rotation = Mathf::ToQuaternion(AxisAngle(angle, normAxis.x, normAxis.y, normAxis.z)) * rotation;
+		rotation = rotation.Normalized();
+
 	}
 
 	void Transform::Scale(Vector3 newScale)
@@ -71,7 +74,7 @@ namespace PXG
 			glm::vec4(0, 0, 0, 1)
 		);
 
-		glm::quat Quaternion = rotation.ToGLMQuat();
+		glm::quat Quaternion = glm::normalize(rotation.ToGLMQuat());
 
 		glm::mat4 mat4Rotation = glm::toMat4(Quaternion);
 

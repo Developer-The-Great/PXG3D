@@ -10,7 +10,7 @@ namespace PXG
 
 	ColorMaterial::ColorMaterial(Vector3 color)
 	{
-		Debug::Log("Color material Init");
+
 		initalizeColorMaterial();
 		this->color = color;
 	}

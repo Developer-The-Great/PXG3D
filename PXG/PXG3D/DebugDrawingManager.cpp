@@ -155,5 +155,13 @@ namespace PXG
 	{
 		return world;
 	}
+	void DebugDrawingManager::SetShouldDraw(bool shouldDrawState)
+	{
+		shouldDraw = shouldDrawState;
+	}
+	bool DebugDrawingManager::GetShouldDraw()
+	{
+		return shouldDraw;
+	}
 }
 

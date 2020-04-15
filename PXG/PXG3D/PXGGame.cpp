@@ -61,7 +61,7 @@ namespace PXG
 			KeyCode::LeftMouse, KeyCode::RightMouse, KeyCode::MiddleMouse
 			, KeyCode::Enter
 			,KeyCode::KeyUp,KeyCode::KeyRight,KeyCode::KeyDown,KeyCode::KeyLeft
-
+			, KeyCode::X, KeyCode::Y, KeyCode::Z
 			,KeyCode::KP0, KeyCode::KP2);
 
 		//---------------------------Initialize Textures---------------------------------------//
@@ -258,7 +258,7 @@ namespace PXG
 		//physicsCollider->CheckCollision(physicsCollider2);
 		//PhysicsCollider 
 
-		*/
+		//*/
 
 
 		//----------------------------------------------------------------- PHYSICS TEST -------------------------------------------------//
@@ -278,7 +278,7 @@ namespace PXG
 		yellowObject->GetTransform()->SetLocalPosition(Vector3(0.0, -2.0, -6.0));
 		yellowObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
 
-		//yellowObject->GetTransform()->rotate(Vector3(1, 0, 0), 45.0f);
+
 		yellowObject->GetTransform()->rotate(Vector3(0, 1, 0),45.0f);
 		
 
@@ -329,7 +329,7 @@ namespace PXG
 
 		////--------------------Physics Test AABB --------------------------//
 
-		///*
+		//*
 		
 		GameObj firstObj = Instantiate();
 		firstObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -341,6 +341,9 @@ namespace PXG
 		firstObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
 		world->AddToChildren(firstObj);
 
+		//*/
+
+		//*
 		GameObj secondObj = Instantiate();
 		secondObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
 		secondObj->GetMeshComponent()->SetMaterial(bluetColorMat);
@@ -350,14 +353,14 @@ namespace PXG
 		secondObj->GetTransform()->SetLocalPosition(Vector3(3.0, 0.0, 2.0));
 		secondObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
 		world->AddToChildren(secondObj);
-
-
 		//*/
+
 		
 		
-		/// More Objects
+		
+		//------------------------More Objects---------------------------------------//
 
-
+		//*
 		GameObj slategrayObject = Instantiate();
 		slategrayObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
 		slategrayObject->GetMeshComponent()->SetMaterial(slateGrayColorMat);
@@ -381,15 +384,94 @@ namespace PXG
 		cremeObj->GetTransform()->rotate(Vector3(1.0, 1.0, 1.0), 45.0f);
 		world->AddToChildren(cremeObj);
 
-
 		auto cremeWorldTransform = cremeObj->GetTransform()->GetWorldTransform();
 		auto aabbTest = cremeObj->GetPhysicsComponent()->CreateAABBFromTransformedColliders(cremeWorldTransform);
-
-
 		world->GetDebugDrawingManager()->InstantiateAABBRepresentation(aabbTest.get(), Vector3(1, 0, 0), 30.0f);
-		
-		
 
+		
+		//*/
+		//Vector3(0.77, 0.77, 0.77); Vector3(1, 0, 0); Vector3(0, 1, 0); Vector3(0, 0, 1); 
+		//Vector3(0.77, 0.77, 0); Vector3(0, 0.77, 0.77); Vector3(0.8, 0, 0.6); Vector3(0, 0.6, 0.8); 
+		
+		std::vector<Vector3> positions;
+		std::vector<Vector3> axis;
+		std::vector<float> angles;
+		
+		/*1*/positions.push_back(Vector3(5.0, 5.0, -5.0)); axis.push_back(Vector3(0.77, 0.77, 0)); angles.push_back(30.0f);
+		/*2*/positions.push_back(Vector3(5.0, -5.0, -5.0)); axis.push_back(Vector3(0.77, 0.77, 0.77)); angles.push_back(30.0f);
+		/*3*/positions.push_back(Vector3(12.0, -7.0, 3.0)); axis.push_back(Vector3(0.77, 0.77, 0)); angles.push_back(20.0f);
+		/*4*/positions.push_back(Vector3(20.0, -2.0, -12.0)); axis.push_back(Vector3(1.77, 0.77, 1)); angles.push_back(90.0f);
+		/*5*/positions.push_back(Vector3(10.0, -2.0, 3.0)); axis.push_back(Vector3(2, 1, 0)); angles.push_back(120.0f);
+		/*6*/positions.push_back(Vector3(8.0, 4.0, 3.0)); axis.push_back(Vector3(0, 1, 1)); angles.push_back(270.0f);
+		/*7*/positions.push_back(Vector3(-8.0, -4.0, -3.0)); axis.push_back(Vector3(1, 1, 1)); angles.push_back(50.0f);
+		/*8*/positions.push_back(Vector3(20.0, -7.0, 8.0)); axis.push_back(Vector3(2, 1, 0)); angles.push_back(100.0f);
+		/*9*/positions.push_back(Vector3(1.0, -12.0, 6.0)); axis.push_back(Vector3(3, 1, 3)); angles.push_back(25.0f);
+		/*10*/positions.push_back(Vector3(7.0, 7.0, 4.0));  axis.push_back(Vector3(0, 1, 0));  angles.push_back(1.0f);
+		/*11*/positions.push_back(Vector3(13.0, -6.0, 8.0)); axis.push_back(Vector3(1, 1, 0)); angles.push_back(8.0f);
+		/*12*/positions.push_back(Vector3(6.0, -4.0, 3.0)); axis.push_back(Vector3(0, 1, 1)); angles.push_back(5.0f);
+		/*13*/positions.push_back(Vector3(-19.0, -19.0, -10.0));  axis.push_back(Vector3(1, 0, 1)); angles.push_back(2.0f);
+		/*14*/positions.push_back(Vector3(10.0, -14.0, 13.0));  axis.push_back(Vector3(6, 0, 1)); angles.push_back(13.0f);
+		/*15*/positions.push_back(Vector3(-11.0, -4.0, 4.0)); axis.push_back(Vector3(6,2, 4)); angles.push_back(60.0f);
+		/*16*/positions.push_back(Vector3(12.0, -4.0, -3.0)); axis.push_back(Vector3(6, 2, 6)); angles.push_back(22.0f);
+		/*17*/positions.push_back(Vector3(-12.0, -4.0, 3.0)); axis.push_back(Vector3(6, 2, 9)); angles.push_back(140.0f);
+		/*18*/positions.push_back(Vector3(-9.0, 9.0, -9.0)); axis.push_back(Vector3(3, 2, 6)); angles.push_back(311.0f);
+		/*19*/positions.push_back(Vector3(9.0, 9.0, 9.0)); axis.push_back(Vector3(1, 2, 6)); angles.push_back(28.0f);
+		/*20*/positions.push_back(Vector3(8.0, -4.0, 20.0));  axis.push_back(Vector3(3, 8, 5)); angles.push_back(0.0f);
+
+		//+20
+		/*21*/positions.push_back(Vector3(25.0, 5.0, 5.0)); axis.push_back(Vector3(2, 3,4)); angles.push_back(2.0f);
+		/*22*/positions.push_back(Vector3(21.0, 7.0, -9.0)); axis.push_back(Vector3(5, 4, 3)); angles.push_back(230.0f);
+		/*23*/positions.push_back(Vector3(33.0, 17.0, -9.0)); axis.push_back(Vector3(2, 1, 2)); angles.push_back(330.0f);
+		/*24*/positions.push_back(Vector3(27.0, -12.0, -11.0)); axis.push_back(Vector3(5, 2, 6)); angles.push_back(130.0f);
+		/*25*/positions.push_back(Vector3(38.0, -3.0, 11.0)); axis.push_back(Vector3(10, 2, 10)); angles.push_back(20.0f);
+		/*26*/positions.push_back(Vector3(38.0, 23.0, 11.0)); axis.push_back(Vector3(10, 1, 1)); angles.push_back(-50.0f);
+		/*27*/positions.push_back(Vector3(40.0, -10.0, 11.0)); axis.push_back(Vector3(0,1, 0)); angles.push_back(20.0f);
+		/*28*/positions.push_back(Vector3(40.0, -12.0, -3.0)); axis.push_back(Vector3(1, 0, 1)); angles.push_back(10.0f);
+		/*29*/positions.push_back(Vector3(40.0, 0.0, 0)); axis.push_back(Vector3(2, 4, 2)); angles.push_back(70.0f);
+		/*30*/positions.push_back(Vector3(40.0, 20.0,2)); axis.push_back(Vector3(1, 2, 6)); angles.push_back(90.0f);
+		/*31*/positions.push_back(Vector3(30.0, 20.0, -20)); axis.push_back(Vector3(6, 2,1)); angles.push_back(110.0f);
+		/*33*/positions.push_back(Vector3(33.0, 23.0, 5)); axis.push_back(Vector3(3,5, 3)); angles.push_back(140.0f);
+		/*34*/positions.push_back(Vector3(37.0, 21.0, -5)); axis.push_back(Vector3(0, 0, 1)); angles.push_back(180.0f);
+		/*35*/positions.push_back(Vector3(39.0,5.0, -5)); axis.push_back(Vector3(1, 0.77, 0)); angles.push_back(33.0f);
+		/*36*/positions.push_back(Vector3(22.0, 5.0, 5)); axis.push_back(Vector3(1, 0.77, 0)); angles.push_back(10.0f);
+		/*37*/positions.push_back(Vector3(22.0, 5.0, 15)); axis.push_back(Vector3(1, 4, 2)); angles.push_back(210.0f);
+		/*38*/positions.push_back(Vector3(24.0, 7.0, 12)); axis.push_back(Vector3(3, 3, 4)); angles.push_back(160.0f);
+		/*39*/positions.push_back(Vector3(26.0, -12.0, 4)); axis.push_back(Vector3(2, 9, 0)); angles.push_back(260.0f);
+		/*40*/positions.push_back(Vector3(28.0, 17.0, 8)); axis.push_back(Vector3(6, 4, 5)); angles.push_back(280.0f);
+
+		/*41*/
+		/*42*/
+		/*43*/
+		/*44*/
+		/*45*/
+		/*46*/
+		/*47*/
+		/*49*/
+		/*50*/
+		/*51*/
+		/*52*/
+		/*53*/
+		/*54*/
+		/*55*/
+		/*56*/
+		/*57*/
+		/*58*/
+		/*59*/
+		/*60*/
+
+		for(int i = 0; i < 39;i++)
+		{
+			GameObj Obj = Instantiate();
+			Obj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+			Obj->GetMeshComponent()->SetMaterial(cremeColorMat);
+			Obj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+			Obj->name = "Object " + std::to_string(i);
+
+			Obj->GetTransform()->SetLocalPosition(positions.at(i));
+			Obj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+			Obj->GetTransform()->rotate(axis.at(i),angles.at(i));
+			world->AddToChildren(Obj);
+		}
 
 		world->SetPhysicsComponentDrawActive(true);
 

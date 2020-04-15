@@ -12,7 +12,12 @@
 #include "CameraComponent.h"
 #include "PhysicsSceneGraphIterationInfo.h"
 #include "PhysicsComponentContainer.h"
+#include "PSGIIToAABB.h"
+
 #include <array>
+#include "OctreeNode.h"
+#include "DebugDrawingManager.h"
+#include "Time.h"
 
 namespace PXG
 {
@@ -22,6 +27,8 @@ namespace PXG
 	PhysicsEngine::PhysicsEngine()
 	{
 		OptimizeBroadPhase = std::bind(&PhysicsEngine::BruteForceBroadPhase,this,std::placeholders::_1,std::placeholders::_2);
+		//OptimizeBroadPhase = std::bind(&PhysicsEngine::BroadPhaseOctreeOptimization, this, std::placeholders::_1, std::placeholders::_2);
+	
 	}
 
 	void PhysicsEngine::AddPhysicsComponent(std::shared_ptr<PhysicsComponent> physicsComponent)
@@ -94,6 +101,8 @@ namespace PXG
 		OptimizeBroadPhase(iterationResult, physicsComponentContainers);
 
 
+		
+
 		std::vector<Manifold> resultingManifolds;
 		//Debug::Log("All PhysicsComponents have been grouped into {0} groups ", physicsComponentContainers.size());
 
@@ -127,6 +136,7 @@ namespace PXG
 
 
 		}
+
 
 		for (const auto& manifold : resultingManifolds)
 		{
@@ -198,33 +208,145 @@ namespace PXG
 
 	void PhysicsEngine::BroadPhaseOctreeOptimization(const std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, std::vector<PhysicsComponentContainer>& physicsComponentContainers)
 	{
-		//TODO Implement BroadPhaseOctreeOptimization
 
-		//create AABB Box for all transformed physicsComponents
+		auto node = std::make_shared<OctreeNode>();
 
-		//create an AABB Box that encompasses all physicsComponent Colliders
+		float minSize = FLT_MAX;
+		float maxSize = -FLT_MAX;
 
-		//std::vector<PhysicsComponentContainer>& physicsComponentContainers
+		Vector3 initialNodeAABBMin = Vector3(minSize, minSize, minSize);
+		Vector3 initialNodeAABBMax = Vector3(maxSize, maxSize, maxSize);
 
-		//RecursiveBoxDivide
+		
+		for (auto psgii : physicsComponents)
+		{
 
-		//if Node has more than x amount of objects
+			//---------------------------------- Fill node's IteratorInfoToAABBCollection ----------------------------------//
 
-			//divide boxes
+			PSGIIToAABB iterationInfoToAABB;
+			auto x = iterationInfoToAABB.PSGII;
+	
+			Mat4 worldTransform = psgii.transform;
+
+			iterationInfoToAABB.PSGII = psgii;
+
+			//create AABB Box for all physicsComponents with colliders
+			iterationInfoToAABB.AABB = psgii.physicsComponent->CreateAABBFromTransformedColliders(worldTransform);
+			world->GetDebugDrawingManager()->InstantiateAABBRepresentation(iterationInfoToAABB.AABB.get(), Vector3(1, 0, 0), world->GetTimeSystem()->GetAverageDeltaTime());
+
 			
+			node->IteratorInfoToAABBCollection.push_back(iterationInfoToAABB);
+
+		
+			//---------------------------------- update node's initialNodeAABBMin and initialNodeAABBMax ----------------------------------//
+
+			Vector3 currentAABBMin = iterationInfoToAABB.AABB->position - iterationInfoToAABB.AABB->halfWidths;
+			Vector3 currentAABBMax = iterationInfoToAABB.AABB->position + iterationInfoToAABB.AABB->halfWidths;
+
+
+			//check if any component of  currentAABBMin is smaller than initialNodeAABBMin
+			if (currentAABBMin.x < initialNodeAABBMin.x)
+			{
+				initialNodeAABBMin.x = currentAABBMin.x;
+			}
+
+			if (currentAABBMin.y < initialNodeAABBMin.y)
+			{
+				initialNodeAABBMin.y = currentAABBMin.y;
+			}
+
+			if (currentAABBMin.z < initialNodeAABBMin.z)
+			{
+				initialNodeAABBMin.z = currentAABBMin.z;
+			}
+
+			//check if any component of  currentAABBMax is bigger than initialNodeAABBMax
+			if (currentAABBMax.x > initialNodeAABBMax.x)
+			{
+				initialNodeAABBMax.x = currentAABBMax.x;
+			}
+
+			if (currentAABBMax.y > initialNodeAABBMax.y)
+			{
+				initialNodeAABBMax.y = currentAABBMax.y;
+			}
+
+			if (currentAABBMax.z > initialNodeAABBMax.z)
+			{
+				initialNodeAABBMax.z = currentAABBMax.z;
+			}
+
+		}
+
+		Vector3 initialPosition = (initialNodeAABBMax + initialNodeAABBMin) * 0.5f;
+		Vector3 initialHalfWidth = (initialNodeAABBMax - initialNodeAABBMin) * 0.5f;
+
+		node->Box = std::make_shared<AABBBox>(initialPosition, initialHalfWidth);
+
+		//world->GetDebugDrawingManager()->InstantiateAABBRepresentation(node->Box.get(), Vector3(1, 0, 0), world->GetTimeSystem()->GetAverageDeltaTime());
+
+
+		//recursively split the node
+		std::vector<std::shared_ptr<OctreeNode>> finalNodes;
+
+		const int minObjectCount = 4;
+		const int maxDepthCount = 5;
+		
+
+		recursiveOctreeSplit(node, finalNodes, 0, minObjectCount, maxDepthCount);
+
+		Debug::Log("Split into {0} groups", finalNodes.size());
+
+
+
+		for(const auto& node : finalNodes)
+		{
+			world->GetDebugDrawingManager()->InstantiateAABBRepresentation(node->Box.get(), Vector3(0, 1, 0), world->GetTimeSystem()->GetAverageDeltaTime());
+
+			/*Debug::Log("node with position : {0}" , node->Box->position.ToString());
+			for (auto IteratorInfoToAABB : node->IteratorInfoToAABBCollection)
+			{
+				Debug::Log(IteratorInfoToAABB.PSGII.physicsComponent->GetOwner()->name);
+			}
+			Debug::Log("");*/
+
+			PhysicsComponentContainer physicsComponentContainer;
+
+			auto iteratorInfoToAABBCollectionnode = node->IteratorInfoToAABBCollection;
+
+			for (auto  iteratorInfoToAABB : iteratorInfoToAABBCollectionnode)
+			{
+				physicsComponentContainer.PSGIIContainer.push_back(iteratorInfoToAABB.PSGII);
+			}
+
+
+			physicsComponentContainers.push_back(physicsComponentContainer);
+		}
+
+	}
+
+	void PhysicsEngine::recursiveOctreeSplit(std::shared_ptr<OctreeNode> node, std::vector<std::shared_ptr<OctreeNode>>& finalNodes, int currentdepthCount, const int minObjectCount, const int maxDepthCount)
+	{
+
+		std::vector<std::shared_ptr<OctreeNode>> splitNodes;
+
+		splitNodes = node->Split();
+
+		int depthCount = currentdepthCount + 1;
+
+		for (const auto& splitNode : splitNodes)
+		{
+			if (splitNode->IteratorInfoToAABBCollection.size() <= minObjectCount || depthCount >= maxDepthCount)
+			{
+				finalNodes.push_back(splitNode);
+
+			}
+			else
+			{
+				recursiveOctreeSplit(splitNode, finalNodes, depthCount, minObjectCount, maxDepthCount);
+			}
 			
-			//for each divided box
-				
-		        //if box has more than componentMax || bigger than minDivisionCount
-					//Recursive box divide 
-				//suggest add to physicsComponentContainer
-
-
-
-
-
-
-
+		}
 
 	}
 
@@ -233,9 +355,6 @@ namespace PXG
 	{
 
 		Vector3 vecAToB = positionB - positionA;
-
-
-		int gsCount = 0;
 
 		//Test all axes parallel to face normals of meshB
 		for (int index = 0; index < collisionMeshB->Indices.size(); index += 3)
@@ -246,18 +365,15 @@ namespace PXG
 			glm::vec3 axis = transformB.ToGLM() * glm::vec4(collisionMeshB->Vertices.at(v0Index).normal.ToGLMVec3(), 0);
 			axis = glm::normalize(axis);
 
-			gsCount += 2;
 
 			if (TestAxisDirection(axis, collisionMeshA, collisionMeshB, transformA, transformB, positionA, positionB, seperationFound))
 			{
-				Debug::Log("Get Support Point Called {0} ", gsCount);
+				
 				return true;
 			}
 
 		}
 
-
-		Debug::Log("Get Support Point Called {0} ", gsCount);
 		return false;
 
 	}
@@ -758,6 +874,8 @@ namespace PXG
 			{
 				minResult.z = vertex.z;
 			}
+
+
 
 			//check for maxResult
 			if (vertex.x > maxResult.x)
