@@ -13,6 +13,10 @@
 #include "AABBBox.h"
 #include <memory>
 
+#include "World.h"
+#include "DebugDrawingManager.h"
+#include "Time.h"
+
 namespace PXG
 {
 	PhysicsComponent::PhysicsComponent() : Component()
@@ -76,25 +80,33 @@ namespace PXG
 
 	}
 
-	std::shared_ptr<AABBBox> PhysicsComponent::CreateAABBFromTransformedColliders(Mat4 & transform)
+	std::shared_ptr<AABBBox> PhysicsComponent::CreateAABBFromTransformedColliders(const Mat4 & transform)
 	{
 		Vector3 objectSpaceMin, objectSpaceMax;
 
 		PhysicsEngine::GetMinMaxPositionOfMeshes(objectSpaceMin, objectSpaceMax, GetPhysicsMeshes());
 
-		Vector3 forward = Vector3(0, 0, objectSpaceMax.z - objectSpaceMin.z);
-		Vector3 Up = Vector3(0, objectSpaceMax.y - objectSpaceMin.y,0);
-		Vector3 Right = Vector3(objectSpaceMax.x - objectSpaceMin.x, 0, 0);
+		glm::vec3  forward = transform.ToGLM() * glm::vec4(0, 0,1,0)   ;
+		glm::vec3  Up = transform.ToGLM() * glm::vec4(0,1 ,0, 0)  ;
+		glm::vec3  Right = transform.ToGLM() * glm::vec4(1, 0, 0, 0) ;
+
+		float scalarZ = objectSpaceMax.z - objectSpaceMin.z;
+		float scalarY = objectSpaceMax.y - objectSpaceMin.y;
+		float scalarX = objectSpaceMax.x - objectSpaceMin.x;
+
+		forward = glm::normalize(forward) *  scalarZ;
+		Right = glm::normalize(Right) * scalarX;
+		Up = glm::normalize(Up) * scalarY;
 
 		glm::vec3 min = transform.ToGLM() * glm::vec4(objectSpaceMin.ToGLMVec3(), 0);
-		glm::vec3 minPlusForward = transform.ToGLM() * glm::vec4(min + forward.ToGLMVec3(), 0);
-		glm::vec3 minPlusUp = transform.ToGLM() * glm::vec4(min + Up.ToGLMVec3(), 0);
-		glm::vec3 minPlusRight = transform.ToGLM() * glm::vec4(min + Right.ToGLMVec3(), 0);
+		glm::vec3 minPlusForward = min + forward;
+		glm::vec3 minPlusUp = min + Up;
+		glm::vec3 minPlusRight = min + Right;
 		
 		glm::vec3 max = transform.ToGLM() * glm::vec4(objectSpaceMax.ToGLMVec3(), 0);
-		glm::vec3 maxMinusBackward = transform.ToGLM() * glm::vec4(max - forward.ToGLMVec3(), 0); 
-		glm::vec3 maxMinusDown = transform.ToGLM() * glm::vec4(max - Up.ToGLMVec3(), 0);
-		glm::vec3 minMinusRight = transform.ToGLM() * glm::vec4(max - Right.ToGLMVec3(), 0);
+		glm::vec3 maxMinusBackward = max - forward;
+		glm::vec3 maxMinusDown = max - Up;
+		glm::vec3 maxMinusRight = max - Right;
 
 		std::vector<Vector3> verticesContainer;
 
@@ -106,13 +118,13 @@ namespace PXG
 		verticesContainer.push_back(max);
 		verticesContainer.push_back(maxMinusBackward);
 		verticesContainer.push_back(maxMinusDown);
-		verticesContainer.push_back(minMinusRight);
+		verticesContainer.push_back(maxMinusRight);
 
 		Vector3 worldSpaceMin, worldSpaceMax;
 
 		PhysicsEngine::GetMinMaxPositionOfVertices(worldSpaceMin, worldSpaceMax, verticesContainer);
 
-		Vector3 halfWidth = (worldSpaceMax - worldSpaceMin) * 0.5f;
+		Vector3 halfWidth = (worldSpaceMax - worldSpaceMin).Abs() * 0.5f;
 
 		return std::make_shared<AABBBox>(glm::vec3(transform.Matrix[3]), halfWidth);
 

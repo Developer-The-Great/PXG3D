@@ -47,7 +47,7 @@ namespace PXG
 	   */ 
 		void DrawPhysicsRepresentation(Mat4 parentTransform, Mat4 view, Mat4 projection);
 
-		std::shared_ptr<AABBBox> CreateAABBFromTransformedColliders(Mat4& transform);
+		std::shared_ptr<AABBBox> CreateAABBFromTransformedColliders(const Mat4& transform);
 
 
 		void SetIsTrigger(bool newTriggerState);
