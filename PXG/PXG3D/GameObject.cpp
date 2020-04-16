@@ -8,7 +8,7 @@ namespace PXG
 {
 	GameObject::GameObject()
 	{
-		Debug::Log("init {0}", name);
+		
 		physicsComponent = std::make_shared<PhysicsComponent>();
 		meshComponent = std::make_shared<MeshComponent>();
 	}

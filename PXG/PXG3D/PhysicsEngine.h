@@ -193,6 +193,7 @@ namespace PXG
 		void recursiveOctreeSplit(std::shared_ptr<OctreeNode> node, std::vector<std::shared_ptr<OctreeNode>>& finalNodes, int currentdepthCount, const int minObjectCount = 3, const int maxDepthCount = 6);
 
 
+
 		//-------------------------------------------------- Raycasting -----------------------------------------------------------//
 
 		//does a raytrace to all objects in the world by recursively going through the scene graph
@@ -210,7 +211,8 @@ namespace PXG
 
 		std::shared_ptr<World> world;
 
-
+		const int minObjectCount = 4;
+		const int maxDepthCount = 5;
 
 
 	};

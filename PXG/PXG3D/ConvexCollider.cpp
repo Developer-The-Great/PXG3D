@@ -51,11 +51,8 @@ namespace PXG
 		Vector3 positionA = glm::vec3(manifold.transformA.Matrix[3]);
 		Vector3 positionB = glm::vec3(manifold.transformB.Matrix[3]);
 
-
-
 		auto meshA = this->GetMesh();
 		auto meshB = convexCollider->GetMesh();
-
 
 		float seperationAB;
 

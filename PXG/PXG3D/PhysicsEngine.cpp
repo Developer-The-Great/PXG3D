@@ -21,13 +21,12 @@
 
 namespace PXG
 {
-	//std::function<void(const std::vector<PhysicsSceneGraphIterationInfo>&, std::vector<PhysicsComponentContainer>&)> PhysicsEngine::OptimizeBroadPhase = nullptr;
 	double PhysicsEngine::gravity = -19.85;
 
 	PhysicsEngine::PhysicsEngine()
 	{
-		OptimizeBroadPhase = std::bind(&PhysicsEngine::BruteForceBroadPhase,this,std::placeholders::_1,std::placeholders::_2);
-		//OptimizeBroadPhase = std::bind(&PhysicsEngine::BroadPhaseOctreeOptimization, this, std::placeholders::_1, std::placeholders::_2);
+		//OptimizeBroadPhase = std::bind(&PhysicsEngine::BruteForceBroadPhase,this,std::placeholders::_1,std::placeholders::_2);
+		OptimizeBroadPhase = std::bind(&PhysicsEngine::BroadPhaseOctreeOptimization, this, std::placeholders::_1, std::placeholders::_2);
 	
 	}
 
@@ -87,24 +86,16 @@ namespace PXG
 
 	void PhysicsEngine::CheckCollisions()
 	{
-		//iterate through the scene graph to get all colliders and their transforms
 		std::vector<PhysicsSceneGraphIterationInfo> iterationResult;
 		Mat4 transform = world->GetTransform()->GetWorldTransform();
 
 		recursiveRetrievePhysicsComponent(world, iterationResult, transform);
 
-		//Debug::Log("Found {0} physicsComponents with colliders",iterationResult.size());
-
 		std::vector<PhysicsComponentContainer> physicsComponentContainers;
 
-		//broad phase optimization
 		OptimizeBroadPhase(iterationResult, physicsComponentContainers);
 
-
-		
-
 		std::vector<Manifold> resultingManifolds;
-		//Debug::Log("All PhysicsComponents have been grouped into {0} groups ", physicsComponentContainers.size());
 
 		for (const auto& physicsComponentContainer : physicsComponentContainers)
 		{
@@ -144,10 +135,6 @@ namespace PXG
 			//if(manifold)
 
 		}
-
-		//Call check collision on each of them
-
-
 	}
 
 	double PhysicsEngine::GetGravity()
@@ -283,32 +270,22 @@ namespace PXG
 
 		node->Box = std::make_shared<AABBBox>(initialPosition, initialHalfWidth);
 
-		//world->GetDebugDrawingManager()->InstantiateAABBRepresentation(node->Box.get(), Vector3(1, 0, 0), world->GetTimeSystem()->GetAverageDeltaTime());
+		world->GetDebugDrawingManager()->InstantiateAABBRepresentation(node->Box.get(), Vector3(1, 0, 0), world->GetTimeSystem()->GetAverageDeltaTime());
 
 
-		//recursively split the node
+		
 		std::vector<std::shared_ptr<OctreeNode>> finalNodes;
 
-		const int minObjectCount = 4;
-		const int maxDepthCount = 5;
 		
-
+		
+		//------------------------------------------ recursively split the node ---------------------------------//
 		recursiveOctreeSplit(node, finalNodes, 0, minObjectCount, maxDepthCount);
 
-		Debug::Log("Split into {0} groups", finalNodes.size());
 
-
-
+		//------------------------------------------ Fill the PhysicsComponentContainer with PSGIIs from the split nodes---------------------------------//
 		for(const auto& node : finalNodes)
 		{
 			world->GetDebugDrawingManager()->InstantiateAABBRepresentation(node->Box.get(), Vector3(0, 1, 0), world->GetTimeSystem()->GetAverageDeltaTime());
-
-			/*Debug::Log("node with position : {0}" , node->Box->position.ToString());
-			for (auto IteratorInfoToAABB : node->IteratorInfoToAABBCollection)
-			{
-				Debug::Log(IteratorInfoToAABB.PSGII.physicsComponent->GetOwner()->name);
-			}
-			Debug::Log("");*/
 
 			PhysicsComponentContainer physicsComponentContainer;
 

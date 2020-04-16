@@ -123,6 +123,7 @@ namespace PXG
 
 	void DebugDrawingManager::RemoveDeadDebugMeshes()
 	{
+
 		std::vector<std::shared_ptr<DebugMeshObject>> deadDebugMeshes;
 
 		for (auto const& debugObject : debugMeshObjects)

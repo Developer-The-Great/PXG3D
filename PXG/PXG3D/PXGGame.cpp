@@ -40,6 +40,9 @@
 #include "AABBBox.h"
 #include "DebugDrawingManager.h"
 
+#include "PhysicsCollider.h"
+#include "ConvexCollider.h"
+#include "Time.h"
 namespace PXG
 {
 
@@ -267,7 +270,7 @@ namespace PXG
 		////--------------------Physics Test OBB EdgeToEdge --------------------------//
 
 
-		//*
+		/*
 		
 		GameObj yellowObject = Instantiate();
 		yellowObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -298,10 +301,10 @@ namespace PXG
 		world->AddToChildren(orangeObject);
 		//*/
 
-		//--------------------Physics Test OBB  --------------------------//
-		
+		////--------------------Physics Test OBB  --------------------------//
+		//
 
-		//*
+		/*
 		
 		GameObj OBBTestObjectPurple = Instantiate();
 		OBBTestObjectPurple->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -329,7 +332,7 @@ namespace PXG
 
 		////--------------------Physics Test AABB --------------------------//
 
-		//*
+		/*
 		
 		GameObj firstObj = Instantiate();
 		firstObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -343,7 +346,7 @@ namespace PXG
 
 		//*/
 
-		//*
+		/*
 		GameObj secondObj = Instantiate();
 		secondObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
 		secondObj->GetMeshComponent()->SetMaterial(bluetColorMat);
@@ -360,18 +363,18 @@ namespace PXG
 		
 		//------------------------More Objects---------------------------------------//
 
-		//*
+		/*
+		
 		GameObj slategrayObject = Instantiate();
 		slategrayObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
 		slategrayObject->GetMeshComponent()->SetMaterial(slateGrayColorMat);
 		slategrayObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 		slategrayObject->name = "slategrayObjectObj ";
 
-		slategrayObject->GetTransform()->SetLocalPosition(Vector3(-2.5, 1.5, 0.0));
+		slategrayObject->GetTransform()->SetLocalPosition(Vector3(-0, 1.5, 0.0));
 		slategrayObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
 		slategrayObject->GetTransform()->rotate(Vector3(1.0, 1.0, 0.0), 80.0f);
 		world->AddToChildren(slategrayObject);
-
 
 		GameObj cremeObj = Instantiate();
 		cremeObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -386,7 +389,7 @@ namespace PXG
 
 		auto cremeWorldTransform = cremeObj->GetTransform()->GetWorldTransform();
 		auto aabbTest = cremeObj->GetPhysicsComponent()->CreateAABBFromTransformedColliders(cremeWorldTransform);
-		world->GetDebugDrawingManager()->InstantiateAABBRepresentation(aabbTest.get(), Vector3(1, 0, 0), 30.0f);
+		//world->GetDebugDrawingManager()->InstantiateAABBRepresentation(aabbTest.get(), Vector3(1, 0, 0), 30.0f);
 
 		
 		//*/
@@ -439,27 +442,30 @@ namespace PXG
 		/*39*/positions.push_back(Vector3(26.0, -12.0, 4)); axis.push_back(Vector3(2, 9, 0)); angles.push_back(260.0f);
 		/*40*/positions.push_back(Vector3(28.0, 17.0, 8)); axis.push_back(Vector3(6, 4, 5)); angles.push_back(280.0f);
 
-		/*41*/
-		/*42*/
-		/*43*/
-		/*44*/
-		/*45*/
-		/*46*/
-		/*47*/
-		/*49*/
-		/*50*/
-		/*51*/
-		/*52*/
-		/*53*/
-		/*54*/
-		/*55*/
-		/*56*/
-		/*57*/
-		/*58*/
-		/*59*/
-		/*60*/
+		//z-20
+		/*41*/positions.push_back(Vector3(23.0, 4.0, -25.0)); axis.push_back(Vector3(2, 3, 4)); angles.push_back(2.0f);
+		/*42*/positions.push_back(Vector3(12.0, 2.0, -24.0)); axis.push_back(Vector3(4, 3, 2)); angles.push_back(20.0f);
+		/*43*/positions.push_back(Vector3(5.0, 10.0, -29.0)); axis.push_back(Vector3(1, 1, 1)); angles.push_back(12.0f);
+		/*44*/positions.push_back(Vector3(-5.0, 20.0, -35.0)); axis.push_back(Vector3(0, 3, 0)); angles.push_back(122.0f);
+		/*45*/positions.push_back(Vector3(7.0, 17.0, -39.0)); axis.push_back(Vector3(8, 2, 2)); angles.push_back(52.0f);
+		/*46*/positions.push_back(Vector3(-8.0, 15.0, -40.0)); axis.push_back(Vector3(6, 3, 6)); angles.push_back(92.0f);
+		/*47*/positions.push_back(Vector3(0.0, -2.0, -20.0)); axis.push_back(Vector3(2, 1, 0)); angles.push_back(62.0f);
+		/*49*/positions.push_back(Vector3(0.0, 0.0, -25.0)); axis.push_back(Vector3(2, 1, 0)); angles.push_back(222.0f);
+		/*50*/positions.push_back(Vector3(-8.0, 2.0, -20.0)); axis.push_back(Vector3(2, 1, 2)); angles.push_back(42.0f);
+		/*51*/positions.push_back(Vector3(9.0, -2.0, -23.0)); axis.push_back(Vector3(2, -1, 0)); angles.push_back(12.0f);
+		/*52*/positions.push_back(Vector3(-8.0, 20.0, -28.0)); axis.push_back(Vector3(-2, 1, 0)); angles.push_back(32.0f);
+		/*53*/positions.push_back(Vector3(2.0, -15.0, -38.0)); axis.push_back(Vector3(-2, 1, -1)); angles.push_back(82.0f);
+		/*54*/positions.push_back(Vector3(-2.0, -15.0, -38.0)); axis.push_back(Vector3(-2, 34, -1)); angles.push_back(62.0f);
+		/*55*/positions.push_back(Vector3(-20.0, 15.0, -34.0)); axis.push_back(Vector3(-2, 1, -1)); angles.push_back(122.0f);
+		/*56*/positions.push_back(Vector3(2.0, -15.0, -33.0)); axis.push_back(Vector3(-2, 12, -5)); angles.push_back(222.0f);
+		/*57*/positions.push_back(Vector3(12.0, -15.0, -31.0)); axis.push_back(Vector3(-2, 5, -1)); angles.push_back(342.0f);
+		/*58*/positions.push_back(Vector3(-15.0, -15.0, -23.0)); axis.push_back(Vector3(-2, 1, -2)); angles.push_back(270.0f);
+		/*59*/positions.push_back(Vector3(-7.0, -15.0, -33.0)); axis.push_back(Vector3(-2, 10, -1)); angles.push_back(45.0f);
+		/*60*/positions.push_back(Vector3(-23.0, -15.0, -32.0)); axis.push_back(Vector3(-2, 7, -5)); angles.push_back(-45.0f);
 
-		for(int i = 0; i < 39;i++)
+
+		//Octree optimization test
+		for(int i = 0; i < 30;i++)
 		{
 			GameObj Obj = Instantiate();
 			Obj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -472,6 +478,59 @@ namespace PXG
 			Obj->GetTransform()->rotate(axis.at(i),angles.at(i));
 			world->AddToChildren(Obj);
 		}
+
+
+		//Octree optimization test
+
+		
+
+		Debug::Log("start  ");
+		double finalTime = 0;
+		float z = 1.0f;
+		for (int i = 0; i < 0; i++)
+		{
+			GameObj slategrayObject = Instantiate();
+			slategrayObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+			slategrayObject->GetMeshComponent()->SetMaterial(slateGrayColorMat);
+			slategrayObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+			slategrayObject->name = "slategrayObjectObj " + std::to_string(i);
+
+			slategrayObject->GetTransform()->SetLocalPosition(Vector3(-0, 1.5, z * i));
+			slategrayObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+			slategrayObject->GetTransform()->rotate(axis.at((int)Mathf::Map(i, 0, 500, 20, 40)), angles.at((int)Mathf::Map(i, 0, 500, 0, 20)));
+			world->AddToChildren(slategrayObject);
+
+			GameObj cremeObj = Instantiate();
+			cremeObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+			cremeObj->GetMeshComponent()->SetMaterial(cremeColorMat);
+			cremeObj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+			cremeObj->name = "cremeObj " + std::to_string(i);
+
+			cremeObj->GetTransform()->SetLocalPosition(Vector3(2.0, 1.5, z * i));
+			cremeObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+			cremeObj->GetTransform()->rotate(axis.at((int)Mathf::Map(i,0,500,0,20)), angles.at((int)Mathf::Map(i, 0, 500, 20, 40)));
+			world->AddToChildren(cremeObj);
+
+
+			auto colliderA = slategrayObject->GetPhysicsComponent()->GetCollider();
+
+			auto colliderB = cremeObj->GetPhysicsComponent()->GetCollider();
+
+			Manifold m;
+			m.physicsComponentA = slategrayObject->GetPhysicsComponent();
+			m.physicsComponentB = cremeObj->GetPhysicsComponent();
+			m.transformA = slategrayObject->GetTransform()->GetWorldTransform();
+			m.transformB = cremeObj->GetTransform()->GetWorldTransform();
+
+			double time = GetWorld()->GetTimeSystem()->GetTime();
+			colliderA->CheckCollision(colliderB, m);
+			finalTime += Mathf::Abs(GetWorld()->GetTimeSystem()->GetTime() - time);
+
+			assert(GetWorld()->GetTimeSystem()->GetTime() > 0);
+		}
+
+		Debug::Log("it took {0} ", finalTime);
+
 
 		world->SetPhysicsComponentDrawActive(true);
 

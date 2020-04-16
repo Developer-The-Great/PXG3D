@@ -177,7 +177,7 @@ int main()
 
 		float beforeCol = time->GetTime();
 		physicsEngine->CheckCollisions();
-		Debug::Log("Collision check time {0}", time->GetTime() - beforeCol);
+		Debug::Log("Collision FPS time {0}", 1.0/ (time->GetTime() - beforeCol));
 
 
 

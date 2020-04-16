@@ -41,4 +41,8 @@ namespace PXG
 		this->drawMode = drawMode;
 
 	}
+	DebugMeshObject::~DebugMeshObject()
+	{
+
+	}
 }
