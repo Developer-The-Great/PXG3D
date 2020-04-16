@@ -14,9 +14,6 @@ namespace PXG
 		virtual bool BoundingVolumeCheckWith(std::shared_ptr<SphereCollider> sphereCollider) override;
 		virtual bool BoundingVolumeCheckWith(std::shared_ptr<ConvexCollider> convexCollider) override;*/
 
-
-
-
 		virtual void CheckCollision(std::shared_ptr<PhysicsCollider> physicsCollider,Manifold& manifold) override;
 
 

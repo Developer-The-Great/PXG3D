@@ -38,16 +38,6 @@ namespace PXG
 
 	void ConvexCollider::CheckCollisionWith(ConvexCollider* convexCollider, Manifold& manifold)
 	{
-		//Debug::SetDebugState(false);
-		//do bounding volume check and exit if bounding volumes do not intersect 
-
-		
-		//TODO Implement Bounding Volumes
-
-
-		//Since we have reached this point, the bounding volumes do intersect.
-
-
 		Vector3 positionA = glm::vec3(manifold.transformA.Matrix[3]);
 		Vector3 positionB = glm::vec3(manifold.transformB.Matrix[3]);
 
@@ -90,7 +80,6 @@ namespace PXG
 		}
 		//*/
 
-
 		Debug::Log("Testing edge to edge");
 
 		if (PhysicsEngine::FindSeperatingAxisByBruteForceEdgeToEdgeCheck(meshB, meshA, manifold.transformB, manifold.transformA, positionB,
@@ -99,9 +88,6 @@ namespace PXG
 			manifold.isColliding = false;
 			return;
 		}
-
-
-
 
 		manifold.isColliding = true;
 

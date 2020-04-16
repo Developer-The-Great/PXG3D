@@ -30,10 +30,6 @@ namespace PXG
 	
 	}
 
-	void PhysicsEngine::AddPhysicsComponent(std::shared_ptr<PhysicsComponent> physicsComponent)
-	{
-	}
-
 	void PhysicsEngine::SetWorld(std::shared_ptr<World> world)
 	{
 		this->world = world;
@@ -342,10 +338,8 @@ namespace PXG
 			glm::vec3 axis = transformB.ToGLM() * glm::vec4(collisionMeshB->Vertices.at(v0Index).normal.ToGLMVec3(), 0);
 			axis = glm::normalize(axis);
 
-
 			if (TestAxisDirection(axis, collisionMeshA, collisionMeshB, transformA, transformB, positionA, positionB, seperationFound))
 			{
-				
 				return true;
 			}
 
@@ -385,7 +379,7 @@ namespace PXG
 				greatestSeperation = seperation;
 				index = i;
 			}
-
+			
 			if (seperation > 0)
 			{
 				//Debug::Log("Get Support Point Called {0} ", gsCount);

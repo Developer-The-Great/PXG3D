@@ -23,8 +23,6 @@ namespace PXG
 
 		PhysicsEngine();
 
-		void AddPhysicsComponent(std::shared_ptr<PhysicsComponent> physicsComponent);
-
 		void SetWorld(std::shared_ptr<World> world);
 
 		float GetTickRate() const;
@@ -39,12 +37,6 @@ namespace PXG
 
 		void CheckCollisions();
 
-
-
-
-
-
-
 		static double GetGravity();
 
 		static void SetGravity(double newGravity);
@@ -58,26 +50,8 @@ namespace PXG
 	    */
 		static bool Raycast(const Vector3& position,const Vector3& direction,HitInfo& hitInfo,std::shared_ptr<World> world,bool usePhysicsComponent = true);
 
-
-		
-
 		//returns the world position of pixel (i,j) in a camera with a screen width of screenWidth and a screen height of screenHeight.
 		static Vector3 GetOrthographicCameraWorldPosition(float i, float j, float screenWidth, float screenHeight, std::shared_ptr<World> world);
-
-		/**@brief checks if triangle with vertices v1,v2,and v3 intersects with a ray coming from rayPosition and rayDirection
-		 *@param [in] v1,v2,v3 : the vertices of the triangle
-		 *@param [in] rayPosition : the origin of the ray
-		 *@param [in] rayDirection : the direction of the ray
-		 *@param [in] objectTransform : the transform the the triangle
-		 *@param [out] hitInfo : a struct that outputs the hit information
-		 *@param [in] owner : the GameObject that owns the triangle, if it exist
-		*/
-		static void RayTriangleIntersection(Vector3 v1, Vector3 v2, Vector3 v3, const Vector3& rayPosition, const Vector3& rayDirection,
-			Mat4 objectTransform, HitInfo& hitInfo, std::shared_ptr<GameObject> owner);
-
-		
-
-
 
 		//------------------------------------------------- Collision Detection Algorithms ----------------------------------------//
 
@@ -118,13 +92,6 @@ namespace PXG
 		*/
 		static bool FindSeperatingAxisByBruteForceEdgeToEdgeCheck(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
 			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound);
-
-
-
-
-		
-
-		
 
 
 		//------------------------------------------------- Collision Detection Helper functions  ----------------------------------------//
@@ -200,6 +167,18 @@ namespace PXG
 		static void recursiveGameObjectRaytrace(const Vector3& position,const Vector3& direction, HitInfo& hitInfo, std::shared_ptr<GameObject> gameObject, Mat4 currentTransform, bool isUsingPhysicsComponent);
 
 		static void rayToMeshIntersection(const Vector3& position, const Vector3& direction, HitInfo& hitInfo,std::shared_ptr<Mesh> mesh, Mat4 objectTransform,std::shared_ptr<GameObject> owner);
+
+		/**@brief checks if triangle with vertices v1,v2,and v3 intersects with a ray coming from rayPosition and rayDirection
+		*@param [in] v1,v2,v3 : the vertices of the triangle
+		*@param [in] rayPosition : the origin of the ray
+		*@param [in] rayDirection : the direction of the ray
+		*@param [in] objectTransform : the transform the the triangle
+		*@param [out] hitInfo : a struct that outputs the hit information
+		*@param [in] owner : the GameObject that owns the triangle, if it exist
+		*/
+		static void RayTriangleIntersection(Vector3 v1, Vector3 v2, Vector3 v3, const Vector3& rayPosition, const Vector3& rayDirection,
+			Mat4 objectTransform, HitInfo& hitInfo, std::shared_ptr<GameObject> owner);
+
 
 		static void recursiveGetMeshComponents(std::vector<std::shared_ptr<MeshComponent>>& MeshComponentList, std::shared_ptr<GameObject> gameObject);
 
