@@ -165,9 +165,11 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="KeyCode.h" />
     <ClInclude Include="NodeClearComponent.h" />
+    <ClInclude Include="OctreeNode.h" />
     <ClInclude Include="PhysicsCollider.h" />
     <ClInclude Include="PhysicsComponentContainer.h" />
     <ClInclude Include="PhysicsSceneGraphIterationInfo.h" />
+    <ClInclude Include="PSGIIToAABB.h" />
     <ClInclude Include="RasterizationMode.h" />
     <ClInclude Include="ScreenSize.h" />
     <ClInclude Include="SphereCollider.h" />

@@ -10,6 +10,7 @@ namespace PXG
 
 	class Mesh;
 	class World;
+	struct AABBBox;
 
 	enum class DebugPrimitive
 	{
@@ -39,6 +40,8 @@ namespace PXG
 		*/
 		void InstantiateCube(Vector3 position, Vector3 min, Vector3 max, Vector3 color, float lifetime = PXG_THIS_FRAME_ONLY, Vector3 vertexOffset = Vector3(0, 0, 0));
 
+		void InstantiateAABBRepresentation(AABBBox* box, Vector3 color, float lifetime = PXG_THIS_FRAME_ONLY);
+
 		void DrawDebugObjects();
 
 		void DecreaseLifespan(float timepast);
@@ -49,8 +52,13 @@ namespace PXG
 
 		std::weak_ptr<World> GetWorld();
 		
+		void SetShouldDraw(bool shouldDrawState);
+
+		bool GetShouldDraw();
 
 	private:
+
+		bool shouldDraw = true;
 		
 		std::weak_ptr<World> world;
 		std::list<std::shared_ptr<DebugMeshObject>> debugMeshObjects;

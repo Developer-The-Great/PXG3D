@@ -6,6 +6,7 @@
 
 namespace PXG
 {
+	//a container that contains PhysicsSceneGraphIterationInfos
 	struct PhysicsComponentContainer
 	{
 		std::vector<PhysicsSceneGraphIterationInfo> PSGIIContainer;

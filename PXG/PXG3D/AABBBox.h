@@ -24,31 +24,31 @@ namespace PXG
 			float zb = otherBox->halfWidths.z;
 			float zd = Mathf::Abs(otherBox->position.z - position.z);
 
-			if (za + zb > zd)
+			if (za + zb < zd)
 			{
-				return true;
+				return false;
 			}
 
 			float xa = halfWidths.x;
 			float xb = otherBox->halfWidths.x;
 			float xd = Mathf::Abs(otherBox->position.x - position.x);
 
-			if (xa + xb > xd)
+			if (xa + xb < xd)
 			{
-				return true;
+				return false;
 			}
 
 			float ya = halfWidths.y;
 			float yb = otherBox->halfWidths.y;
 			float yd = Mathf::Abs(otherBox->position.y - position.y);
 
-			if (ya + yb > yd)
+			if (ya + yb < yd)
 			{
-				return true;
+				return false;
 			}
 
 
-			return false;
+			return true;
 
 		}
 

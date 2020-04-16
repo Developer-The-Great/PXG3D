@@ -8,6 +8,7 @@
 #include "CameraComponent.h"
 #include "Mesh.h"
 #include "RasterizationMode.h"
+#include "AABBBox.h"
 namespace PXG
 {
 	void DebugDrawingManager::InstantiateLine(Vector3 start, Vector3 end, Vector3 color, float lifetime)
@@ -84,6 +85,11 @@ namespace PXG
 
 	}
 
+	void DebugDrawingManager::InstantiateAABBRepresentation(AABBBox * box, Vector3 color, float lifetime)
+	{
+		InstantiateCube(box->position, Vector3(), box->halfWidths * 2.0f, color, lifetime,-box->halfWidths);
+	}
+
 	void DebugDrawingManager::DrawDebugObjects()
 	{
 		Mesh::SetRasterizationMode(RasterizationMode::LINE);
@@ -117,6 +123,7 @@ namespace PXG
 
 	void DebugDrawingManager::RemoveDeadDebugMeshes()
 	{
+
 		std::vector<std::shared_ptr<DebugMeshObject>> deadDebugMeshes;
 
 		for (auto const& debugObject : debugMeshObjects)
@@ -148,6 +155,14 @@ namespace PXG
 	std::weak_ptr<World> DebugDrawingManager::GetWorld()
 	{
 		return world;
+	}
+	void DebugDrawingManager::SetShouldDraw(bool shouldDrawState)
+	{
+		shouldDraw = shouldDrawState;
+	}
+	bool DebugDrawingManager::GetShouldDraw()
+	{
+		return shouldDraw;
 	}
 }
 

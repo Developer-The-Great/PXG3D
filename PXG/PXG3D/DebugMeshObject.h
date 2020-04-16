@@ -22,6 +22,8 @@ namespace PXG
 
 		DebugMeshObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<AbstractMaterial> material, Mat4 transform, float lifespan,PrimitiveDrawingMode drawMode);
 
+		~DebugMeshObject();
+
 		void Draw(std::weak_ptr<World> world, Mat4 parentTransform, Mat4 view, Mat4 projection);
 
 		bool IsLifeSpanOver() const;
