@@ -3,199 +3,215 @@
 
 #include "Debug.h"
 
-Input::~Input()
+namespace PXG
 {
-}
+	Input::~Input()
+	{
+	}
 
-void Input::PollEvents()
-{
-	glfwPollEvents();
-}
+	void Input::PollEvents()
+	{
+		GetInstance().scrollY = 0.0f;
+		glfwPollEvents();
+	}
 
-Input & Input::GetInstance()
-{
-	static Input inputInstance;
+	Input & Input::GetInstance()
+	{
+		static Input inputInstance;
 
-	return inputInstance;
-}
+		return inputInstance;
+	}
 
-int Input::GetTrackedKeyCount()
-{
-	return GetInstance().inputStates.size();
-}
+	int Input::GetTrackedKeyCount()
+	{
+		return GetInstance().inputStates.size();
+	}
 
-template<typename T>
-inline void Input::AddKeysToTrack(T key)
-{
-	int keyGiven = static_cast<int>(key);
-	Debug::Log(Verbosity::Info,"{0}",keyGiven);
+	template<typename T>
+	inline void Input::AddKeysToTrack(T key)
+	{
+		int keyGiven = static_cast<int>(key);
+		Debug::Log(Verbosity::Info, "{0}", keyGiven);
 
-	Input* input = &GetInstance();
+		Input* input = &GetInstance();
 
-	input->inputStates.insert(std::pair<int, InputState>(keyGiven, InputState()));
+		input->inputStates.insert(std::pair<int, InputState>(keyGiven, InputState()));
 	}
 
 
 
-void Input::key_callback(GLFWwindow * window, int key, int scancode, int action, int mods)
-{
-	UpdateKey(key, action);
-}
-
-void Input::mouse_button_callback(GLFWwindow * window, int button, int action, int mods)
-{
-	UpdateKey(button, action);
-}
-
-void Input::mouse_position_callback(GLFWwindow * window, double xpos, double ypos)
-{
-	GetInstance().x = xpos;
-	GetInstance().y = ypos;
-}
-
-
-
-bool Input::GetKey(KeyCode keyCode)
-{
-	Input* input = &GetInstance();
-	
-	std::map<int, InputState>::iterator iter;
-	bool keyFound = input->findKey(keyCode, iter);
-	
-	if (keyFound)
+	void Input::key_callback(GLFWwindow * window, int key, int scancode, int action, int mods)
 	{
-		//Debug::Log(Verbosity::Debug, "KeyFound");
-		InputState KeyState = iter->second;
-		
-		return KeyState.CurrentButtonPressState && KeyState.PreviousButtonPressState;
-		
+		UpdateKey(key, action);
 	}
-	return false;
-}
 
-bool Input::GetKeyDown(KeyCode keyCode)
-{
-	Input* input = &GetInstance();
-	
-	std::map<int, InputState>::iterator iter;
-	bool keyFound = input->findKey(keyCode, iter);
-
-	if (keyFound)
+	void Input::mouse_button_callback(GLFWwindow * window, int button, int action, int mods)
 	{
-		InputState KeyState = iter->second;
-		//Debug::Log(Verbosity::Debug, "previous : {0} , current : {1}", KeyState.PreviousButtonPressState, KeyState.CurrentButtonPressState);
-		return KeyState.CurrentButtonPressState && !KeyState.PreviousButtonPressState;
-
+		UpdateKey(button, action);
 	}
-	return false;
-}
 
-bool Input::GetKeyUp(KeyCode keyCode)
-{
-	Input* input = &GetInstance();
-
-	std::map<int, InputState>::iterator iter;
-	bool keyFound = input->findKey(keyCode, iter);
-
-	if (keyFound)
+	void Input::mouse_position_callback(GLFWwindow * window, double xpos, double ypos)
 	{
-		InputState KeyState = iter->second;
-
-		return !KeyState.CurrentButtonPressState && KeyState.PreviousButtonPressState;
-
+		GetInstance().x = xpos;
+		GetInstance().y = ypos;
 	}
-	return false;
-}
 
-void Input::LateUpdateTrackedKeyStates()
-{
-	Input * input = &GetInstance();
-	std::map<int, InputState>::iterator iter;
-
-	for (iter = input->inputStates.begin(); iter != input->inputStates.end(); ++iter)
+	void Input::mouse_scroll_callback(GLFWwindow * window, double xpos, double ypos)
 	{
-		iter->second.PreviousButtonPressState = iter->second.CurrentButtonPressState;
+		GetInstance().scrollY = ypos;
 	}
-}
 
-int Input::GetMouseX()
-{
-	return GetInstance().x;
-}
 
-int Input::GetMouseY()
-{
-	return GetInstance().y;
-}
 
-Input::Input()
-{
-	
-}
-
-bool Input::findKey(int key, std::map<int, InputState>::iterator& OUT outIter)
-{
-
-	Input* input = &GetInstance();
-	std::map<int, InputState>::iterator iter;
-
-	for (iter = input->inputStates.begin(); iter != input->inputStates.end(); ++iter)
+	bool Input::GetKey(KeyCode keyCode)
 	{
-		if (iter->first == key)
+		Input* input = &GetInstance();
+
+		std::map<int, InputState>::iterator iter;
+		bool keyFound = input->findKey(keyCode, iter);
+
+		if (keyFound)
 		{
-			outIter = iter;
-			return true;
+			//Debug::Log(Verbosity::Debug, "KeyFound");
+			InputState KeyState = iter->second;
+
+			return KeyState.CurrentButtonPressState && KeyState.PreviousButtonPressState;
+
 		}
+		return false;
 	}
-	outIter = iter;
-	return false;
-}
 
-bool Input::findKey(KeyCode keyCode, std::map<int, InputState>::iterator& OUT outIter)
-{
-	return findKey(static_cast<int>(keyCode), outIter);
-}
-
-void Input::UpdateKey(int key,int action)
-{
-	Input* input = &GetInstance();
-
-	std::map<int, InputState>::iterator iter;
-
-	bool isKeyFound = false;
-
-	//attempt to find key
-
-	for (iter = input->inputStates.begin(); iter != input->inputStates.end(); ++iter)
+	bool Input::GetKeyDown(KeyCode keyCode)
 	{
-		if (iter->first == key)
+		Input* input = &GetInstance();
+
+		std::map<int, InputState>::iterator iter;
+		bool keyFound = input->findKey(keyCode, iter);
+
+		if (keyFound)
 		{
-			isKeyFound = true;
-			break;
+			InputState KeyState = iter->second;
+			//Debug::Log(Verbosity::Debug, "previous : {0} , current : {1}", KeyState.PreviousButtonPressState, KeyState.CurrentButtonPressState);
+			return KeyState.CurrentButtonPressState && !KeyState.PreviousButtonPressState;
+
+		}
+		return false;
+	}
+
+	bool Input::GetKeyUp(KeyCode keyCode)
+	{
+		Input* input = &GetInstance();
+
+		std::map<int, InputState>::iterator iter;
+		bool keyFound = input->findKey(keyCode, iter);
+
+		if (keyFound)
+		{
+			InputState KeyState = iter->second;
+
+			return !KeyState.CurrentButtonPressState && KeyState.PreviousButtonPressState;
+
+		}
+		return false;
+	}
+
+	void Input::LateUpdateTrackedKeyStates()
+	{
+		Input * input = &GetInstance();
+		std::map<int, InputState>::iterator iter;
+
+		for (iter = input->inputStates.begin(); iter != input->inputStates.end(); ++iter)
+		{
+			iter->second.PreviousButtonPressState = iter->second.CurrentButtonPressState;
 		}
 	}
 
-	//if found
-	if (isKeyFound)
+	int Input::GetMouseX()
 	{
-		std::map<int, InputState>::iterator iter = input->inputStates.find(key);
-		//update data
-		if (action == GLFW_PRESS)
-		{
+		return GetInstance().x;
+	}
 
-			iter->second.CurrentButtonPressState = true;
-		}
-		else if (action == GLFW_RELEASE)
-		{
-			iter->second.CurrentButtonPressState = false;
-		}
+	int Input::GetMouseY()
+	{
+		return GetInstance().y;
+	}
+
+	float Input::GetMouseWheelScroll()
+	{
+		return (double)GetInstance().scrollY;
+	}
+
+	Input::Input()
+	{
 
 	}
+
+	bool Input::findKey(int key, std::map<int, InputState>::iterator& OUT outIter)
+	{
+
+		Input* input = &GetInstance();
+		std::map<int, InputState>::iterator iter;
+
+		for (iter = input->inputStates.begin(); iter != input->inputStates.end(); ++iter)
+		{
+			if (iter->first == key)
+			{
+				outIter = iter;
+				return true;
+			}
+		}
+		outIter = iter;
+		return false;
+	}
+
+	bool Input::findKey(KeyCode keyCode, std::map<int, InputState>::iterator& OUT outIter)
+	{
+		return findKey(static_cast<int>(keyCode), outIter);
+	}
+
+	void Input::UpdateKey(int key, int action)
+	{
+		Input* input = &GetInstance();
+
+		std::map<int, InputState>::iterator iter;
+
+		bool isKeyFound = false;
+
+		//attempt to find key
+
+		for (iter = input->inputStates.begin(); iter != input->inputStates.end(); ++iter)
+		{
+			if (iter->first == key)
+			{
+				isKeyFound = true;
+				break;
+			}
+		}
+
+		//if found
+		if (isKeyFound)
+		{
+			std::map<int, InputState>::iterator iter = input->inputStates.find(key);
+			//update data
+			if (action == GLFW_PRESS)
+			{
+
+				iter->second.CurrentButtonPressState = true;
+			}
+			else if (action == GLFW_RELEASE)
+			{
+				iter->second.CurrentButtonPressState = false;
+			}
+
+		}
+	}
+
+
+
+
+	template void Input::AddKeysToTrack<KeyCode>(KeyCode key);
+	template void Input::AddKeysToTrack<int>(int key);
 }
 
 
-
-
-template void Input::AddKeysToTrack<KeyCode>(KeyCode key);
-template void Input::AddKeysToTrack<int>(int key);
 

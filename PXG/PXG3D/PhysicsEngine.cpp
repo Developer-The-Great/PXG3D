@@ -158,9 +158,12 @@ namespace PXG
 	{
 		Mat4 rootObjTransform = rootObj->GetTransform()->GetLocalTransform() * transform;
 
+		
+
 		//all gameObjects have a physicsComponent but may not have coliders. we are only interested in those that do have colliders
 		if (rootObj->GetPhysicsComponent()->GetColliderCount() > 0)
 		{
+
 			PhysicsSceneGraphIterationInfo psgii;
 			psgii.physicsComponent = rootObj->GetPhysicsComponent();
 			
@@ -487,9 +490,10 @@ namespace PXG
 		gameObject->GetMeshComponent()->GetMeshes();
 
 		Mat4 Transform = gameObject->GetTransform()->GetLocalTransform() * parentTransform;
-
+		
 		for (const auto& mesh : meshes)
 		{
+			Debug::Log("raycast on {0}", gameObject->name);
 			rayToMeshIntersection(position, direction, hitInfo, mesh, Transform, gameObject);
 		}
 		
@@ -523,9 +527,15 @@ namespace PXG
 				triangleHitInfo,
 				owner);
 
-			if (triangleHitInfo.RayHit && triangleHitInfo.T < hitInfo.T)
+			if (triangleHitInfo.RayHit)
 			{
-				hitInfo = triangleHitInfo;
+				Vector3 raycasterToHitPoint = Vector3(position - triangleHitInfo.Position);
+				float foundT = raycasterToHitPoint.Length();
+				if (foundT < hitInfo.T)
+				{
+					hitInfo = triangleHitInfo;
+					hitInfo.T = foundT;
+				}
 			}
 
 
@@ -535,6 +545,7 @@ namespace PXG
 
 	void PhysicsEngine::RayTriangleIntersection(Vector3 vec1, Vector3 vec2, Vector3 vec3, const Vector3& rayPosition, const Vector3& rayDirection, Mat4 objectTransform, HitInfo& hitInfo, std::shared_ptr<GameObject> owner)
 	{
+		
 		//-----------find a point where the ray intersects the plane where the triangle lies-------//
 		HitInfo Result;
 
@@ -550,13 +561,7 @@ namespace PXG
 		Vector3 b(vec2.ToGLMVec3());
 		Vector3 c(vec3.ToGLMVec3());
 
-		Vector3 ObjectSpaceNormal =  Mathf::Cross(a - b, c - b).Normalized();
-
-
-		auto transformedNormal = glm::transpose(glm::inverse(objectTransform.ToGLM())) * glm::vec4(ObjectSpaceNormal.ToGLMVec3(), 0);
-		transformedNormal = glm::normalize(transformedNormal);
-
-		Result.Normal = glm::vec3(transformedNormal.x, transformedNormal.y, transformedNormal.z);
+		Vector3 ObjectSpaceNormal =  -Mathf::Cross(a - b, c - b).Normalized();
 
 		float normalDotDirection = Mathf::Dot(ObjectSpaceNormal, Vector3(rayDir.x, rayDir.y, rayDir.z));
 
@@ -571,6 +576,7 @@ namespace PXG
 		{
 			Result.RayHit = false;
 			Result.T = t;
+			Result.GameObjectHit = owner;
 			hitInfo = Result;
 			return;
 		}
@@ -619,7 +625,7 @@ namespace PXG
 
 		float u = 1 - w - v;
 
-		if (u < 0 || u > 1 && (u + v + w) <= 1.0f)
+		if (u < 0 || u > 1)
 		{
 			Result.RayHit = false;
 			Result.T = t;
@@ -627,10 +633,13 @@ namespace PXG
 			return;
 		}
 
-		//ray hits triangle
+		//------------------------- ray hits triangle--------------------------//
+		auto transformedNormal = glm::transpose(glm::inverse(objectTransform.ToGLM())) * glm::vec4(ObjectSpaceNormal.ToGLMVec3(), 0);
+		Result.Normal = glm::vec3(transformedNormal.x, transformedNormal.y, transformedNormal.z);
+		Result.Normal.Normalize();
 
 		glm::vec4 finalPosition = objectTransform.ToGLM() * glm::vec4(p.x, p.y, p.z, 1.0);
-
+		//Debug::Log("u:{0} , v:{1} , w:{2}", u, v, w);
 		Result.Position = Vector3(finalPosition.x,finalPosition.y,finalPosition.z);
 		Result.GameObjectHit = owner;
 		Result.RayHit = true;

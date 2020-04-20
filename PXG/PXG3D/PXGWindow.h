@@ -12,6 +12,8 @@ namespace PXG
 
 		void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
 
+		void scroll_callback(GLFWwindow* window, double xpos, double ypos);
+
 		GLFWwindow* MakeGLFWWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
 
 		void Init();

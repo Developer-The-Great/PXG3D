@@ -41,6 +41,17 @@ namespace PXG
 				transform->translate(right * speed * tick);
 			}
 
+		
+			//if(Input::GetKey(KeyCode::scr))
+			if (Input::GetMouseWheelScroll() > 0.1f)
+			{
+				speed += 1.0f;
+			}
+
+			if (Input::GetMouseWheelScroll() < -0.1f)
+			{
+				speed += -1.0f;
+			}
 
 
 

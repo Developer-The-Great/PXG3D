@@ -23,12 +23,6 @@ namespace PXG
 
 	void RayCastShooter::FixedUpdate(float tick)
 	{
-		
-
-		
-		
-
-
 	}
 
 	void RayCastShooter::Update()
@@ -80,9 +74,7 @@ namespace PXG
 			{
 				possessedGameObject->GetTransform()->rotate(Vector3(0, 0, 1), 1.0f);
 			}
-
-
-
+			
 
 		}
 
@@ -101,12 +93,12 @@ namespace PXG
 		Vector3 ObjectPosition = transform->GetPosition();
 
 		HitInfo hit;
-
+		Debug::Log("---------------------------raycast start----------------");
 		PhysicsEngine::Raycast(ObjectPosition, (PixelPosition - ObjectPosition).Normalized(), hit, GetOwner()->GetWorld().lock(), true);
-
+		
 		if (hit.RayHit)
 		{
-			Debug::Log("Hit");
+			
 
 			auto world = GetOwner()->GetWorld().lock();
 
@@ -115,8 +107,9 @@ namespace PXG
 				if (auto debugDrawer = world->GetDebugDrawingManager())
 				{
 					Debug::Log("hit at {0}", hit.Position.ToString());
-					debugDrawer->InstantiateLine(ObjectPosition, hit.Position, Vector3(1, 0, 0), 5.0f);
-					debugDrawer->InstantiateCube(hit.Position, Vector3(0, 0, 0), Vector3(0.5, 0.5, 0.5), Vector3(0, 1, 0), 5.0f);
+					Debug::Log("hit normal {0}", hit.Normal.ToString());
+					debugDrawer->InstantiateLine(ObjectPosition, hit.Position, Vector3(1, 0, 0), 2.0f);
+					debugDrawer->InstantiateCube(hit.Position, Vector3(0, 0, 0), Vector3(0.1, 0.1, 0.1), Vector3(0, 1, 0), 2.0f);
 
 					Debug::Log("Now possessing GameObject with name: {0}", hit.GameObjectHit->name);
 					possessedGameObject = hit.GameObjectHit;
@@ -132,7 +125,7 @@ namespace PXG
 		{
 			Debug::Log("Miss");
 		}
-
+		Debug::Log("---------------raycast end--------------------");
 		//----------------------------- Control Possesssed GameObject------------------------------------//
 
 		

@@ -92,6 +92,7 @@ int main()
 	glfwSetKeyCallback(window, PXG::PXGWindow::key_callback);
 	glfwSetMouseButtonCallback(window, PXG::PXGWindow::mouse_button_callback);
 	glfwSetCursorPosCallback(window, PXG::PXGWindow::mouse_position_callback);
+	glfwSetScrollCallback(window, PXG::PXGWindow::scroll_callback);
 
 	//--------------------Initialize Game-----------------------//
 
@@ -157,7 +158,7 @@ int main()
 		//track current time
 		time->UpdateTimePassed();
 
-		Input::PollEvents();
+		PXG::Input::PollEvents();
 
 		physicsEngine->SetTickRemaining(time->GetAverageDeltaTime());
 
@@ -176,8 +177,8 @@ int main()
 		}
 
 		float beforeCol = time->GetTime();
-		physicsEngine->CheckCollisions();
-		Debug::Log("Collision FPS time {0}", 1.0/ (time->GetTime() - beforeCol));
+		//physicsEngine->CheckCollisions();
+		//Debug::Log("Collision FPS time {0}", 1.0/ (time->GetTime() - beforeCol));
 
 
 
@@ -203,9 +204,9 @@ int main()
 
 		glfwSwapBuffers(window);
 
-		Input::LateUpdateTrackedKeyStates();
+		PXG::Input::LateUpdateTrackedKeyStates();
 
-		Debug::Log("FPS :{0}", time->GetFPS());
+		//Debug::Log("FPS :{0}", time->GetFPS());
 
 		time->UpdateAverageTime();
 

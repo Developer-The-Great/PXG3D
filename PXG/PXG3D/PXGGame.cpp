@@ -121,23 +121,81 @@ namespace PXG
 		cameraObj->GetTransform()->rotate(Vector3(1, 0, 0), -45.0f);
 		
 
-		/*
+		////--------------------------SetUp ceiling--------------------------------//
+
+		GameObj upperFloor = Instantiate();
+		upperFloor->name = "brick floor";
+
+		upperFloor->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "cube.obj");
+		upperFloor->GetMeshComponent()->SetMaterial(brickMaterial);
+		upperFloor->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "bricks.jpg", TextureType::DIFFUSE), 0);
+		upperFloor->GetTransform()->SetLocalPosition(Vector3(0,30, 0));
+		upperFloor->GetTransform()->Scale(Vector3(26,0.5, 26));
+		upperFloor->GetPhysicsComponent()->ConstructCollisionCube();
+
+
+		world->AddToChildren(upperFloor);
+
+		////--------------------------SetUp BackWall--------------------------------//
+
+		GameObj backFloor = Instantiate();
+		backFloor->name = "brick floor";
+
+		backFloor->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "cube.obj");
+		backFloor->GetMeshComponent()->SetMaterial(brickMaterial);
+		backFloor->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "bricks.jpg", TextureType::DIFFUSE), 0);
+		backFloor->GetTransform()->SetLocalPosition(Vector3(0, 10, 25));
+		backFloor->GetTransform()->Scale(Vector3(26, 0.5, 26));
+		backFloor->GetPhysicsComponent()->ConstructCollisionCube();
+		backFloor->GetTransform()->rotate(Vector3(1, 0, 0), 90);
+
+		world->AddToChildren(backFloor);
+
+		////--------------------------SetUp FrontWall--------------------------------//
+
+		GameObj frontFloor = Instantiate();
+		frontFloor->name = "brick floor";
+
+		frontFloor->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "cube.obj");
+		frontFloor->GetMeshComponent()->SetMaterial(brickMaterial);
+		frontFloor->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "bricks.jpg", TextureType::DIFFUSE), 0);
+		frontFloor->GetTransform()->SetLocalPosition(Vector3(0, 10, -25));
+		frontFloor->GetTransform()->Scale(Vector3(26, 0.5, 26));
+		frontFloor->GetPhysicsComponent()->ConstructCollisionCube();
+		frontFloor->GetTransform()->rotate(Vector3(1, 0,0), 90);
+
+		world->AddToChildren(frontFloor);
 		
 
-		//--------------------------SetUp bottomFloor--------------------------------//
+		////--------------------------SetUp bottomFloor--------------------------------//
 
 		GameObj brickFloor = Instantiate();
 		brickFloor->name = "brick floor";
 
 		brickFloor->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH +  "cube.obj");
 		brickFloor->GetMeshComponent()->SetMaterial(brickMaterial);
-		brickFloor->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "bricks.jpg", TextureType::DIFFUSE), 0);
+		brickFloor->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "concrete.png", TextureType::DIFFUSE), 0);
 		brickFloor->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
-		brickFloor->GetTransform()->Scale(Vector3(25, 0.5, 25));
+		brickFloor->GetTransform()->Scale(Vector3(26, 0.5, 26));
 		brickFloor->GetPhysicsComponent()->ConstructCollisionCube();
 
 
 		world->AddToChildren(brickFloor);
+
+		//-----------------------------setup right wall---------------------------------//
+		GameObj rightBrickWall = Instantiate();
+		rightBrickWall->name = "rightBrickWall";
+
+		rightBrickWall->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "cube.obj");
+		rightBrickWall->GetMeshComponent()->SetMaterial(brickMaterial);
+		rightBrickWall->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "concrete.png", TextureType::DIFFUSE), 0);
+		rightBrickWall->GetTransform()->SetLocalPosition(Vector3(25, 10, 0));
+		rightBrickWall->GetTransform()->Scale(Vector3(20, 0.5, 25));
+		rightBrickWall->GetTransform()->rotate(Vector3(0, 0, 1), 90);
+		rightBrickWall->GetPhysicsComponent()->ConstructCollisionCube();
+
+
+		world->AddToChildren(rightBrickWall);
 
 
 		//-----------------------------setup left wall---------------------------------//
@@ -148,8 +206,8 @@ namespace PXG
 		leftBrickWall->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "cube.obj");
 		leftBrickWall->GetMeshComponent()->SetMaterial(brickMaterial);
 		leftBrickWall->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "concrete.png", TextureType::DIFFUSE), 0);
-		leftBrickWall->GetTransform()->SetLocalPosition(Vector3(-25, 9, 16));
-		leftBrickWall->GetTransform()->Scale(Vector3(9, 0.5, 9));
+		leftBrickWall->GetTransform()->SetLocalPosition(Vector3(-25, 10, 0));
+		leftBrickWall->GetTransform()->Scale(Vector3(20, 0.5, 25));
 		leftBrickWall->GetTransform()->rotate(Vector3(0, 0, 1), 90);
 		leftBrickWall->GetPhysicsComponent()->ConstructCollisionCube();
 
@@ -157,58 +215,50 @@ namespace PXG
 		world->AddToChildren(leftBrickWall);
 
 
-		GameObj leftBrickWall2 = Instantiate();
-		leftBrickWall->name = "leftBrickWall2";
-
-		leftBrickWall2->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "cube.obj");
-		leftBrickWall2->GetMeshComponent()->SetMaterial(brickMaterial);
-		leftBrickWall2->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "concrete.png", TextureType::DIFFUSE), 0);
-		leftBrickWall2->GetTransform()->SetLocalPosition(Vector3(-25, 9, -2));
-		leftBrickWall2->GetTransform()->Scale(Vector3(9, 0.5, 9));
-		leftBrickWall2->GetTransform()->rotate(Vector3(0, 0, 1), 90);
-		leftBrickWall2->GetPhysicsComponent()->ConstructCollisionCube();
+		
 
 
-		world->AddToChildren(leftBrickWall2);
+		////-----------------------------setup left wall---------------------------------//
 
 
-		//-----------------------------setup left wall---------------------------------//
-
-
-		//--------------------------SetUp middleCube--------------------------------//
+		////--------------------------SetUp middleCube--------------------------------//
 
 
 		GameObj middleCube = Instantiate();
 		middleCube->name = "midlle cube";
-		middleCube->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "cube.obj");
+		middleCube->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
 		middleCube->GetMeshComponent()->SetMaterial(diamondMaterial);
 		middleCube->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "diffuse3.jpg", TextureType::DIFFUSE), 0);
-		middleCube->GetTransform()->SetLocalPosition(Vector3(0, 2.5, 0));
-		middleCube->GetTransform()->Scale(Vector3(2, 2, 2));
-		middleCube->GetPhysicsComponent()->ConstructCollisionCube();
+		middleCube->GetTransform()->SetLocalPosition(Vector3(0, 2.0, 0));
+		middleCube->GetTransform()->Scale(Vector3(3, 3, 3));
+		//middleCube->GetPhysicsComponent()->ConstructCollisionCube();
 		world->AddToChildren(middleCube);
+		middleCube->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 
 		//-----------------------Setup Diamond ------------------------------------//
 		auto rotator = std::make_shared<RotatorComponent>(Vector3(0,1,0));
 
 		GameObj diamond = Instantiate();
-		diamond->name = "midlle cube";
-		diamond->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "diamond.obj");
+		diamond->name = "diamond";
+		diamond->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "mineral.obj");
 		diamond->GetMeshComponent()->SetMaterial(diamondMaterial);
 		diamond->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "bg-image.png", TextureType::DIFFUSE), 0);
 		diamond->GetTransform()->SetLocalPosition(Vector3(0, 6.0, 0));
-		diamond->GetTransform()->Scale(Vector3(0.5, 0.5, 0.5));
+		diamond->GetTransform()->Scale(Vector3(1.5, 1.5, 1.5));
 		diamond->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+	
 		diamond->AddComponent(rotator);
 		world->AddToChildren(diamond);
+
+		
 
 		GameObj smallDiamond = Instantiate();
 		smallDiamond->name = "smallDiamond";
 		smallDiamond->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "diamond.obj");
 		smallDiamond->GetMeshComponent()->SetMaterial(diamondMaterial);
 		smallDiamond->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "bg-image.png", TextureType::DIFFUSE), 0);
-		smallDiamond->GetTransform()->SetLocalPosition(Vector3(2.0, 0.0, 2.0));
-		smallDiamond->GetTransform()->Scale(Vector3(0.5, 0.5, 0.5));
+		smallDiamond->GetTransform()->SetLocalPosition(Vector3(1.5, 0.0, 1.5));
+		smallDiamond->GetTransform()->Scale(Vector3(0.3, 0.3, 0.3));
 		smallDiamond->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 
 		diamond->AddToChildren(smallDiamond);
@@ -227,7 +277,7 @@ namespace PXG
 		topSpotlight->GetMeshComponent()->SetMaterial(bluetColorMat);
 		topSpotlight->name = "spotlight top";
 		topSpotlight->AddComponent(lightComp);
-		topSpotlight->GetTransform()->SetLocalPosition(Vector3(0.0, 18.0, 0.0));
+		topSpotlight->GetTransform()->SetLocalPosition(Vector3(0.0, 23.0, 0.0));
 		topSpotlight->GetTransform()->Scale(Vector3(0.5, 0.5, 0.5));
 		world->AddToChildren(topSpotlight);
 
@@ -238,7 +288,7 @@ namespace PXG
 		leftPonintLight->GetMeshComponent()->SetMaterial(bluetColorMat);
 		leftPonintLight->name = "leftPonintLight ";
 		leftPonintLight->AddComponent(leftlightComp);
-		leftPonintLight->GetTransform()->SetLocalPosition(Vector3(-12.0, 18.0, 0.0));
+		leftPonintLight->GetTransform()->SetLocalPosition(Vector3(-12.0, 23.0, 0.0));
 		leftPonintLight->GetTransform()->Scale(Vector3(0.5, 0.5, 0.5));
 		world->AddToChildren(leftPonintLight);
 
@@ -250,18 +300,22 @@ namespace PXG
 		rightPonintLight->GetMeshComponent()->SetMaterial(bluetColorMat);
 		rightPonintLight->name = "rightPonintLight";
 		rightPonintLight->AddComponent(rightlightComp);
-		rightPonintLight->GetTransform()->SetLocalPosition(Vector3(12.0, 18.0, 0.0));
+		rightPonintLight->GetTransform()->SetLocalPosition(Vector3(12.0, 23.0, 0.0));
 		rightPonintLight->GetTransform()->Scale(Vector3(0.5, 0.5, 0.5));
 		world->AddToChildren(rightPonintLight);
 
-		//std::shared_ptr<PhysicsCollider> physicsCollider = std::make_shared<ConvexCollider>();
-		//std::shared_ptr<PhysicsCollider> physicsCollider2 = std::make_shared<ConvexCollider>();
 
-		//Manifold mdgsa;
-		//physicsCollider->CheckCollision(physicsCollider2);
-		//PhysicsCollider 
 
-		//*/
+
+
+
+
+
+
+
+
+
+
 
 
 		//----------------------------------------------------------------- PHYSICS TEST -------------------------------------------------//
@@ -465,7 +519,7 @@ namespace PXG
 
 
 		//Octree optimization test
-		for(int i = 0; i < 30;i++)
+		for(int i = 0; i < 0;i++)
 		{
 			GameObj Obj = Instantiate();
 			Obj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -532,7 +586,7 @@ namespace PXG
 		Debug::Log("it took {0} ", finalTime);
 
 
-		world->SetPhysicsComponentDrawActive(true);
+		world->SetPhysicsComponentDrawActive(false);
 
 
 	}

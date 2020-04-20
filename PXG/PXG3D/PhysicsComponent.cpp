@@ -86,17 +86,14 @@ namespace PXG
 
 		PhysicsEngine::GetMinMaxPositionOfMeshes(objectSpaceMin, objectSpaceMax, GetPhysicsMeshes());
 
-		glm::vec3  forward = transform.ToGLM() * glm::vec4(0, 0,1,0)   ;
-		glm::vec3  Up = transform.ToGLM() * glm::vec4(0,1 ,0, 0)  ;
-		glm::vec3  Right = transform.ToGLM() * glm::vec4(1, 0, 0, 0) ;
-
 		float scalarZ = objectSpaceMax.z - objectSpaceMin.z;
 		float scalarY = objectSpaceMax.y - objectSpaceMin.y;
 		float scalarX = objectSpaceMax.x - objectSpaceMin.x;
 
-		forward = glm::normalize(forward) *  scalarZ;
-		Right = glm::normalize(Right) * scalarX;
-		Up = glm::normalize(Up) * scalarY;
+		glm::vec3  forward = transform.ToGLM() * glm::vec4(0, 0,1,0)  * scalarZ;
+		glm::vec3  Up = transform.ToGLM() * glm::vec4(0,1 ,0, 0) * scalarY ;
+		glm::vec3  Right = transform.ToGLM() * glm::vec4(1, 0, 0, 0) * scalarX ;
+
 
 		glm::vec3 min = transform.ToGLM() * glm::vec4(objectSpaceMin.ToGLMVec3(), 0);
 		glm::vec3 minPlusForward = min + forward;

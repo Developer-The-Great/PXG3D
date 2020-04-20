@@ -17,60 +17,76 @@ struct InputState
 struct GLFWwindow;
 enum class KeyCode;
 
-class Input
+namespace PXG
 {
 
-public:
-	~Input();
 
-	static void PollEvents();
-
-	static Input& GetInstance();
-
-	static int GetTrackedKeyCount();
-
-	//static void AddKeysToTrack();
-	template<typename T> static void AddKeysToTrack(T key);
-
-	template<typename T, typename ...Args> static void AddKeysToTrack(T key, Args ...args)
+	class Input
 	{
-		AddKeysToTrack(key);
-		AddKeysToTrack(args...);
-	}
 
-	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	public:
+		~Input();
 
-	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+		static void PollEvents();
 
-	static void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
+		static Input& GetInstance();
 
-	static bool GetKey(KeyCode keyCode);
+		static int GetTrackedKeyCount();
 
-	static bool GetKeyDown(KeyCode keyCode);
+		//static void AddKeysToTrack();
+		template<typename T> static void AddKeysToTrack(T key);
 
-	static bool GetKeyUp(KeyCode keyCode);
+		template<typename T, typename ...Args> static void AddKeysToTrack(T key, Args ...args)
+		{
+			AddKeysToTrack(key);
+			AddKeysToTrack(args...);
+		}
 
-	static void LateUpdateTrackedKeyStates();
+		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-	static int GetMouseX();
+		static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
-	static int GetMouseY();
+		static void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
 
-private:
+		static void mouse_scroll_callback(GLFWwindow* window, double xpos, double ypos);
 
-	Input();
+		static bool GetKey(KeyCode keyCode);
 
-	std::map<int, InputState> inputStates;
+		static bool GetKeyDown(KeyCode keyCode);
 
-	bool findKey(int key, std::map<int, InputState>::iterator& OUT outIter);
+		static bool GetKeyUp(KeyCode keyCode);
 
-	bool findKey(KeyCode keyCode, std::map<int, InputState>::iterator& OUT outIter);
+		static void LateUpdateTrackedKeyStates();
 
-	static void UpdateKey(int key, int action);
+		static int GetMouseX();
 
-	float x, y;
-};
+		static int GetMouseY();
+
+		static float GetMouseWheelScroll();
+
+	private:
+
+		Input();
+
+		std::map<int, InputState> inputStates;
+
+		bool findKey(int key, std::map<int, InputState>::iterator& OUT outIter);
+
+		bool findKey(KeyCode keyCode, std::map<int, InputState>::iterator& OUT outIter);
+
+		static void UpdateKey(int key, int action);
+
+		float x, y;
+
+		double scrollY;
 
 
+	};
+
+
+
+
+
+}
 
 
