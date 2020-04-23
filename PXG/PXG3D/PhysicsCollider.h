@@ -64,7 +64,7 @@ namespace PXG
 
 		std::shared_ptr<Mesh> GetMesh() const;
 
-		void SetMesh(std::shared_ptr<Mesh> mesh);
+		virtual void SetMesh(std::shared_ptr<Mesh> mesh);
 
 
 

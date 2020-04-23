@@ -120,7 +120,7 @@ namespace PXG
 		cameraObj->GetTransform()->SetLocalPosition(Vector3(0, 8, 4));
 		cameraObj->GetTransform()->rotate(Vector3(1, 0, 0), -45.0f);
 		
-
+		/*
 		////--------------------------SetUp ceiling--------------------------------//
 
 		GameObj upperFloor = Instantiate();
@@ -313,7 +313,7 @@ namespace PXG
 
 
 
-
+		*/
 
 
 
@@ -324,7 +324,7 @@ namespace PXG
 		////--------------------Physics Test OBB EdgeToEdge --------------------------//
 
 
-		/*
+		//*
 		
 		GameObj yellowObject = Instantiate();
 		yellowObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");

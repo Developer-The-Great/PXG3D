@@ -87,13 +87,15 @@ namespace PXG
 	std::shared_ptr<Mesh> Mesh::InstantiateCubeMesh(Vector3 lowerV0, Vector3 lowerV1, Vector3 lowerV2, Vector3 lowerV3, Vector3 upperV0, Vector3 upperV1, Vector3 upperV2, Vector3 upperV3)
 	{
 
-		std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
+		//std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
 
 		//---------------------Create top and bottom face--------------------------//
 		Vector3 topNormal = Vector3(0.0, 1.0, 0.0);
 		Vector3 bottomNormal = Vector3(0.0, -1.0, 0.0);
 
-		{
+		std::vector<Vertex> Vertices;
+
+		
 			//top face
 			Vertex topFaceTriangle1V0;
 			topFaceTriangle1V0.position = upperV0;
@@ -120,16 +122,16 @@ namespace PXG
 			topFaceTriangle2V2.normal = topNormal;
 
 			//top face push_back
-			cube->Vertices.push_back(topFaceTriangle1V0);
-			cube->Vertices.push_back(topFaceTriangle1V1);
-			cube->Vertices.push_back(topFaceTriangle1V2);
+			Vertices.push_back(topFaceTriangle1V0);
+			Vertices.push_back(topFaceTriangle1V1);
+			Vertices.push_back(topFaceTriangle1V2);
 
-			cube->Vertices.push_back(topFaceTriangle2V0);
-			cube->Vertices.push_back(topFaceTriangle2V1);
-			cube->Vertices.push_back(topFaceTriangle2V2);
-		}
+			Vertices.push_back(topFaceTriangle2V0);
+			Vertices.push_back(topFaceTriangle2V1);
+			Vertices.push_back(topFaceTriangle2V2);
+		
 
-		{
+		
 			//bottom face
 			Vertex bottomFaceTriangle1V0;
 			bottomFaceTriangle1V0.position = lowerV0;
@@ -156,22 +158,22 @@ namespace PXG
 			bottomFaceTriangle2V2.normal = bottomNormal;
 
 			//bottom face push_back
-			cube->Vertices.push_back(bottomFaceTriangle1V0);
-			cube->Vertices.push_back(bottomFaceTriangle1V1);
-			cube->Vertices.push_back(bottomFaceTriangle1V2);
+			Vertices.push_back(bottomFaceTriangle1V0);
+			Vertices.push_back(bottomFaceTriangle1V1);
+			Vertices.push_back(bottomFaceTriangle1V2);
 
-			cube->Vertices.push_back(bottomFaceTriangle2V0);
-			cube->Vertices.push_back(bottomFaceTriangle2V1);
-			cube->Vertices.push_back(bottomFaceTriangle2V2);
+			Vertices.push_back(bottomFaceTriangle2V0);
+			Vertices.push_back(bottomFaceTriangle2V1);
+			Vertices.push_back(bottomFaceTriangle2V2);
 
-		}
+		
 
 		//---------------------Create forward and back face-----------------------------//
 		Vector3 forwardNormal = Vector3(0.0, 0.0, 1.0);
 		Vector3 backNormal = Vector3(-0.0, -0.0, -1.0);
 
 
-		{
+		
 			//forward face
 			Vertex forwardFaceTriangle1V0;
 			forwardFaceTriangle1V0.position = upperV3;
@@ -198,17 +200,17 @@ namespace PXG
 			forwardFaceTriangle2V2.normal = forwardNormal;
 
 			//forward face push_back
-			cube->Vertices.push_back(forwardFaceTriangle1V0);
-			cube->Vertices.push_back(forwardFaceTriangle1V1);
-			cube->Vertices.push_back(forwardFaceTriangle1V2);
+			Vertices.push_back(forwardFaceTriangle1V0);
+			Vertices.push_back(forwardFaceTriangle1V1);
+			Vertices.push_back(forwardFaceTriangle1V2);
 
-			cube->Vertices.push_back(forwardFaceTriangle2V0);
-			cube->Vertices.push_back(forwardFaceTriangle2V1);
-			cube->Vertices.push_back(forwardFaceTriangle2V2);
+			Vertices.push_back(forwardFaceTriangle2V0);
+			Vertices.push_back(forwardFaceTriangle2V1);
+			Vertices.push_back(forwardFaceTriangle2V2);
 
-		}
+		
 
-		{
+		
 			//backward face 
 			Vertex backwardFaceTriangle1V0;
 			backwardFaceTriangle1V0.position = upperV0;
@@ -234,22 +236,22 @@ namespace PXG
 			backwardFaceTriangle2V2.position = lowerV1;
 			backwardFaceTriangle2V2.normal = backNormal;
 
-			cube->Vertices.push_back(backwardFaceTriangle1V0);
-			cube->Vertices.push_back(backwardFaceTriangle1V1);
-			cube->Vertices.push_back(backwardFaceTriangle1V2);
+			Vertices.push_back(backwardFaceTriangle1V0);
+			Vertices.push_back(backwardFaceTriangle1V1);
+			Vertices.push_back(backwardFaceTriangle1V2);
 
-			cube->Vertices.push_back(backwardFaceTriangle2V0);
-			cube->Vertices.push_back(backwardFaceTriangle2V1);
-			cube->Vertices.push_back(backwardFaceTriangle2V2);
+			Vertices.push_back(backwardFaceTriangle2V0);
+			Vertices.push_back(backwardFaceTriangle2V1);
+			Vertices.push_back(backwardFaceTriangle2V2);
 
 
-		}
+		
 
 		//---------------------Create right and left face--------------------------//
 		Vector3 rightNormal = Vector3(1.0, 0.0, 0.0);
 		Vector3 leftNormal = Vector3(-1.0, -0.0, 0.0);
 
-		{
+		
 			//right face 
 			Vertex rightFaceTriangle1V0;
 			rightFaceTriangle1V0.position = upperV1;
@@ -275,16 +277,16 @@ namespace PXG
 			rightFaceTriangle2V2.position = lowerV3;
 			rightFaceTriangle2V2.normal = rightNormal;
 
-			cube->Vertices.push_back(rightFaceTriangle1V0);
-			cube->Vertices.push_back(rightFaceTriangle1V1);
-			cube->Vertices.push_back(rightFaceTriangle1V2);
+			Vertices.push_back(rightFaceTriangle1V0);
+			Vertices.push_back(rightFaceTriangle1V1);
+			Vertices.push_back(rightFaceTriangle1V2);
 
-			cube->Vertices.push_back(rightFaceTriangle2V0);
-			cube->Vertices.push_back(rightFaceTriangle2V1);
-			cube->Vertices.push_back(rightFaceTriangle2V2);
-		}
+			Vertices.push_back(rightFaceTriangle2V0);
+			Vertices.push_back(rightFaceTriangle2V1);
+			Vertices.push_back(rightFaceTriangle2V2);
+		
 
-		{
+		
 			//left face 
 			Vertex leftFaceTriangle1V0;
 			leftFaceTriangle1V0.position = upperV0;
@@ -310,26 +312,26 @@ namespace PXG
 			leftFaceTriangle2V2.position = lowerV2;
 			leftFaceTriangle2V2.normal = leftNormal;
 
-			cube->Vertices.push_back(leftFaceTriangle1V0);
-			cube->Vertices.push_back(leftFaceTriangle1V1);
-			cube->Vertices.push_back(leftFaceTriangle1V2);
+			Vertices.push_back(leftFaceTriangle1V0);
+			Vertices.push_back(leftFaceTriangle1V1);
+			Vertices.push_back(leftFaceTriangle1V2);
 
-			cube->Vertices.push_back(leftFaceTriangle2V0);
-			cube->Vertices.push_back(leftFaceTriangle2V1);
-			cube->Vertices.push_back(leftFaceTriangle2V2);
-		}
+			Vertices.push_back(leftFaceTriangle2V0);
+			Vertices.push_back(leftFaceTriangle2V1);
+			Vertices.push_back(leftFaceTriangle2V2);
+		
 
-
+		std::vector<unsigned int>Indices;
 		//set indices
-		for (int i = 0; i < cube->Vertices.size(); i++)
+		for (int i = 0; i < Vertices.size(); i++)
 		{
-			cube->Indices.push_back(i);
+			Indices.push_back(i);
 		}
 
-		cube->SetupMesh();
+		std::vector<Texture>Textures;
 
 
-		return cube;
+		return std::make_shared<Mesh>(Indices,Vertices,Textures);
 	}
 
 	void Mesh::SetupMesh()

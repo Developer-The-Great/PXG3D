@@ -153,6 +153,7 @@
     <ClInclude Include="FreeMovementComponent.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GLMHeaders.h" />
+    <ClInclude Include="HalfEdgeEdge.h" />
     <ClInclude Include="HitInfo.h" />
     <ClInclude Include="imgui\examples\imgui_impl_glfw.h" />
     <ClInclude Include="imgui\examples\imgui_impl_opengl3.h" />

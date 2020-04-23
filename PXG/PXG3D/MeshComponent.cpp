@@ -122,10 +122,10 @@ namespace PXG
 
 			for (unsigned int j = 0; j < face.mNumIndices; j++)
 			{
-				unsigned int index = face.mIndices[j];
-				indices.push_back(index);
+				indices.push_back(face.mIndices[j]);
 			}
 		}
+
 
 		//textures
 		if (mesh->mMaterialIndex >= 0)

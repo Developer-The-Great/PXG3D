@@ -9,6 +9,7 @@
 #include "Mesh.h"
 #include "RasterizationMode.h"
 #include "AABBBox.h"
+#include <algorithm>
 namespace PXG
 {
 	void DebugDrawingManager::InstantiateLine(Vector3 start, Vector3 end, Vector3 color, float lifetime)
@@ -71,7 +72,10 @@ namespace PXG
 
 
 
-		std::shared_ptr<Mesh> cube =  Mesh::InstantiateCubeMesh(lowerV0, lowerV1, lowerV2, lowerV3, upperV0, upperV1, upperV2, upperV3);
+		auto cube = Mesh::InstantiateCubeMesh(lowerV0, lowerV1, lowerV2, lowerV3, upperV0, upperV1, upperV2, upperV3);
+
+		//Debug::Log("cube ref {0} ", cube.use_count());
+
 		std::shared_ptr<AbstractMaterial> abstractMaterial = std::make_shared<ColorMaterial>(color);
 		
 		glm::mat4 mat4Position(
@@ -124,25 +128,20 @@ namespace PXG
 	void DebugDrawingManager::RemoveDeadDebugMeshes()
 	{
 
-		std::vector<std::shared_ptr<DebugMeshObject>> deadDebugMeshes;
+		//std::vector<std::shared_ptr<DebugMeshObject>> deadDebugMeshes;
 
-		for (auto const& debugObject : debugMeshObjects)
-		{
-			if (debugObject->IsLifeSpanOver())
-			{
-				deadDebugMeshes.push_back(debugObject);
-			}
-		}
+		//for (auto const& debugObject : debugMeshObjects)
+		//{
+		//	if (debugObject->IsLifeSpanOver())
+		//	{
+		//		deadDebugMeshes.push_back(debugObject);
+		//	}
+		//}
+		Debug::Log("bfr debugMeshCount {0}", debugMeshObjects.size());
 
-		for (auto const& debugObject : deadDebugMeshes)
-		{
-			debugMeshObjects.remove(debugObject);
+		debugMeshObjects.remove_if([](std::shared_ptr<DebugMeshObject> x) {return x->IsLifeSpanOver(); });
 
-
-		}
-
-
-
+		Debug::Log("after debugMeshCount {0}", debugMeshObjects.size());
 
 	}
 

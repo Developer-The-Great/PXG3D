@@ -356,6 +356,9 @@
     <ClInclude Include="OctreeNode.h">
       <Filter>core\physics</Filter>
     </ClInclude>
+    <ClInclude Include="HalfEdgeEdge.h">
+      <Filter>core\physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="PXGColor.vert.glsl" />

@@ -36,6 +36,15 @@ namespace PXG
 			SetupMesh();
 		}
 
+		~Mesh()
+		{
+			glDeleteBuffers(1, &VBO);
+			glDeleteBuffers(1, &EBO);
+			
+			glDeleteVertexArrays(1, &VAO);
+
+		}
+
 		
 		std::vector<unsigned int> Indices;
 		std::vector<Vertex> Vertices;

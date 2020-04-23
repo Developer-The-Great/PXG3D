@@ -10,6 +10,8 @@ namespace PXG
 	class GameObject;
 	class PhysicsComponent;
 	class MeshComponent;
+	class ConvexCollider;
+
 	struct PhysicsSceneGraphIterationInfo;
 	struct PhysicsComponentContainer;
 	class World;
@@ -81,6 +83,9 @@ namespace PXG
 		static bool FindSeperatingAxisByExtremePointProjection(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
 			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, int& index);
 
+
+
+
 		/**@brief Attempts to find the seperating axis between 2 meshes by iterating through all of the edges of 'collisionMeshA' and 'collisionMeshB'
 		and testing the vector that is perpendicular to both edges and using it as a potential seperating axis.
 		Returns true if a seperation axis is found. The function will also seperation amount if a seperation axis if found.
@@ -92,6 +97,11 @@ namespace PXG
 		*/
 		static bool FindSeperatingAxisByBruteForceEdgeToEdgeCheck(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
 			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound);
+
+
+		static bool FindSperatingAxisByGaussMapEdgeToEdgeCheck(ConvexCollider * colliderA, ConvexCollider * colliderB,
+			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound);
+
 
 
 		//------------------------------------------------- Collision Detection Helper functions  ----------------------------------------//

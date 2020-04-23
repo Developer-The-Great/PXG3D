@@ -43,6 +43,7 @@ namespace PXG
 	}
 	DebugMeshObject::~DebugMeshObject()
 	{
-
+		//Debug::Log("ref count mesh {0} ", mesh.use_count());
+		//Debug::Log("abstract material {0} ", material.use_count());
 	}
 }

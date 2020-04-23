@@ -13,6 +13,8 @@
 #include "PhysicsSceneGraphIterationInfo.h"
 #include "PhysicsComponentContainer.h"
 #include "PSGIIToAABB.h"
+#include "ConvexCollider.h"
+#include "HalfEdgeEdge.h"
 
 #include <array>
 #include "OctreeNode.h"
@@ -218,7 +220,7 @@ namespace PXG
 
 			//create AABB Box for all physicsComponents with colliders
 			iterationInfoToAABB.AABB = psgii.physicsComponent->CreateAABBFromTransformedColliders(worldTransform);
-			world->GetDebugDrawingManager()->InstantiateAABBRepresentation(iterationInfoToAABB.AABB.get(), Vector3(1, 0, 0), world->GetTimeSystem()->GetAverageDeltaTime());
+			//world->GetDebugDrawingManager()->InstantiateAABBRepresentation(iterationInfoToAABB.AABB.get(), Vector3(1, 0, 0), world->GetTimeSystem()->GetAverageDeltaTime());
 
 			
 			node->IteratorInfoToAABBCollection.push_back(iterationInfoToAABB);
@@ -269,7 +271,7 @@ namespace PXG
 
 		node->Box = std::make_shared<AABBBox>(initialPosition, initialHalfWidth);
 
-		world->GetDebugDrawingManager()->InstantiateAABBRepresentation(node->Box.get(), Vector3(1, 0, 0), world->GetTimeSystem()->GetAverageDeltaTime());
+		//world->GetDebugDrawingManager()->InstantiateAABBRepresentation(node->Box.get(), Vector3(1, 0, 0), world->GetTimeSystem()->GetAverageDeltaTime());
 
 
 		
@@ -405,26 +407,23 @@ namespace PXG
 
 		Vector3 vecAToB = positionB - positionA;
 
-		Debug::Log("ColA {0} ", collisionMeshA->Indices.size());
-		Debug::Log("ColB {0} ", collisionMeshB->Indices.size());
-
 		//for a each triangleA in mesh A
 		for (int i = 0; i < collisionMeshA->Indices.size(); i += 3)
 		{
 			std::array<Vector3, 3> triangleA =
 			{
-				collisionMeshA->Vertices.at(i).position,
-				collisionMeshA->Vertices.at(i + 1).position,
-				collisionMeshA->Vertices.at(i + 2).position,
+				collisionMeshA->Vertices.at(collisionMeshA->Indices.at(i)).position,
+				collisionMeshA->Vertices.at(collisionMeshA->Indices.at(i + 1)).position,
+				collisionMeshA->Vertices.at(collisionMeshA->Indices.at(i + 2)).position,
 			};
 			//for a each triangleB in mesh B
 			for (int j = 0; j < collisionMeshB->Indices.size(); j += 3)
 			{
 				std::array<Vector3, 3> triangleB =
 				{
-					collisionMeshB->Vertices.at(j).position,
-					collisionMeshB->Vertices.at(j + 1).position,
-					collisionMeshB->Vertices.at(j + 2).position,
+					collisionMeshB->Vertices.at(collisionMeshB->Indices.at(j)).position,
+					collisionMeshB->Vertices.at(collisionMeshB->Indices.at(j + 1)).position,
+					collisionMeshB->Vertices.at(collisionMeshB->Indices.at(j + 2)).position,
 				};
 
 				for (int k = 0; k < triangleA.size(); k++)
@@ -478,6 +477,27 @@ namespace PXG
 
 			}
 		}
+
+		return false;
+	}
+
+	bool PhysicsEngine::FindSperatingAxisByGaussMapEdgeToEdgeCheck(ConvexCollider * colliderA, ConvexCollider * colliderB, 
+		const Mat4 & transformA, const Mat4 & transformB, const Vector3 & positionA, const Vector3 & positionB, float & seperationFound)
+	{
+		for (auto edge : colliderA->GetEdges())
+		{
+			for (auto otherEdge : colliderB->GetEdges())
+			{
+				Vector3 axis = Mathf::Cross(edge->GetEdgeDirection(), otherEdge->GetEdgeDirection());
+
+				if (TestAxisDirection(axis, colliderA->GetMesh(), colliderB->GetMesh(), transformA, transformB, positionA, positionB, seperationFound))
+				{
+					return true;
+				}
+
+			}
+		}
+
 
 		return false;
 	}
