@@ -21,6 +21,8 @@ namespace PXG
 	{
 		if (isAsleep || Mathf::FloatCompare(0.0f,inverseMass)) { return; }
 
+		Debug::Log("isAsleep {0}  Mathf::FloatCompare(0.0f,inverseMass) {1} ", isAsleep, Mathf::FloatCompare(0.0f, inverseMass));
+
 		auto transform = GetOwner()->GetTransform();
 
 		semiImplicitEulerIntegration(transform, dt);
@@ -58,11 +60,15 @@ namespace PXG
 	void PXG::Rigidbody::semiImplicitEulerIntegration(Transform * transform, float dt)
 	{
 		//add force accumulation to acceleration
+		forceAccumulator = forceAccumulator + Vector3(0, -9, 0);
+
 		Vector3 newAcceleration = forceAccumulator * inverseMass;
 
 		acceleration =  newAcceleration;
 
-		velocity = velocity + newAcceleration * dt;
+		velocity = velocity + (newAcceleration + Vector3(0, -9, 0)) * dt;
+
+		Debug::Log("velocity {0} ", (velocity * dt).ToString());
 
 		transform->translate(velocity * dt);
 

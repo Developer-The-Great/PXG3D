@@ -31,7 +31,7 @@ namespace PXG
 
 	private:
 
-		bool isAsleep;
+		bool isAsleep = false;
 
 		float inverseMass;
 

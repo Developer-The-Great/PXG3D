@@ -162,13 +162,14 @@ int main()
 
 		PXG::Input::PollEvents();
 
-		Debug::Log(" accumulating {0}", time->GetAverageDeltaTime());
+		//Debug::Log(" accumulating {0}", time->GetAverageDeltaTime());
 		physicsEngine->AccumulateTickTime(time->GetAverageDeltaTime());
 		physicsEngine->ResetTickCount();
 		gamePtr->Update();
 
 		
 		{
+			float remainingTick;
 			PXG::BenchmarkTimer gameLoopTimer("The physics loop");
 			while (physicsEngine->IsTicking())
 			{
@@ -178,11 +179,16 @@ int main()
 				//fixed update on game
 				gamePtr->FixedUpdate(tick);
 
+				physicsEngine->Integrate(tick);
+
 				physicsEngine->CheckCollisions();
 
 				physicsEngine->IncrementTickCount();
 
 			}
+
+			physicsEngine->Integrate(physicsEngine->GetTickTimeRemaining());
+			physicsEngine->ResetTickTimeRemaining();
 		}
 		
 

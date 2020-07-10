@@ -52,6 +52,8 @@ namespace PXG
 		{
 			if (auto rigidbody = child->GetComponent<Rigidbody>())
 			{
+				Debug::Log("Integrating {0} by {1}" , child->name,dt);
+
 				rigidbody->Integrate(dt);
 			}
 		}
@@ -126,14 +128,14 @@ namespace PXG
 
 		//go through the scene graph and find all physicsComponents that have colliders
 		{
-			BenchmarkTimer timer("recursiveRetrievePhysicsComponent");
+			//BenchmarkTimer timer("recursiveRetrievePhysicsComponent");
 			recursiveRetrievePhysicsComponent(world, iterationResult, transform);
 		}
 		
 
 		std::vector<PhysicsComponentContainer> physicsComponentContainers;
 		{
-			BenchmarkTimer timer("OptimizeBroadPhase");
+			//BenchmarkTimer timer("OptimizeBroadPhase");
 			OptimizeBroadPhase(iterationResult, physicsComponentContainers);
 		}
 		
@@ -142,10 +144,10 @@ namespace PXG
 
 		std::set<std::pair<unsigned int, unsigned int>> collisionPairings;
 
-		Debug::Log("------------------------------------------- Iterating through physics containers--------------");
+		//Debug::Log("------------------------------------------- Iterating through physics containers--------------");
 
 		{
-			BenchmarkTimer timer("physicsComponentContainer loop");
+			//BenchmarkTimer timer("physicsComponentContainer loop");
 			for (const auto& physicsComponentContainer : physicsComponentContainers)
 			{
 				//BenchmarkTimer timer("single physicsComponentContainer loop");
@@ -208,6 +210,11 @@ namespace PXG
 	{
 		gravity = newGravity;
 
+	}
+
+	void PhysicsEngine::ResetTickTimeRemaining()
+	{
+		tickTimeRemaining = 0.0f;
 	}
 
 	bool PhysicsEngine::Raycast(const Vector3& position, const Vector3& direction, HitInfo& hitInfo, std::shared_ptr<World> world, bool usePhysicsComponent)

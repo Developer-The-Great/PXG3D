@@ -35,8 +35,8 @@ namespace PXG
 		//TODO documentation for this
 		void IncrementTickCount();
 
+		//TODO documentation for this
 		void ResetTickCount();
-
 
 		/**@brief Sets the World where the physics Engine would 'act' in
 		 *@param [in] world : a shared_ptr to the world where we would like the physics engine to act in.
@@ -76,6 +76,9 @@ namespace PXG
 		 *@param [in]: a double representing new gravity used
 		*/
 		static void SetGravity(double newGravity);
+
+		//TODO documentation for this
+		void ResetTickTimeRemaining();
 
 		/**@brief Casts a ray with a certain position and direction and returns true if it hits a mesh
 		* @param [in] position: the start point of the raycast
