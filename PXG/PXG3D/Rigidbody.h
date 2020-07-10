@@ -11,6 +11,8 @@ namespace PXG
 	{
 	public:
 
+		Rigidbody();
+
 		void AddForce(Vector3 force);
 
 		void AddForceAt(Vector3 force, Vector3 worldPosition);
@@ -19,7 +21,7 @@ namespace PXG
 
 		void Integrate(float dt);
 
-		void SetInertia();
+		void SetInertia(glm::mat3 inertiaTensor);
 
 		void SetMass(float newMass);
 

@@ -50,6 +50,13 @@ namespace PXG
 
 	}
 
+	void Transform::rotate(const Quaternion& rotationQuat)
+	{
+		rotation = rotationQuat * rotation;
+		rotation = rotation.Normalized();
+
+	}
+
 	void Transform::Scale(Vector3 newScale)
 	{
 		scale = newScale;

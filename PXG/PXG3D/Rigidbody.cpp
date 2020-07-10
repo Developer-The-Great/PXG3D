@@ -4,6 +4,10 @@
 
 namespace PXG
 {
+	Rigidbody::Rigidbody()
+	{
+		inverseMass = 0.1f;
+	}
 	void Rigidbody::AddForce(Vector3 force)
 	{
 	}
@@ -20,7 +24,10 @@ namespace PXG
 		auto transform = GetOwner()->GetTransform();
 
 		semiImplicitEulerIntegration(transform, dt);
+	}
 
+	void Rigidbody::SetInertia(glm::mat3 inertiaTensor)
+	{
 	}
 
 	void Rigidbody::SetMass(float newMass)
@@ -29,8 +36,6 @@ namespace PXG
 		{
 			inverseMass = 0.0f;
 		}
-
-
 	}
 
 	Vector3 Rigidbody::GetVelocity() const
@@ -44,27 +49,35 @@ namespace PXG
 	}
 
 
+	void Rigidbody::resetAccumulators()
+	{
+		forceAccumulator = Vector3();
+		torqueAccumulator = Vector3();
+	}
+
 	void PXG::Rigidbody::semiImplicitEulerIntegration(Transform * transform, float dt)
 	{
 		//add force accumulation to acceleration
 		Vector3 newAcceleration = forceAccumulator * inverseMass;
 
-		//TODO make an operator overload for += 
-		acceleration = acceleration + newAcceleration;
+		acceleration =  newAcceleration;
 
-		velocity = velocity + acceleration;
+		velocity = velocity + newAcceleration * dt;
 
-		transform->translate(velocity);
+		transform->translate(velocity * dt);
 
 		//add torque accumulation to angular acceleration
+		Vector3 newAngularAcceleration = inverseInertiaTensor * torqueAccumulator.ToGLMVec3();
+
+		angularAcceleration =  newAngularAcceleration;
+
+		angularVelocity = angularVelocity + newAngularAcceleration * dt;
 
 
+		Quaternion quat(0, angularVelocity.x, angularVelocity.y, angularVelocity.z);
+		transform->rotate(quat * 0.5f * dt);
 
-		//add angular acceleration to angular velocity
-
-		//add angular velocity to acceleration 
-
-		//reset accumulators
+		resetAccumulators();
 
 	}
 

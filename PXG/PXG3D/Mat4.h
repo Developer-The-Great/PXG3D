@@ -17,18 +17,31 @@ namespace PXG
 		{
 			Matrix = glm::mat4(1.0f);
 		}
-		Mat4 operator%(const Mat4& otherMat4) const
-		{
-		}
 
-		/*Mat4 operator*(const Mat4& otherMat4) const
+		Mat4 operator*(const Mat4& otherMat4) const
 		{
 			return Mat4( otherMat4.Matrix  * Matrix);
-		}*/
+		}
 
-		Vector3 operator*(const Vector3 vec3) const
+		/*Vector3 operator*(const Vector3 vec3) const
 		{
 			glm::vec4 v(vec3.ToGLMVec3(),1);
+			return  Vector3(glm::vec3(Matrix * v));
+		}*/
+
+		Vector3 multiplyPoint(const Vector3& vec3) const
+		{
+			return multiplyVector3(vec3, 1);
+		}
+
+		Vector3 multiplyDirection(const Vector3& vec3) const
+		{
+			return multiplyVector3(vec3, 0);
+		}
+
+		Vector3 multiplyVector3(const Vector3& vec3,float fourthNumber) const
+		{
+			glm::vec4 v(vec3.ToGLMVec3(), fourthNumber);
 			return  Vector3(glm::vec3(Matrix * v));
 		}
 
@@ -37,6 +50,8 @@ namespace PXG
 			Matrix = otherMat4.Matrix;
 			return *this;
 		}
+
+
 
 		Mat4& operator=(const glm::mat4& otherMat4)
 		{

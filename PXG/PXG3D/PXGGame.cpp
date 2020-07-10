@@ -43,6 +43,7 @@
 #include "PhysicsCollider.h"
 #include "ConvexCollider.h"
 #include "Time.h"
+#include "Rigidbody.h"
 namespace PXG
 {
 
@@ -346,6 +347,7 @@ namespace PXG
 		orangeObject->GetMeshComponent()->SetMaterial(orangeColorMat);
 		orangeObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 		orangeObject->name = "orangeObj";
+		orangeObject->AddComponent(std::make_shared<Rigidbody>());
 
 		orangeObject->GetTransform()->SetLocalPosition(Vector3(1.0, -2.0, -6.0));
 		orangeObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));

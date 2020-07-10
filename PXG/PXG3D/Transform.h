@@ -26,6 +26,8 @@ namespace PXG
 
 		void rotate(Vector3 axis, float angle);
 
+		void rotate(const Quaternion& quat);
+
 		void Scale(Vector3 newScale);
 
 		Quaternion GetRotation() const;
