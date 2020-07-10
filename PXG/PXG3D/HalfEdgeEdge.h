@@ -33,6 +33,11 @@ namespace PXG
 			return nullptr;
 		}
 
+		bool isPairingEqualNormal()
+		{
+			return Mathf::FloatVectorCompare(*GetNormal(), *GetPairingNormal());
+		}
+
 	};
 }
 

@@ -4,8 +4,12 @@
 #include "PhysicsEngine.h"
 #include "GameObject.h"
 
-
-
+#include "World.h"
+#include "DebugDrawingManager.h"
+#include <memory>
+#include "Time.h"
+#include <chrono>
+#include "BenchmarkTimer.h"
 
 namespace PXG
 {
@@ -50,14 +54,6 @@ namespace PXG
 
 	void ConvexCollider::CheckCollisionWith(ConvexCollider* convexCollider, Manifold& manifold)
 	{
-		for (auto edge : edges)
-		{
-			assert(edge->GetNormal());
-			assert(edge->GetPairingNormal());
-		}
-
-
-
 		Vector3 positionA = glm::vec3(manifold.transformA.Matrix[3]);
 		Vector3 positionB = glm::vec3(manifold.transformB.Matrix[3]);
 
@@ -66,23 +62,8 @@ namespace PXG
 
 		float seperationAB;
 
-		/*
-		if (PhysicsEngine::FindSeperatingAxisByProjectingMeshAandBToFaceNormals(meshA, meshB, manifold.transformA, manifold.transformB, positionA, 
-			positionB, seperationAB))
-		{
-			manifold.isColliding = false;
-			return;
-		}
+		//------------------------------------------- Do face normal checking --------------------------------------------------------//
 
-		if (PhysicsEngine::FindSeperatingAxisByProjectingMeshAandBToFaceNormals(meshB,meshA, manifold.transformB, manifold.transformA, positionB, 
-			positionA, seperationAB))
-		{
-			manifold.isColliding = false;
-			return;
-		}
-		//*/
-
-		//*
 		int indexA = -1;
 		if (PhysicsEngine::FindSeperatingAxisByExtremePointProjection(meshA, meshB, manifold.transformA, manifold.transformB, positionA,
 			positionB, indexA))
@@ -98,24 +79,15 @@ namespace PXG
 			manifold.isColliding = false;
 			return;
 		}
-		//*/
+			
 
+		//------------------------------------------- Do edge checking --------------------------------------------------------//
 
+		HalfEdgeEdge* edge1 = nullptr;
+		HalfEdgeEdge* edge2 = nullptr;
 
-
-		Debug::Log("Testing edge to edge");
-
-		/*
-		if (PhysicsEngine::FindSeperatingAxisByBruteForceEdgeToEdgeCheck(meshB, meshA, manifold.transformB, manifold.transformA, positionB,
-			positionA, seperationAB))
-		{
-			manifold.isColliding = false;
-			return;
-		}
-		*/
-
-		if (PhysicsEngine::FindSperatingAxisByGaussMapEdgeToEdgeCheck(this, convexCollider, manifold.transformB, manifold.transformA, positionB,
-			positionA, seperationAB))
+		if (PhysicsEngine::FindSeparatingAxisByGaussMapEdgeToEdgeCheck(this, convexCollider, manifold.transformA, manifold.transformB, positionA,
+			positionB, seperationAB, edge1, edge2))
 		{
 			manifold.isColliding = false;
 			return;
@@ -172,7 +144,7 @@ namespace PXG
 
 
 
-
+		
 		VertexIndexToHalfEdgePtr vertexIndexToHalfEdge;
 
 		//-------------instantiate Half edges and set their respective vertices and next edges----------------------//
@@ -253,6 +225,16 @@ namespace PXG
 
 		//*/
 
+	}
+
+	void ConvexCollider::SetPhysicsComponentOwner(PhysicsComponent* physicsComponentOwner)
+	{
+		this->physicsComponentOwner = physicsComponentOwner;
+	}
+
+	PhysicsComponent* ConvexCollider::GetPhysicsComponentContainer()
+	{
+		return physicsComponentOwner;
 	}
 
 	const std::vector<HalfEdgeEdge*>& ConvexCollider::GetEdges()

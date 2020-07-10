@@ -47,6 +47,7 @@ constexpr int height = PXG::ScreenSize::HEIGHT;
 
 #include "AABBBox.h"
 #include "DebugDrawingManager.h"
+#include "BenchmarkTimer.h"
 
 #include <iostream>
 #include <string>
@@ -126,6 +127,7 @@ int main()
 	//--------------------------------- Initialize Debug Mesh Object------------------------------//
 
 	std::shared_ptr<PXG::DebugDrawingManager> debugDrawingManager = std::make_shared<PXG::DebugDrawingManager>();
+	debugDrawingManager->SetShouldDraw(false);
 	debugDrawingManager->SetWorld(gamePtr->GetWorld());
 	gamePtr->GetWorld()->SetDebugDrawingManager(debugDrawingManager);
 
@@ -144,49 +146,52 @@ int main()
 
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
+
+	
 	
 	while (!glfwWindowShouldClose(window))
 	{
+		Debug::SetDebugState(true);
+		PXG::BenchmarkTimer gameLoopTimer("The game loop");
 
 		glClearColor(0.4f, 0.5f, 0.8f, 1.0f);
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
+		
 		//track current time
 		time->UpdateTimePassed();
 
 		PXG::Input::PollEvents();
 
-		physicsEngine->SetTickRemaining(time->GetAverageDeltaTime());
-
+		Debug::Log(" accumulating {0}", time->GetAverageDeltaTime());
+		physicsEngine->AccumulateTickTime(time->GetAverageDeltaTime());
+		physicsEngine->ResetTickCount();
 		gamePtr->Update();
 
-		while (physicsEngine->IsTicking())
+		
 		{
-			
-			float tick = physicsEngine->DecreaseRemainingTickTime();
+			PXG::BenchmarkTimer gameLoopTimer("The physics loop");
+			while (physicsEngine->IsTicking())
+			{
 
-			//fixed update on game
-			gamePtr->FixedUpdate(tick);
+				float tick = physicsEngine->DecreaseRemainingTickTime();
 
-			float currentTime = time->GetTime();
+				//fixed update on game
+				gamePtr->FixedUpdate(tick);
 
+				physicsEngine->CheckCollisions();
+
+				physicsEngine->IncrementTickCount();
+
+			}
 		}
+		
 
 		float beforeCol = time->GetTime();
-		physicsEngine->CheckCollisions();
+		
 		//Debug::Log("Collision FPS time {0}", 1.0/ (time->GetTime() - beforeCol));
-
-
-
 		//gamePtr->Update();
 		
 		renderingEngine->RenderCurrentlySetWorld();
-
-
 
 		glDisable(GL_DEPTH_TEST);
 		debugDrawingManager->DrawDebugObjects();
@@ -194,13 +199,7 @@ int main()
 		debugDrawingManager->DecreaseLifespan(time->GetAverageDeltaTime());
 		debugDrawingManager->RemoveDeadDebugMeshes();
 
-		renderingEngine->RenderCanvas();
-
-
-		
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
+		//renderingEngine->RenderCanvas();
 
 		glfwSwapBuffers(window);
 

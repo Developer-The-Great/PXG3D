@@ -29,13 +29,16 @@ namespace PXG
 		
 		void SetMesh(std::shared_ptr<Mesh> mesh) override;
 
-
+		void SetPhysicsComponentOwner(PhysicsComponent * physicsComponentOwner);
+		PhysicsComponent * GetPhysicsComponentContainer();
 		
 		const std::vector<HalfEdgeEdge*>& GetEdges();
 		
 
 		
 	private:
+
+		PhysicsComponent * physicsComponentOwner;
 		//VertexIndexToHalfEdgePtr vertexIndexToHalfEdge;
 		std::vector<HalfEdgeEdge*> edges;
 		

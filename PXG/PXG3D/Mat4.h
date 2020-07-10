@@ -17,11 +17,14 @@ namespace PXG
 		{
 			Matrix = glm::mat4(1.0f);
 		}
+		Mat4 operator%(const Mat4& otherMat4) const
+		{
+		}
 
-		Mat4 operator*(const Mat4& otherMat4) const
+		/*Mat4 operator*(const Mat4& otherMat4) const
 		{
 			return Mat4( otherMat4.Matrix  * Matrix);
-		}
+		}*/
 
 		Vector3 operator*(const Vector3 vec3) const
 		{

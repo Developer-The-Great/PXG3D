@@ -10,6 +10,7 @@ namespace PXG
 	{
 		Mat4 transform;
 		std::shared_ptr<PhysicsComponent> physicsComponent;
+		unsigned int id;
 	};
 }
 

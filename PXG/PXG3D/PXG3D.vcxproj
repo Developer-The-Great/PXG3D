@@ -46,6 +46,10 @@
     <IncludePath>$(SolutionDir)deps/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)deps/libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)deps/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)deps/libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -80,6 +84,7 @@
     <ClCompile Include="..\deps\include\src\glad.c" />
     <ClCompile Include="AudioLibrary.cpp" />
     <ClCompile Include="AudioSource.cpp" />
+    <ClCompile Include="BenchmarkTimer.cpp" />
     <ClCompile Include="ButtonComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CameraMover.cpp" />
@@ -114,6 +119,7 @@
     <ClCompile Include="PXGWindow.cpp" />
     <ClCompile Include="RayCastShooter.cpp" />
     <ClCompile Include="RenderingEngine.cpp" />
+    <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="RotatorComponent.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
@@ -135,6 +141,7 @@
     <ClInclude Include="AudioLibrary.h" />
     <ClInclude Include="AudioSource.h" />
     <ClInclude Include="AxisAngle.h" />
+    <ClInclude Include="BenchmarkTimer.h" />
     <ClInclude Include="ButtonComponent.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CameraMover.h" />
@@ -172,6 +179,7 @@
     <ClInclude Include="PhysicsSceneGraphIterationInfo.h" />
     <ClInclude Include="PSGIIToAABB.h" />
     <ClInclude Include="RasterizationMode.h" />
+    <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="ScreenSize.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="stb_image.h" />

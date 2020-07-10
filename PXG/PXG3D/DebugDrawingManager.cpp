@@ -14,6 +14,7 @@ namespace PXG
 {
 	void DebugDrawingManager::InstantiateLine(Vector3 start, Vector3 end, Vector3 color, float lifetime)
 	{
+		if (!shouldDraw) { return; }
 
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
@@ -49,6 +50,8 @@ namespace PXG
 
 	void DebugDrawingManager::InstantiateCube(Vector3 position, Vector3 min, Vector3 max, Vector3 color, float lifetime, Vector3 vertexOffset)
 	{
+		if (!shouldDraw) { return; }
+
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		std::vector<Texture> emptyTextures;
@@ -91,11 +94,14 @@ namespace PXG
 
 	void DebugDrawingManager::InstantiateAABBRepresentation(AABBBox * box, Vector3 color, float lifetime)
 	{
+		if (!shouldDraw) { return; }
 		InstantiateCube(box->position, Vector3(), box->halfWidths * 2.0f, color, lifetime,-box->halfWidths);
 	}
 
 	void DebugDrawingManager::DrawDebugObjects()
 	{
+		if (!shouldDraw) { return; }
+
 		Mesh::SetRasterizationMode(RasterizationMode::LINE);
 		
 
@@ -127,22 +133,7 @@ namespace PXG
 
 	void DebugDrawingManager::RemoveDeadDebugMeshes()
 	{
-
-		//std::vector<std::shared_ptr<DebugMeshObject>> deadDebugMeshes;
-
-		//for (auto const& debugObject : debugMeshObjects)
-		//{
-		//	if (debugObject->IsLifeSpanOver())
-		//	{
-		//		deadDebugMeshes.push_back(debugObject);
-		//	}
-		//}
-		Debug::Log("bfr debugMeshCount {0}", debugMeshObjects.size());
-
 		debugMeshObjects.remove_if([](std::shared_ptr<DebugMeshObject> x) {return x->IsLifeSpanOver(); });
-
-		Debug::Log("after debugMeshCount {0}", debugMeshObjects.size());
-
 	}
 
 	

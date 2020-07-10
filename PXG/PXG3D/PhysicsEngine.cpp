@@ -15,11 +15,17 @@
 #include "PSGIIToAABB.h"
 #include "ConvexCollider.h"
 #include "HalfEdgeEdge.h"
+#include "World.h"
 
 #include <array>
 #include "OctreeNode.h"
 #include "DebugDrawingManager.h"
 #include "Time.h"
+#include "DebugDrawingManager.h"
+#include "BenchmarkTimer.h"
+#include <set>
+#include "Rigidbody.h"
+#include "GameObject.h"
 
 namespace PXG
 {
@@ -32,6 +38,35 @@ namespace PXG
 	
 	}
 
+	void PhysicsEngine::Integrate(float dt)
+	{
+		if (!world) 
+		{ 
+			Debug::Log("world ptr is empty!");
+			return; 
+		}
+
+		auto children = world->GetChildren();
+
+		for (auto child : children)
+		{
+			if (auto rigidbody = child->GetComponent<Rigidbody>())
+			{
+				rigidbody->Integrate(dt);
+			}
+		}
+	}
+
+	void PhysicsEngine::IncrementTickCount()
+	{
+		currentFrameTickCount++;
+	}
+
+	void PhysicsEngine::ResetTickCount()
+	{
+		currentFrameTickCount = 0;
+	}
+
 	void PhysicsEngine::SetWorld(std::shared_ptr<World> world)
 	{
 		this->world = world;
@@ -42,25 +77,29 @@ namespace PXG
 		return tickTime;
 	}
 
-	float PhysicsEngine::GetCurrentTickRemaining() const
+	float PhysicsEngine::GetTickTimeRemaining() const
 	{
 		return tickTimeRemaining;
 	}
 
-	void PhysicsEngine::SetTickRemaining(float tick)
+	//float PhysicsEngine::GetCurrentTickRemaining() const
+	//{
+	//	return tickTimeRemaining;
+	//}
+
+	void PhysicsEngine::AccumulateTickTime(float tick)
 	{
-		tickTimeRemaining = tick;
+		tickTimeRemaining += tick;
 	}
 
 	bool PhysicsEngine::IsTicking()
 	{
-		if (tickTimeRemaining > 0.0f)
+		if (tickTimeRemaining > tickTime && currentFrameTickCount < maxTickCountPerFrame)
 		{
 			return true;
 		}
 		else
 		{
-			tickTimeRemaining = 0.0f;
 			return false;
 		}
 
@@ -75,57 +114,82 @@ namespace PXG
 		}
 		else
 		{
-			float decreasedTime = tickTimeRemaining;
-
-			tickTimeRemaining = 0;
-			return  decreasedTime;
+			return  0;
 		}
 	}
 
 	void PhysicsEngine::CheckCollisions()
 	{
+		BenchmarkTimer timer("CheckCollisions()");
 		std::vector<PhysicsSceneGraphIterationInfo> iterationResult;
 		Mat4 transform = world->GetTransform()->GetWorldTransform();
 
-		recursiveRetrievePhysicsComponent(world, iterationResult, transform);
+		//go through the scene graph and find all physicsComponents that have colliders
+		{
+			BenchmarkTimer timer("recursiveRetrievePhysicsComponent");
+			recursiveRetrievePhysicsComponent(world, iterationResult, transform);
+		}
+		
 
 		std::vector<PhysicsComponentContainer> physicsComponentContainers;
-
-		OptimizeBroadPhase(iterationResult, physicsComponentContainers);
+		{
+			BenchmarkTimer timer("OptimizeBroadPhase");
+			OptimizeBroadPhase(iterationResult, physicsComponentContainers);
+		}
+		
 
 		std::vector<Manifold> resultingManifolds;
 
-		for (const auto& physicsComponentContainer : physicsComponentContainers)
+		std::set<std::pair<unsigned int, unsigned int>> collisionPairings;
+
+		Debug::Log("------------------------------------------- Iterating through physics containers--------------");
+
 		{
-
-			for (int i = 0; i < physicsComponentContainer.PSGIIContainer.size(); i++)
+			BenchmarkTimer timer("physicsComponentContainer loop");
+			for (const auto& physicsComponentContainer : physicsComponentContainers)
 			{
-
-				for (int j = i+1; j < physicsComponentContainer.PSGIIContainer.size(); j++)
+				//BenchmarkTimer timer("single physicsComponentContainer loop");
+				for (int i = 0; i < physicsComponentContainer.PSGIIContainer.size(); i++)
 				{
-					Manifold m;
 
-					//for now, assume that each physicsComponent only has 1 collider
-					auto PSGIIA = physicsComponentContainer.PSGIIContainer.at(i);
-					auto PSGIIB = physicsComponentContainer.PSGIIContainer.at(j);
+					for (int j = i + 1; j < physicsComponentContainer.PSGIIContainer.size(); j++)
+					{
+						Manifold m;
 
-					m.physicsComponentA = PSGIIA.physicsComponent;
-					m.physicsComponentB = PSGIIB.physicsComponent;
-					m.transformA = PSGIIA.transform;
-					m.transformB = PSGIIB.transform;
+						//for now, assume that each physicsComponent only has 1 collider
+						auto PSGIIA = physicsComponentContainer.PSGIIContainer.at(i);
+						auto PSGIIB = physicsComponentContainer.PSGIIContainer.at(j);
 
-					auto colliderA = PSGIIA.physicsComponent->GetCollider();
-					auto colliderB = PSGIIB.physicsComponent->GetCollider();
+						auto searchResult = collisionPairings.find(std::pair<unsigned int, unsigned int>(PSGIIA.id, PSGIIB.id));
 
-					colliderA->CheckCollision(colliderB, m);
-					resultingManifolds.push_back(m);
+						//check if this pair has not been checked for collision
+						if (searchResult == collisionPairings.end())
+						{
+							//check for collision
+							m.physicsComponentA = PSGIIA.physicsComponent;
+							m.physicsComponentB = PSGIIB.physicsComponent;
+							m.transformA = PSGIIA.transform;
+							m.transformB = PSGIIB.transform;
 
+							auto colliderA = PSGIIA.physicsComponent->GetCollider();
+							auto colliderB = PSGIIB.physicsComponent->GetCollider();
+
+
+							colliderA->CheckCollision(colliderB, m);
+							resultingManifolds.push_back(m);
+
+
+							collisionPairings.insert(std::pair<unsigned int, unsigned int>(PSGIIA.id, PSGIIB.id));
+
+						}
+					}
 				}
+
+
 			}
-
-
 		}
-
+		
+		//Debug::Log("------------------------------------------- END Iterating through physics containers--------------");
 
 		for (const auto& manifold : resultingManifolds)
 		{
@@ -156,11 +220,11 @@ namespace PXG
 		return hitInfo.RayHit;
 	}
 
-	void PhysicsEngine::recursiveRetrievePhysicsComponent(std::shared_ptr<GameObject> rootObj, std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, Mat4 transform)
+	void PhysicsEngine::recursiveRetrievePhysicsComponent(std::shared_ptr<GameObject> rootObj, std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, Mat4 transform,int id)
 	{
 		Mat4 rootObjTransform = rootObj->GetTransform()->GetLocalTransform() * transform;
 
-		
+		int colliderId = id;
 
 		//all gameObjects have a physicsComponent but may not have coliders. we are only interested in those that do have colliders
 		if (rootObj->GetPhysicsComponent()->GetColliderCount() > 0)
@@ -170,14 +234,18 @@ namespace PXG
 			psgii.physicsComponent = rootObj->GetPhysicsComponent();
 			
 			psgii.transform = rootObjTransform;
+			psgii.id = colliderId;
 
 			physicsComponents.push_back(psgii);
 
 		}
 
+		
+
 		for (const auto& child : rootObj->GetChildren())
 		{
-			recursiveRetrievePhysicsComponent(child, physicsComponents, rootObjTransform);
+			colliderId++;
+			recursiveRetrievePhysicsComponent(child, physicsComponents, rootObjTransform, colliderId);
 		}
 
 	}
@@ -398,7 +466,7 @@ namespace PXG
 	}
 
 
-	bool PhysicsEngine::FindSeperatingAxisByBruteForceEdgeToEdgeCheck(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
+	bool PhysicsEngine::FindSeparatingAxisByBruteForceEdgeToEdgeCheck(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
 		const Mat4& transformA, const Mat4& transformB, const Vector3& positionA,  const Vector3& positionB, float& seperationFound)
 	{
 
@@ -481,24 +549,56 @@ namespace PXG
 		return false;
 	}
 
-	bool PhysicsEngine::FindSperatingAxisByGaussMapEdgeToEdgeCheck(ConvexCollider * colliderA, ConvexCollider * colliderB, 
-		const Mat4 & transformA, const Mat4 & transformB, const Vector3 & positionA, const Vector3 & positionB, float & seperationFound)
+	bool PhysicsEngine::FindSeparatingAxisByGaussMapEdgeToEdgeCheck(ConvexCollider * colliderA, ConvexCollider * colliderB, 
+		const Mat4 & transformA, const Mat4 & transformB, const Vector3 & positionA, const Vector3 & positionB, float & seperationFound,
+		HalfEdgeEdge * firstEdge, HalfEdgeEdge *secondEdge)
 	{
+
 		for (auto edge : colliderA->GetEdges())
 		{
 			for (auto otherEdge : colliderB->GetEdges())
 			{
-				Vector3 axis = Mathf::Cross(edge->GetEdgeDirection(), otherEdge->GetEdgeDirection());
+				if (edge->isPairingEqualNormal() || otherEdge->isPairingEqualNormal()) { continue; }
 
-				if (TestAxisDirection(axis, colliderA->GetMesh(), colliderB->GetMesh(), transformA, transformB, positionA, positionB, seperationFound))
+				//check if both edges create a minkowski difference face
+				if (AttemptBuildMinkowskiFace(edge, otherEdge, transformA, transformB))
 				{
-					return true;
-				}
 
+					glm::vec3 transformedEdgeA = transformA.ToGLM() * glm::vec4(edge->GetEdgeDirection().ToGLMVec3(), 0);
+					glm::vec3 transformedEdgeB = transformB.ToGLM() * glm::vec4(otherEdge->GetEdgeDirection().ToGLMVec3(), 0);
+
+					Vector3 normal = Mathf::Cross(transformedEdgeA, transformedEdgeB).Normalized();
+
+					if (Mathf::FloatCompare(normal.Length(), 0.0f)) { continue; }
+
+					glm::vec3 EdgeAVertexPosition = transformA.ToGLM() * glm::vec4(edge->vert->position.ToGLMVec3(), 1);
+					glm::vec3 EdgeBVertexPosition = transformB.ToGLM() * glm::vec4(otherEdge->vert->position.ToGLMVec3(), 1);
+
+					Vector3 vertexEdgeAToCenterA = Vector3(EdgeAVertexPosition) - positionA;
+
+					if (Mathf::Dot(normal, vertexEdgeAToCenterA) < 0)
+					{
+						normal = -normal;
+					}
+
+					float distance = Mathf::Dot(normal, EdgeBVertexPosition - EdgeAVertexPosition);
+					seperationFound = distance;
+
+					if (distance > 0)
+					{
+						return true;
+					}
+
+					/*if (TestAxisDirection(axis, colliderA->GetMesh(), colliderB->GetMesh(), transformA, transformB, positionA, positionB, seperationFound))
+					{
+						return true;
+					}*/
+
+				}
 			}
 		}
 
-
+	
 		return false;
 	}
 
@@ -899,6 +999,54 @@ namespace PXG
 		max = maxResult;
 
 	}
+
+	bool PhysicsEngine::AttemptBuildMinkowskiFace(HalfEdgeEdge* edgeA, HalfEdgeEdge* edgeB, const Mat4& transformA, const Mat4& transformB)
+	{
+		Vector3 transformedNormalA1 = glm::vec3(transformA.ToGLM() * glm::vec4(edgeA->GetNormal()->ToGLMVec3(), 0));
+		Vector3 transformedNormalA2 = glm::vec3(transformA.ToGLM() * glm::vec4(edgeA->GetPairingNormal()->ToGLMVec3(), 0));
+
+		Vector3 transformedNormalB1 = -glm::vec3(transformB.ToGLM() * glm::vec4(edgeB->GetNormal()->ToGLMVec3(), 0));
+		Vector3 transformedNormalB2 = -glm::vec3(transformB.ToGLM() * glm::vec4(edgeB->GetPairingNormal()->ToGLMVec3(), 0));
+
+		return IsMinkowskiFace(transformedNormalA1, transformedNormalA2,transformedNormalB1, transformedNormalB2);
+	}
+
+	bool PhysicsEngine::IsMinkowskiFace(Vector3 & transformedNormalA1, Vector3& transformedNormalA2,
+		Vector3& transformedNormalB1, Vector3& transformedNormalB2)
+	{
+		Vector3 edgeANormalPlane = Mathf::Cross(transformedNormalA1, transformedNormalA2);
+		Vector3 edgeBNormalPlane = Mathf::Cross(transformedNormalB1, transformedNormalB2);
+
+		//check if plane created from the cross products of the normals of edgeA divides the normals of edgeB
+		float normalPlaneAToBNormalsResult = Mathf::Dot(transformedNormalB1, edgeANormalPlane)
+			* Mathf::Dot(transformedNormalB2, edgeANormalPlane);
+
+		//normals of B are found to be in the same side of the plane ,gauss Map arcs do not intersect
+		if (normalPlaneAToBNormalsResult > 0) { return false; }
+
+		//check if plane created from the cross products of the normals of edgeB divides the normals of edgeA
+		float normalPlaneBToANormalsResult = Mathf::Dot(transformedNormalA1, edgeBNormalPlane)
+			* Mathf::Dot(transformedNormalA2, edgeBNormalPlane);
+
+		//normals of A are found to be in the same side of the plane ,gauss Map arcs do not intersect
+		if (normalPlaneBToANormalsResult > 0) { return false; }
+
+
+		//check if normals are in the same hemisphere
+		Vector3 edgeAEdgeBNormalPlane = Mathf::Cross(transformedNormalA2, transformedNormalB2);
+
+		float edgeAEdgeBNormalPlaneToOtherNormals = Mathf::Dot(transformedNormalA1, edgeAEdgeBNormalPlane)
+			* Mathf::Dot(transformedNormalB1, edgeAEdgeBNormalPlane);
+
+		//normals of A are found to be on different sides of the plane, 
+		//gauss Map arcs are in different sides of the hemisphere
+		if (edgeAEdgeBNormalPlaneToOtherNormals < 0) { return false; }
+
+		return true;
+	}
+
+
+
 
 	Vector3 PhysicsEngine::GetOrthographicCameraWorldPosition(float x, float y, float screenWidth, float screenHeight, std::shared_ptr<World> world)
 	{

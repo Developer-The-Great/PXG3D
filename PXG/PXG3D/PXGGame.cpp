@@ -274,7 +274,7 @@ namespace PXG
 
 		GameObj topSpotlight = Instantiate();
 		topSpotlight->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "cube.obj");
-		topSpotlight->GetMeshComponent()->SetMaterial(bluetColorMat);
+		topSpotlight->GetMeshComponent()->SetMaterial(yellowColorMat);
 		topSpotlight->name = "spotlight top";
 		topSpotlight->AddComponent(lightComp);
 		topSpotlight->GetTransform()->SetLocalPosition(Vector3(0.0, 23.0, 0.0));
@@ -285,7 +285,7 @@ namespace PXG
 		leftlightComp->SetIntensity(150.0f);
 		GameObj leftPonintLight = Instantiate();
 		leftPonintLight->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "cube.obj");
-		leftPonintLight->GetMeshComponent()->SetMaterial(bluetColorMat);
+		leftPonintLight->GetMeshComponent()->SetMaterial(yellowColorMat);
 		leftPonintLight->name = "leftPonintLight ";
 		leftPonintLight->AddComponent(leftlightComp);
 		leftPonintLight->GetTransform()->SetLocalPosition(Vector3(-12.0, 23.0, 0.0));
@@ -297,7 +297,7 @@ namespace PXG
 		rightlightComp->SetIntensity(150.0f);
 		GameObj rightPonintLight = Instantiate();
 		rightPonintLight->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "cube.obj");
-		rightPonintLight->GetMeshComponent()->SetMaterial(bluetColorMat);
+		rightPonintLight->GetMeshComponent()->SetMaterial(yellowColorMat);
 		rightPonintLight->name = "rightPonintLight";
 		rightPonintLight->AddComponent(rightlightComp);
 		rightPonintLight->GetTransform()->SetLocalPosition(Vector3(12.0, 23.0, 0.0));
@@ -324,7 +324,7 @@ namespace PXG
 		////--------------------Physics Test OBB EdgeToEdge --------------------------//
 
 
-		//*
+		///*
 		
 		GameObj yellowObject = Instantiate();
 		yellowObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -347,7 +347,7 @@ namespace PXG
 		orangeObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 		orangeObject->name = "orangeObj";
 
-		orangeObject->GetTransform()->SetLocalPosition(Vector3(2.0, -2.0, -6.0));
+		orangeObject->GetTransform()->SetLocalPosition(Vector3(1.0, -2.0, -6.0));
 		orangeObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
 		orangeObject->GetTransform()->rotate(Vector3(0, 1, 0), 45.0f);
 		orangeObject->GetTransform()->rotate(Vector3(1, 0, 0), 90.0f);
@@ -519,7 +519,7 @@ namespace PXG
 
 
 		//Octree optimization test
-		for(int i = 0; i < 0;i++)
+		for(int i = 0; i < 30;i++)
 		{
 			GameObj Obj = Instantiate();
 			Obj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -586,7 +586,7 @@ namespace PXG
 		Debug::Log("it took {0} ", finalTime);
 
 
-		world->SetPhysicsComponentDrawActive(false);
+		world->SetPhysicsComponentDrawActive(true);
 
 
 	}

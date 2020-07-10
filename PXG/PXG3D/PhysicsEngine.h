@@ -5,6 +5,8 @@
 
 namespace PXG
 {
+
+	struct HalfEdgeEdge;
 	struct Vector3;
 	struct HitInfo;
 	class GameObject;
@@ -25,22 +27,54 @@ namespace PXG
 
 		PhysicsEngine();
 
+		/**@brief Gets all the rigidbodies in the world and calls the Integrate function on them
+		 *@param [in] dt : a float representing the amount of time we would like to integrate
+		*/
+		void Integrate(float dt);
+
+		//TODO documentation for this
+		void IncrementTickCount();
+
+		void ResetTickCount();
+
+
+		/**@brief Sets the World where the physics Engine would 'act' in
+		 *@param [in] world : a shared_ptr to the world where we would like the physics engine to act in.
+		*/
 		void SetWorld(std::shared_ptr<World> world);
 
+		/**@brief Returns the time step of the physics engine
+		*/
 		float GetTickRate() const;
 
-		float GetCurrentTickRemaining() const;
+		/**@bried Returns the tick time remaining
+		*/
+		float GetTickTimeRemaining() const;
 
-		void SetTickRemaining(float tick);
+		/**@brief Sets the amount of time that the physics engine needs to update
+		 *@param [in]: a float representing the amount of time that the physics engine needs to update
+		*/
+		void AccumulateTickTime(float tick);
 
+		/**@brief return true if 'tickTimeRemaining' is bigger than zero
+		*/
 		bool IsTicking();
 
+		/**@brief return the amount of 'tickTimeRemaining' after it has been decreased by a single time step
+		*/
 		float DecreaseRemainingTickTime();
 
+		/**@brief Checks if each GameObject with a non-empty PhysicsComponent collides with other gameObjects with a 
+		non-empty PhysicsComponent
+		*/
 		void CheckCollisions();
 
+		/**@brief returns the gravity the physicsEngine uses*/
 		static double GetGravity();
 
+		/**@brief sets the gravity the physicsEngine uses
+		 *@param [in]: a double representing new gravity used
+		*/
 		static void SetGravity(double newGravity);
 
 		/**@brief Casts a ray with a certain position and direction and returns true if it hits a mesh
@@ -83,25 +117,28 @@ namespace PXG
 		static bool FindSeperatingAxisByExtremePointProjection(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
 			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, int& index);
 
-
-
-
 		/**@brief Attempts to find the seperating axis between 2 meshes by iterating through all of the edges of 'collisionMeshA' and 'collisionMeshB'
 		and testing the vector that is perpendicular to both edges and using it as a potential seperating axis.
-		Returns true if a seperation axis is found. The function will also seperation amount if a seperation axis if found.
+		Returns true if a seperation axis is found. The function will also output the seperation amount if a seperation axis if found.
 		 *@param [in] collisionMeshA,collisionMeshB : the meshes that will be projected into the face normals of 'collisionMeshA'
 		 *@param [in] transformA,transformB : the world transforms of collisionMeshA and collisionMeshB
 		 *@param [in] positionA,positionB : the world position of collisionMeshA and collisionMeshB
 		 *@param [out] seperationFound: the result of substracting the supportPoint of A and B projected into the seperating Axis from the vector
 		 coming from positionA to positionB, projected into the seperating Axis
 		*/
-		static bool FindSeperatingAxisByBruteForceEdgeToEdgeCheck(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
+		static bool FindSeparatingAxisByBruteForceEdgeToEdgeCheck(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
 			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound);
 
-
-		static bool FindSperatingAxisByGaussMapEdgeToEdgeCheck(ConvexCollider * colliderA, ConvexCollider * colliderB,
-			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound);
-
+		/**@brief Attempts to find the seperating axis between 2 meshes by iterating through only the edges that create a valid seperating axis.
+		Returns true id a seperating axis is found.The function will also output the seperation amount if a seperation axis if found.
+		 *@param [in] collisionMeshA,collisionMeshB : the meshes that will be projected into the face normals of 'collisionMeshA'
+		 *@param [in] transformA,transformB : the world transforms of collisionMeshA and collisionMeshB
+		 *@param [in] positionA,positionB : the world position of collisionMeshA and collisionMeshB
+		 *@param [out] seperationFound: the result of substracting the supportPoint of A and B projected into the seperating Axis from the vector
+		*/
+		static bool FindSeparatingAxisByGaussMapEdgeToEdgeCheck(ConvexCollider * colliderA, ConvexCollider * colliderB,
+			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound,
+			HalfEdgeEdge * firstEdge,HalfEdgeEdge *secondEdge);
 
 
 		//------------------------------------------------- Collision Detection Helper functions  ----------------------------------------//
@@ -111,11 +148,21 @@ namespace PXG
 		 *@param [in] meshTransform : the transform of the mesh
 		 *@param [in] position : the world position of the mesh
 		 *@param [in] direction : the direction in which we would measure the distance with
-		 *@param [out] index : the index of the furthest vertex, will return -1 if such index is not found
+		 *@param [out] index : an integer representing the index of the furthest vertex, will return -1 if such index is not found
+		 *@param [out] vertexWorldPosition : a Vector3 representing the world position of the given index
 		*/
 		static void GetSupportPoint(std::shared_ptr<Mesh> mesh, const Mat4& meshTransform, const Vector3& position,const Vector3& direction, unsigned int & index, Vector3& vertexWorldPosition);
 
-
+		/**@brief finds the 2 vertices that represent furthest vertex in a given direction and the direction opposite to it.
+		 **@param [in] mesh : the given mesh that we would like to know its furthest point
+		 *@param [in] meshTransform : the transform of the mesh
+		 *@param [in] position : the world position of the mesh
+		 *@param [in] direction : the direction in which we would measure the distance with
+		 *@param [out] indexMin : the index of the furthest vertex in the direction parrallel to the Vector3 'direction', will return -1 if such index is not found
+		 *@param [out] vertexWorldPositionMin : a Vector3 representing the world position of the vertex at index 'indexMin'
+		 *@param [out] indexMax : the index of the furthest vertex in the direction opposite to the Vector3 'direction', will return -1 if such index is not found
+		 *@param [out] vertexWorldPositionMax : a Vector3 representing the world position of the vertex at index 'indexMax'
+		*/
 		static void GetSupportPointMinMax(std::shared_ptr<Mesh> mesh, const Mat4& meshTransform, const Vector3& position, const Vector3& direction
 			, unsigned int & indexMin,  Vector3& vertexWorldPositionMin, unsigned int & indexMax,  Vector3& vertexWorldPositionMax);
 
@@ -145,12 +192,30 @@ namespace PXG
 		*/
 		static void GetMinMaxPositionOfVertices(Vector3& min, Vector3& max,const std::vector<Vector3> vertices);
 
+		/** @brief returns true if given 2 Half Edges and their respective world transform, create a Minkoswski Face
+		 *@param [in] edgeA: a HalfEdgeEdge from the first Mesh
+		 *@param [in] edgeB: a HalfEdgeEdge another Mesh
+		 *param [in] transformA: the world transform of the first Mesh
+		 *@param [in] transformB: the world transform of the second Mesh
+		*/
+		static bool AttemptBuildMinkowskiFace(HalfEdgeEdge* edgeA, HalfEdgeEdge* edgeB,const Mat4& transformA,const Mat4& transformB);
+
+		/** @bried returns true if given 2 arcs of a sphere, one represented by transformedNormalA1 and transformedA2,
+		and another arc represented by transformedNormalB1 and transformedNormalB2 are intersecting
+		 *@param [in] transformedA1: a Vector3 representing the start of the first arc
+		 *@param [in] transformedA2: a Vector3 representing the end of the first arc
+		 *@param [in] transformedB1: a Vector3 representing the start of the second arc
+		 *@param [in] transofrmedB2: a Vector3 representing the end of the second arc
+		*/
+		static bool IsMinkowskiFace(Vector3 & transformedNormalA1, Vector3 & transformedNormalA2,
+			Vector3 & transformedNormalB1, Vector3 & transformedNormalB2);
+
+
 
 	private:
-
-		
-		
-		void recursiveRetrievePhysicsComponent(std::shared_ptr<GameObject> rootObj, std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, Mat4 transform);
+		/**
+		*/
+		void recursiveRetrievePhysicsComponent(std::shared_ptr<GameObject> rootObj, std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, Mat4 transform,int id = 0);
 
 		//----------------------------------------------- Broad Phase Optimization Algorithms --------------------------------------------------------------------------//
 
@@ -168,7 +233,6 @@ namespace PXG
 		//----------------------------------------------- Octree Helper Function --------------------------------------------------------------------------//
 
 		void recursiveOctreeSplit(std::shared_ptr<OctreeNode> node, std::vector<std::shared_ptr<OctreeNode>>& finalNodes, int currentdepthCount, const int minObjectCount = 3, const int maxDepthCount = 6);
-
 
 
 		//-------------------------------------------------- Raycasting -----------------------------------------------------------//
@@ -189,10 +253,12 @@ namespace PXG
 		static void RayTriangleIntersection(Vector3 v1, Vector3 v2, Vector3 v3, const Vector3& rayPosition, const Vector3& rayDirection,
 			Mat4 objectTransform, HitInfo& hitInfo, std::shared_ptr<GameObject> owner);
 
-
 		static void recursiveGetMeshComponents(std::vector<std::shared_ptr<MeshComponent>>& MeshComponentList, std::shared_ptr<GameObject> gameObject);
 
 		const float tickTime = 0.02f;
+
+		const int maxTickCountPerFrame = 3;
+		int currentFrameTickCount = 0;
 
 		static double gravity;
 

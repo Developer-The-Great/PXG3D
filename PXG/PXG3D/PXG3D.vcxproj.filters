@@ -143,6 +143,10 @@
     <ClCompile Include="DebugMeshObject.cpp">
       <Filter>debug</Filter>
     </ClCompile>
+    <ClCompile Include="BenchmarkTimer.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Rigidbody.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ScreenSize.h" />
@@ -359,6 +363,10 @@
     <ClInclude Include="HalfEdgeEdge.h">
       <Filter>core\physics</Filter>
     </ClInclude>
+    <ClInclude Include="BenchmarkTimer.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Rigidbody.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PXGColor.vert.glsl" />

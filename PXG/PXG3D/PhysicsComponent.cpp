@@ -45,6 +45,7 @@ namespace PXG
 		for (const auto& mesh : meshComponentMeshes)
 		{
 			std::shared_ptr<ConvexCollider> convexCollider = std::make_shared<ConvexCollider>();
+			convexCollider->SetPhysicsComponentOwner(this);
 			convexCollider->SetMesh(mesh);
 			physicsColliders.push_back(convexCollider);
 

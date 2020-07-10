@@ -13,7 +13,7 @@ namespace PXG
 	struct AABBBox;
 	//struct Vector3;
 
-	class PhysicsComponent : public Component
+	class PhysicsComponent : public Component,  std::enable_shared_from_this< PhysicsComponent >
 	{
 	public:
 		virtual void Start() override;
