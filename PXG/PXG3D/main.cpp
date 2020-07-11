@@ -152,7 +152,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		Debug::SetDebugState(true);
-		PXG::BenchmarkTimer gameLoopTimer("The game loop");
+		//PXG::BenchmarkTimer gameLoopTimer("The game loop");
 
 		glClearColor(0.4f, 0.5f, 0.8f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -170,7 +170,7 @@ int main()
 		
 		{
 			float remainingTick;
-			PXG::BenchmarkTimer gameLoopTimer("The physics loop");
+			//PXG::BenchmarkTimer gameLoopTimer("The physics loop");
 			while (physicsEngine->IsTicking())
 			{
 
@@ -188,7 +188,7 @@ int main()
 			}
 
 			physicsEngine->Integrate(physicsEngine->GetTickTimeRemaining());
-			physicsEngine->ResetTickTimeRemaining();
+			//physicsEngine->ResetTickTimeRemaining();
 		}
 		
 

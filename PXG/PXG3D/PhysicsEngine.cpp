@@ -29,7 +29,7 @@
 
 namespace PXG
 {
-	double PhysicsEngine::gravity = -19.85;
+	Vector3 PhysicsEngine::gravity = Vector3(0,-9.8,0);
 
 	PhysicsEngine::PhysicsEngine()
 	{
@@ -52,8 +52,7 @@ namespace PXG
 		{
 			if (auto rigidbody = child->GetComponent<Rigidbody>())
 			{
-				Debug::Log("Integrating {0} by {1}" , child->name,dt);
-
+				
 				rigidbody->Integrate(dt);
 			}
 		}
@@ -122,7 +121,7 @@ namespace PXG
 
 	void PhysicsEngine::CheckCollisions()
 	{
-		BenchmarkTimer timer("CheckCollisions()");
+		//BenchmarkTimer timer("CheckCollisions()");
 		std::vector<PhysicsSceneGraphIterationInfo> iterationResult;
 		Mat4 transform = world->GetTransform()->GetWorldTransform();
 
@@ -201,12 +200,12 @@ namespace PXG
 		}
 	}
 
-	double PhysicsEngine::GetGravity()
+	Vector3 PhysicsEngine::GetGravity()
 	{
 		return gravity;
 	}
 
-	void PhysicsEngine::SetGravity(double newGravity)
+	Vector3 PhysicsEngine::SetGravity(Vector3 newGravity)
 	{
 		gravity = newGravity;
 

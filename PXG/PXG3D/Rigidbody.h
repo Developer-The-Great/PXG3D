@@ -50,7 +50,7 @@ namespace PXG
 		void semiImplicitEulerIntegration(Transform * transform,float dt);
 	
 		//TODO please create an actual wrapper for mat3 at some point...
-		glm::mat3 inverseInertiaTensor;
+		glm::mat3 inverseInertiaTensor = glm::mat3(1.0);
 
 	};
 

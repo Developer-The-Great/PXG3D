@@ -13,12 +13,13 @@ namespace PXG
 	{
 		auto transform = GetOwner()->GetTransform();
 
-
+		Debug::Log("FixedUpdate(float tick)");
 		if (transform)
 		{
 
 			if (Input::GetKey(KeyCode::W))
 			{
+				Debug::Log("w pressed");
 				Vector3 forward = transform->GetForward();
 				transform->translate(forward * speed * tick);
 			}

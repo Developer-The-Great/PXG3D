@@ -70,12 +70,12 @@ namespace PXG
 		void CheckCollisions();
 
 		/**@brief returns the gravity the physicsEngine uses*/
-		static double GetGravity();
+		static Vector3 GetGravity();
 
 		/**@brief sets the gravity the physicsEngine uses
 		 *@param [in]: a double representing new gravity used
 		*/
-		static void SetGravity(double newGravity);
+		static Vector3 SetGravity(Vector3 newGravity);
 
 		//TODO documentation for this
 		void ResetTickTimeRemaining();
@@ -263,7 +263,8 @@ namespace PXG
 		const int maxTickCountPerFrame = 3;
 		int currentFrameTickCount = 0;
 
-		static double gravity;
+
+		static Vector3 gravity;
 
 		float tickTimeRemaining;
 

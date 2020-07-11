@@ -44,6 +44,8 @@
 #include "ConvexCollider.h"
 #include "Time.h"
 #include "Rigidbody.h"
+#include "ForceAdderTestComponent.h"
+
 namespace PXG
 {
 
@@ -61,11 +63,11 @@ namespace PXG
 		font = new Font(config::PXG_FONT_PATH + "Roboto-Regular.ttf", 20);
 
 		Input::AddKeysToTrack(
-			KeyCode::A, KeyCode::W, KeyCode::S, KeyCode::D, KeyCode::Q, KeyCode::E, KeyCode::K, KeyCode::J, KeyCode::Z,
+			KeyCode::A, KeyCode::W, KeyCode::S, KeyCode::D, KeyCode::Q, KeyCode::E, KeyCode::K, KeyCode::J, KeyCode::Z,KeyCode::F,
 			KeyCode::LeftMouse, KeyCode::RightMouse, KeyCode::MiddleMouse
 			, KeyCode::Enter
 			,KeyCode::KeyUp,KeyCode::KeyRight,KeyCode::KeyDown,KeyCode::KeyLeft
-			, KeyCode::X, KeyCode::Y, KeyCode::Z
+			, KeyCode::X, KeyCode::Y, KeyCode::Z,KeyCode::T
 			,KeyCode::KP0, KeyCode::KP2);
 
 		//---------------------------Initialize Textures---------------------------------------//
@@ -348,6 +350,7 @@ namespace PXG
 		orangeObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 		orangeObject->name = "orangeObj";
 		orangeObject->AddComponent(std::make_shared<Rigidbody>());
+		orangeObject->AddComponent(std::make_shared<ForceAdderTestComponent>(Vector3(0,0.9,0)));
 
 		orangeObject->GetTransform()->SetLocalPosition(Vector3(1.0, -2.0, -6.0));
 		orangeObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));

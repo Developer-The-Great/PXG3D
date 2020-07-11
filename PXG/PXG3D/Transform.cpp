@@ -52,8 +52,9 @@ namespace PXG
 
 	void Transform::rotate(const Quaternion& rotationQuat)
 	{
-		rotation = rotationQuat * rotation;
-		rotation = rotation.Normalized();
+		
+		rotation = (rotationQuat * rotation).Normalized();
+		
 
 	}
 

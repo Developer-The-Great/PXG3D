@@ -98,6 +98,7 @@
     <ClCompile Include="DebugDrawingManager.cpp" />
     <ClCompile Include="DebugMeshObject.cpp" />
     <ClCompile Include="font.cpp" />
+    <ClCompile Include="ForceAdderTestComponent.cpp" />
     <ClCompile Include="FreeMovementComponent.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="imgui\examples\imgui_impl_glfw.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="FileConfig.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="font.h" />
+    <ClInclude Include="ForceAdderTestComponent.h" />
     <ClInclude Include="FreeMovementComponent.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GLMHeaders.h" />

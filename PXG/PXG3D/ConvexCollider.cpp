@@ -95,10 +95,10 @@ namespace PXG
 
 		manifold.isColliding = true;
 
-		Debug::Log("No Seperating Axis was found");
-		Debug::Log("Collision found between gameObject: {0} and gameObject: {1}"
+		//Debug::Log("No Seperating Axis was found");
+		/*Debug::Log("Collision found between gameObject: {0} and gameObject: {1}"
 			, manifold.physicsComponentA->GetOwner()->name
-			, manifold.physicsComponentB->GetOwner()->name);
+			, manifold.physicsComponentB->GetOwner()->name);*/
 		
 
 	}

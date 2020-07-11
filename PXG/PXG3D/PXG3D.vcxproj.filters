@@ -147,6 +147,7 @@
       <Filter>debug</Filter>
     </ClCompile>
     <ClCompile Include="Rigidbody.cpp" />
+    <ClCompile Include="ForceAdderTestComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ScreenSize.h" />
@@ -367,6 +368,7 @@
       <Filter>debug</Filter>
     </ClInclude>
     <ClInclude Include="Rigidbody.h" />
+    <ClInclude Include="ForceAdderTestComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PXGColor.vert.glsl" />
