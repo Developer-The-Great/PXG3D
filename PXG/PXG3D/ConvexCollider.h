@@ -26,6 +26,13 @@ namespace PXG
 
 		virtual void CheckCollisionWith(SphereCollider* sphereCollider, Manifold& manifold) override;
 		virtual void CheckCollisionWith(ConvexCollider* convexCollider, Manifold& manifold) override;
+
+
+		virtual void FillInManifold(std::shared_ptr<PhysicsCollider> otherPhysicsCollider, Manifold& manifold) override;
+
+		virtual void FillInManifoldWith(ConvexCollider* convexCollider, Manifold& manifold) override;
+		virtual void FillInManifoldWith(SphereCollider* sphereCollider, Manifold& manifold)  override;
+
 		
 		void SetMesh(std::shared_ptr<Mesh> mesh) override;
 

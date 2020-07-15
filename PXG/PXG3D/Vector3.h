@@ -27,6 +27,13 @@ namespace PXG
 			z = 0;
 		}
 
+		Vector3(float val)
+		{
+			x = val;
+			y = val;
+			z = val;
+		}
+
 		Vector3(glm::vec3 GLMVec3)
 		{
 			x = GLMVec3.x;
@@ -170,6 +177,12 @@ namespace PXG
 		{
 			return glm::length(glm::vec3(x, y, z));
 		}
+
+		bool IsZeroVector() const
+		{
+			return Mathf::FloatCompare(x, 0.0f) && Mathf::FloatCompare(y, 0.0f) && Mathf::FloatCompare(z, 0.0f);
+		}
+
 		float getAngle(Vector3 a, Vector3 b)
 		{
 			float angle = 0;

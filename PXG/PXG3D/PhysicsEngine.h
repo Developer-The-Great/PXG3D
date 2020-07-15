@@ -9,17 +9,20 @@ namespace PXG
 	struct HalfEdgeEdge;
 	struct Vector3;
 	struct HitInfo;
+	struct Mat4;
+	struct OctreeNode;
+
 	class GameObject;
 	class PhysicsComponent;
 	class MeshComponent;
 	class ConvexCollider;
+	class DebugDrawingManager;
 
 	struct PhysicsSceneGraphIterationInfo;
 	struct PhysicsComponentContainer;
 	class World;
 	class Mesh;
-	struct Mat4;
-	struct OctreeNode;
+
 
 	class PhysicsEngine
 	{
@@ -75,7 +78,10 @@ namespace PXG
 		/**@brief sets the gravity the physicsEngine uses
 		 *@param [in]: a double representing new gravity used
 		*/
-		static Vector3 SetGravity(Vector3 newGravity);
+		static void SetGravity(Vector3 newGravity);
+
+		void SetDebugDrawer(std::shared_ptr< DebugDrawingManager> debugDrawer);
+
 
 		//TODO documentation for this
 		void ResetTickTimeRemaining();
@@ -96,13 +102,19 @@ namespace PXG
 
 		static std::function<void(const std::vector<PhysicsSceneGraphIterationInfo>&, std::vector<PhysicsComponentContainer>&)> CheckFaceNormalsOfMeshForSeperationAxis;
 
+
+
+		//------------------------------------------------- Collision Detection Helper functions  ----------------------------------------//
+
+
+
 		/**@brief Finds the seperating axis between 2 meshes by iterating through the face normals of 'collisionMeshA' and
 		projecting the support points of collisionMeshA and collisionMeshB and checking for colllision under the projection
 		Returns a true if a seperation axis is found. The function will also seperation amount if a seperation axis if found.
 		 *@param [in] collisionMeshA,collisionMeshB : the meshes that will be projected into the face normals of 'collisionMeshA'
 		 *@param [in] transformA,transformB : the world transforms of collisionMeshA and collisionMeshB
 		 *@param [in] positionA,positionB : the world position of collisionMeshA and collisionMeshB
-		 *@param [out] seperationFound: the result of substracting the supportPoint of A and B projected into the seperating Axis from the vector 
+		 *@param [out] seperationFound: the result of substracting the supportPoint of A and B projected into the seperating Axis from the vector
 		 coming from positionA to positionB, projected into the seperating Axis
 		*/
 		static bool FindSeperatingAxisByProjectingMeshAandBToFaceNormals(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
@@ -141,10 +153,7 @@ namespace PXG
 		*/
 		static bool FindSeparatingAxisByGaussMapEdgeToEdgeCheck(ConvexCollider * colliderA, ConvexCollider * colliderB,
 			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound,
-			HalfEdgeEdge * firstEdge,HalfEdgeEdge *secondEdge);
-
-
-		//------------------------------------------------- Collision Detection Helper functions  ----------------------------------------//
+			HalfEdgeEdge * firstEdge, HalfEdgeEdge *secondEdge);
 
 		/**@brief finds the furthest vertex in a certain direction of a mesh with a certain transform.
 		 *@param [in] mesh : the given mesh that we would like to know its furthest point
@@ -155,6 +164,10 @@ namespace PXG
 		 *@param [out] vertexWorldPosition : a Vector3 representing the world position of the given index
 		*/
 		static void GetSupportPoint(std::shared_ptr<Mesh> mesh, const Mat4& meshTransform, const Vector3& position,const Vector3& direction, unsigned int & index, Vector3& vertexWorldPosition);
+
+		//TODO Document this
+		static float FindVectorToPlaneInterpolation(const Vector3& startPoint, const Vector3& endPoint, const Vector3& planePosition, const Vector3& planeNormal);
+
 
 		/**@brief finds the 2 vertices that represent furthest vertex in a given direction and the direction opposite to it.
 		 **@param [in] mesh : the given mesh that we would like to know its furthest point
@@ -195,6 +208,8 @@ namespace PXG
 		*/
 		static void GetMinMaxPositionOfVertices(Vector3& min, Vector3& max,const std::vector<Vector3> vertices);
 
+
+
 		/** @brief returns true if given 2 Half Edges and their respective world transform, create a Minkoswski Face
 		 *@param [in] edgeA: a HalfEdgeEdge from the first Mesh
 		 *@param [in] edgeB: a HalfEdgeEdge another Mesh
@@ -203,7 +218,7 @@ namespace PXG
 		*/
 		static bool AttemptBuildMinkowskiFace(HalfEdgeEdge* edgeA, HalfEdgeEdge* edgeB,const Mat4& transformA,const Mat4& transformB);
 
-		/** @bried returns true if given 2 arcs of a sphere, one represented by transformedNormalA1 and transformedA2,
+		/** @brief returns true if given 2 arcs of a sphere, one represented by transformedNormalA1 and transformedA2,
 		and another arc represented by transformedNormalB1 and transformedNormalB2 are intersecting
 		 *@param [in] transformedA1: a Vector3 representing the start of the first arc
 		 *@param [in] transformedA2: a Vector3 representing the end of the first arc
@@ -212,6 +227,11 @@ namespace PXG
 		*/
 		static bool IsMinkowskiFace(Vector3 & transformedNormalA1, Vector3 & transformedNormalA2,
 			Vector3 & transformedNormalB1, Vector3 & transformedNormalB2);
+
+		/** @brief: Finds the polyhedron created by clipping the incidentPolyhedron with the reference polyhedron
+		*/
+		static void SutherlandHodgmanClipping(ConvexCollider* referencePolyhedron, ConvexCollider* incidentPolyhedron, std::vector<Vector3>& contactPoints);
+
 
 
 
@@ -268,7 +288,8 @@ namespace PXG
 
 		float tickTimeRemaining;
 
-		std::shared_ptr<World> world;
+		std::shared_ptr<World> world = nullptr;
+		std::shared_ptr<DebugDrawingManager> debugDrawer = nullptr;
 
 		const int minObjectCount = 4;
 		const int maxDepthCount = 5;

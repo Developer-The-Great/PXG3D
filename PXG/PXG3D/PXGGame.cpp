@@ -325,9 +325,6 @@ namespace PXG
 
 		//
 		////--------------------Physics Test OBB EdgeToEdge --------------------------//
-
-
-		///*
 		
 		GameObj yellowObject = Instantiate();
 		yellowObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
@@ -350,7 +347,7 @@ namespace PXG
 		orangeObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 		orangeObject->name = "orangeObj";
 		orangeObject->AddComponent(std::make_shared<Rigidbody>());
-		orangeObject->AddComponent(std::make_shared<ForceAdderTestComponent>(Vector3(0,0.9,0)));
+		orangeObject->AddComponent(std::make_shared<ForceAdderTestComponent>(PhysicsEngine::GetGravity() * -10.0f));
 
 		orangeObject->GetTransform()->SetLocalPosition(Vector3(1.0, -2.0, -6.0));
 		orangeObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
@@ -358,6 +355,10 @@ namespace PXG
 		orangeObject->GetTransform()->rotate(Vector3(1, 0, 0), 90.0f);
 
 		world->AddToChildren(orangeObject);
+
+
+
+
 		//*/
 
 		////--------------------Physics Test OBB  --------------------------//

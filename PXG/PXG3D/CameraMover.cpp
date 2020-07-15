@@ -13,7 +13,7 @@ namespace PXG
 	{
 		auto transform = GetOwner()->GetTransform();
 
-		Debug::Log("FixedUpdate(float tick)");
+		//Debug::Log("FixedUpdate(float tick)");
 		if (transform)
 		{
 

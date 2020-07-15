@@ -75,22 +75,13 @@ namespace PXG
 
 	void PXG::Rigidbody::semiImplicitEulerIntegration(Transform * transform, float dt)
 	{
+
 		//add force accumulation to acceleration
 		Vector3 newAcceleration = forceAccumulator * inverseMass;
 		
-
 		acceleration =  newAcceleration;
-
-		velocity = velocity + (newAcceleration + Vector3(0, 0, 0)) * dt;
-
-		//if (!Mathf::FloatCompare((newAcceleration).y, 0.0f))
-		//{
-		//	Debug::Log("(newAcceleration {0} ", (newAcceleration.ToString()));
-
-		//	Debug::Log("(newAcceleration {0} ", (newAcceleration.ToString()));
-		//	Debug::Log("(newAcceleration + Vector3(0, -9, 0)) * dt {0} ", ((newAcceleration + Vector3(0, -9, 0)) * dt).ToString());
-		//}
-
+		
+		velocity = velocity + (newAcceleration + PhysicsEngine::GetGravity()) * dt;
 
 		transform->translate(velocity * dt);
 
@@ -102,19 +93,33 @@ namespace PXG
 
 		//Debug::Log("(inverseInertiaTensor {0} ", (glm::to_string(inverseInertiaTensor)));
 
-		angularVelocity = angularVelocity + newAngularAcceleration * dt;
+		angularVelocity = angularVelocity + (newAngularAcceleration ) * dt;
+
+		angularVelocity = angularVelocity * (0.999f);
+
+		Quaternion quat;
 
 
-		Quaternion quat(1, angularVelocity.x, angularVelocity.y, angularVelocity.z);
-
-
-		transform->rotate((quat * 0.5f * dt).Normalized());
-
-		if (!Mathf::FloatCompare(torqueAccumulator.Length(), 0.0f))
+		if (!angularVelocity.IsZeroVector())
 		{
-			Debug::Log("(newAngularAcceleration {0} ", (newAngularAcceleration.ToString()));
-			Debug::Log("(quat {0}", (quat.ToString()));
+			float angle = angularVelocity.Length();
+
+			Vector3 axis = angularVelocity / angle * Mathf::Sin(0.5f * angle * dt);
+
+			quat.w = Mathf::Cos(0.5 * angle * dt);
+			quat.x = axis.x;
+			quat.y = axis.y;
+			quat.z = axis.z;
+
+			if (Mathf::FloatCompare(quat.Length(), 0.0))
+			{
+				quat = Quaternion();
+			}
+			
+			transform->rotate(( quat ));
+
 		}
+		
 
 		resetAccumulators();
 

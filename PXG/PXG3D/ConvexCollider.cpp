@@ -103,12 +103,39 @@ namespace PXG
 
 	}
 
+	void ConvexCollider::FillInManifold(std::shared_ptr<PhysicsCollider> otherPhysicsCollider, Manifold & manifold)
+	{
+		otherPhysicsCollider->FillInManifoldWith(this, manifold);
+	}
+
+	void ConvexCollider::FillInManifoldWith(ConvexCollider * convexCollider, Manifold & manifold)
+	{
+
+		//decide which collider would be the reference polygon
+		std::vector<Vector3> contactPoints;
+
+		PhysicsEngine::SutherlandHodgmanClipping(this, convexCollider, contactPoints);
+
+
+		//use sutherland-hodgman to get the clipping points of the polygon
+
+
+	}
+
+	void ConvexCollider::FillInManifoldWith(SphereCollider * sphereCollider, Manifold & manifold)
+	{
+	}
+
 	void ConvexCollider::SetMesh(std::shared_ptr<Mesh> mesh)
 	{
 		PhysicsCollider::SetMesh(mesh);
 
 		///*
+
+
+		// holds the "pointer" to the unique indices inside mesh->Indices
 		std::vector<int> uniqueIndex;
+		// stores the unique vertices of the mesh
 		std::vector<Vector3> uniquePositions;
 
 		int uniqueIndexCount = -1;
@@ -119,13 +146,13 @@ namespace PXG
 
 			bool isVectorSeen = false;
 			//have we found this vector before?
-			for (int i = 0; i < uniquePositions.size(); i++)
+			for (int j = 0; j < uniquePositions.size(); j++)
 			{
 				
-				if (Mathf::FloatVectorCompare(uniquePositions.at(i), position))
+				if (Mathf::FloatVectorCompare(uniquePositions.at(j), position))
 				{
 					//we have seen this vector before
-					uniqueIndex.push_back(i);
+					uniqueIndex.push_back(j);
 					isVectorSeen = true;
 					break;
 				}
@@ -136,6 +163,7 @@ namespace PXG
 				//we have not seen this position before,add it 
 				uniqueIndexCount++;
 				uniqueIndex.push_back(uniqueIndexCount);
+				
 				uniquePositions.push_back(position);
 				
 			}
@@ -154,22 +182,26 @@ namespace PXG
 			unsigned int firstVertIndex = mesh->Indices.at(i);
 			unsigned int secondVertIndex = mesh->Indices.at(i+1);
 			unsigned int thirdVertIndex = mesh->Indices.at(i+2);
+
+			unsigned int uniqueFirstIndex = uniqueIndex.at(firstVertIndex);
+			unsigned int uniqueSecondIndex = uniqueIndex.at(secondVertIndex);
+			unsigned int uniqueThirdIndex = uniqueIndex.at(thirdVertIndex);
 			
 			//instantiate first half edge
-			edges.push_back(new HalfEdgeEdge());
+			edges.push_back(new HalfEdgeEdge(uniqueFirstIndex));
 			edges.back()->vert = &mesh->Vertices.at(firstVertIndex);
 
 			//std::map<std::pair<unsigned int, unsigned int>, HalfEdgeEdge*> ;
 
-			std::pair<unsigned int, unsigned int> firstPairing(uniqueIndex.at(firstVertIndex), uniqueIndex.at(secondVertIndex));
+			std::pair<unsigned int, unsigned int> firstPairing(uniqueFirstIndex, uniqueSecondIndex);
 			vertexIndexToHalfEdge.insert(std::map<edgeVertexIndexPair, HalfEdgeEdge*>::value_type(firstPairing, edges.back()));
 
 
 			//instantiate second half edge
-			edges.push_back(new HalfEdgeEdge());
+			edges.push_back(new HalfEdgeEdge(uniqueSecondIndex));
 			edges.back()->vert = &mesh->Vertices.at(secondVertIndex);
 
-			edgeVertexIndexPair secondPairing(uniqueIndex.at(secondVertIndex), uniqueIndex.at(thirdVertIndex));
+			edgeVertexIndexPair secondPairing(uniqueSecondIndex, uniqueThirdIndex);
 			vertexIndexToHalfEdge.insert(VertexIndexToHalfEdgePtr::value_type(secondPairing, edges.back()));
 
 			//link first half edge to second half edge
@@ -177,10 +209,10 @@ namespace PXG
 
 
 			//instantiate third half edge
-			edges.push_back(new HalfEdgeEdge());
+			edges.push_back(new HalfEdgeEdge(uniqueThirdIndex));
 			edges.back()->vert = &mesh->Vertices.at(thirdVertIndex);
 
-			edgeVertexIndexPair thirdPairing(uniqueIndex.at(thirdVertIndex), uniqueIndex.at(firstVertIndex));
+			edgeVertexIndexPair thirdPairing(uniqueThirdIndex, uniqueFirstIndex);
 			vertexIndexToHalfEdge.insert(VertexIndexToHalfEdgePtr::value_type(thirdPairing, edges.back()));
 
 			//link second half edge to third half edge

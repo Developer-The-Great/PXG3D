@@ -43,21 +43,17 @@ namespace PXG
 
 		PhysicsCollider() = default;
 
-		/*virtual bool BoundingVolumeCheck(std::shared_ptr<PhysicsCollider> otherPhysicsCollider) = 0;
-
-		virtual bool BoundingVolumeCheckWith(std::shared_ptr<SphereCollider> sphereCollider) = 0;
-
-		virtual bool BoundingVolumeCheckWith(std::shared_ptr<ConvexCollider> convexCollider) = 0;*/
-
-
-
-
-
 		virtual void CheckCollision(std::shared_ptr<PhysicsCollider> otherPhysicsCollider,Manifold& manifold) { }
 
 		virtual void CheckCollisionWith( SphereCollider* sphereCollider, Manifold& manifold) { }
 
 		virtual void CheckCollisionWith(ConvexCollider* convexCollider, Manifold& manifold) {  }
+
+		virtual void FillInManifold(std::shared_ptr<PhysicsCollider> otherPhysicsCollider,Manifold& manifold) { }
+
+		virtual void FillInManifoldWith(ConvexCollider* convexCollider, Manifold& manifold) { }
+
+		virtual void FillInManifoldWith(SphereCollider* sphereCollider, Manifold& manifold) { }
 
 		
 

@@ -16,8 +16,11 @@
 #include "ConvexCollider.h"
 #include "HalfEdgeEdge.h"
 #include "World.h"
+#include "DebugDrawingManager.h"
+#include "ClippintIterInfo.h"
 
 #include <array>
+#include <limits>
 #include "OctreeNode.h"
 #include "DebugDrawingManager.h"
 #include "Time.h"
@@ -177,12 +180,17 @@ namespace PXG
 
 
 							colliderA->CheckCollision(colliderB, m);
-							resultingManifolds.push_back(m);
 
+							if (m.isColliding)
+							{
+								colliderA->FillInManifold(colliderB, m);
+								resultingManifolds.push_back(m);
+							}
 
 							collisionPairings.insert(std::pair<unsigned int, unsigned int>(PSGIIA.id, PSGIIB.id));
 
 						}
+
 					}
 				}
 
@@ -205,10 +213,15 @@ namespace PXG
 		return gravity;
 	}
 
-	Vector3 PhysicsEngine::SetGravity(Vector3 newGravity)
+	void PhysicsEngine::SetGravity(Vector3 newGravity)
 	{
 		gravity = newGravity;
 
+	}
+
+	void PhysicsEngine::SetDebugDrawer(std::shared_ptr<DebugDrawingManager> debugDrawer)
+	{
+		this->debugDrawer = debugDrawer;
 	}
 
 	void PhysicsEngine::ResetTickTimeRemaining()
@@ -799,6 +812,11 @@ namespace PXG
 		vertexWorldPosition = meshTransform.ToGLM() * glm::vec4(mesh->Vertices.at(index).position.ToGLMVec3(),1);
 	}
 
+	float PhysicsEngine::FindVectorToPlaneInterpolation(const Vector3& startPoint, const Vector3& endPoint, const Vector3& planePosition,const Vector3& planeNormal)
+	{
+		return Mathf::Dot(planePosition - startPoint, planeNormal) / Mathf::Dot((endPoint - startPoint).Normalized(),planeNormal);
+	}
+
 	void PhysicsEngine::GetSupportPointMinMax(std::shared_ptr<Mesh> mesh, const Mat4 & meshTransform, const Vector3 & position, const Vector3 & direction,
 		unsigned int & indexMin, Vector3 & vertexWorldPositionMin, unsigned int & indexMax, Vector3 & vertexWorldPositionMax)
 	{
@@ -867,19 +885,6 @@ namespace PXG
 
 		if (d > ra + rb)
 		{
-
-			/*Debug::Log("CenterAToSupportPointA {0}", CenterAToSupportPointA.ToString());
-			Debug::Log("CenterBToSupportPointB {0}", CenterBToSupportPointB.ToString());
-
-			Debug::Log("ra {0}", ra);
-			Debug::Log("rb {0}", rb);
-			Debug::Log("ra + rb {0}", (ra+rb));
-			Debug::Log("d {0}", d);
-			Debug::Log("Axis of seperation found! It is perpendicular to {0}", glm::to_string(l));*/
-
-			//Debug::Log("No Collision found between gameObject: {0} and gameObject: {1}"
-				//, manifold.physicsComponentA->GetOwner()->name
-				//, manifold.physicsComponentB->GetOwner()->name);
 			seperationFound = d - ra + rb;
 
 			return true;
@@ -1051,8 +1056,69 @@ namespace PXG
 		return true;
 	}
 
+	void PhysicsEngine::SutherlandHodgmanClipping(ConvexCollider* referencePolyhedron, ConvexCollider* incidentPolyhedron, std::vector<Vector3>& contactPoints)
+	{
+
+		float floatMax = std::numeric_limits<float>::max();
+
+		//output list = an std::vector for the edges of the incidentPolyhedron
+
+		std::vector<ClippingIterInfo> outputResult;
+
+		for (auto edge : incidentPolyhedron->GetEdges())
+		{
+			ClippingIterInfo iterInfo(edge, std::make_shared<std::array<Vector3, 2>>());
+			outputResult.push_back(iterInfo);
+		}
+
+		//for each face in reference polygon (iterated as an indice array)
+		auto referenceMesh = referencePolyhedron->GetMesh();
+
+		for (int i = 0; i < referenceMesh->Indices.size(); i+=3)
+		{
+			Vector3 planePosition = referenceMesh->Vertices.at(i).position;
+			Vector3 planeNormal = referenceMesh->Vertices.at(i).normal;
+
+			auto inputResult = outputResult;
+
+			for (ClippingIterInfo iterInfo : inputResult)
+			{
+				bool isCurrentPointAbovePlane = false;
+				bool isNextPointAbovePlane = false;
 
 
+
+
+
+			}
+
+
+
+		}
+			//input list 
+
+			//get triangle normal and position
+			
+			//for each edge in inputlist 
+
+				//if both points of the edges are inside the plane
+					//store next point
+
+				//if first point is outside and second point is inside
+					//store intersection point
+					//store second point
+				
+				//if first point is inside and second point is outside 
+					//store intersection point
+
+				//if both points are outside 
+					//store none of them
+
+					
+		//debugDrawer->dr
+				
+
+	}
 
 	Vector3 PhysicsEngine::GetOrthographicCameraWorldPosition(float x, float y, float screenWidth, float screenHeight, std::shared_ptr<World> world)
 	{

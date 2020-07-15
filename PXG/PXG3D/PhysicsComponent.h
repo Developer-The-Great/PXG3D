@@ -13,9 +13,10 @@ namespace PXG
 	struct AABBBox;
 	//struct Vector3;
 
-	class PhysicsComponent : public Component,  std::enable_shared_from_this< PhysicsComponent >
+	class PhysicsComponent : public Component,  std::enable_shared_from_this<PhysicsComponent>
 	{
 	public:
+
 		virtual void Start() override;
 
 		virtual void FixedUpdate(float tick) override;
@@ -44,7 +45,7 @@ namespace PXG
 		* @param [in] parentTransform: the transform of the GameObject that this GameObject is parented to
 		* @param [in] view: the view matrix of the camera that is currently used to render the world
 		* @param [in] projection: the projection matrix of the camera that is currently used to render the world
-	   */ 
+	    */ 
 		void DrawPhysicsRepresentation(Mat4 parentTransform, Mat4 view, Mat4 projection);
 
 		std::shared_ptr<AABBBox> CreateAABBFromTransformedColliders(const Mat4& transform);

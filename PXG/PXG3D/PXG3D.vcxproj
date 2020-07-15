@@ -148,6 +148,7 @@
     <ClInclude Include="CameraMover.h" />
     <ClInclude Include="CameraRotator.h" />
     <ClInclude Include="Canvas.h" />
+    <ClInclude Include="ClippintIterInfo.h" />
     <ClInclude Include="CollisionCubeParams.h" />
     <ClInclude Include="ColorMaterial.h" />
     <ClInclude Include="Component.h" />

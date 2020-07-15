@@ -8,6 +8,22 @@ namespace PXG
 		Vertex* vert = nullptr;
 		HalfEdgeEdge * pairingEdge = nullptr;
 		HalfEdgeEdge * nextEdge = nullptr;
+		int index;
+		
+
+		HalfEdgeEdge(int uniqueIndex)
+		{
+			index = uniqueIndex;
+		}
+
+		/*public HalfEdgeEdge()
+		{
+
+		}*/
+		int GetNextIndex()
+		{
+			return nextEdge->index;
+		}
 
 		Vector3 GetEdgeDirection()
 		{

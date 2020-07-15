@@ -369,6 +369,7 @@
     </ClInclude>
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="ForceAdderTestComponent.h" />
+    <ClInclude Include="ClippintIterInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PXGColor.vert.glsl" />

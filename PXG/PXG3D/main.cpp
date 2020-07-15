@@ -137,6 +137,11 @@ int main()
 	gamePtr->Initialize();
 	gamePtr->Start();
 
+
+	physicsEngine->SetDebugDrawer(debugDrawingManager);
+
+
+
 	//-------------------------------------- GAME LOOP ------------------------------------//
 	glEnable(GL_DEPTH_TEST);
 
@@ -170,12 +175,12 @@ int main()
 		
 		{
 			float remainingTick;
-			//PXG::BenchmarkTimer gameLoopTimer("The physics loop");
+			PXG::BenchmarkTimer gameLoopTimer("The physics loop");
 			while (physicsEngine->IsTicking())
 			{
 
 				float tick = physicsEngine->DecreaseRemainingTickTime();
-
+				//Debug::Log("tick Amount {0}" , tick);
 				//fixed update on game
 				gamePtr->FixedUpdate(tick);
 
@@ -186,7 +191,7 @@ int main()
 				physicsEngine->IncrementTickCount();
 
 			}
-
+			//Debug::Log("physicsEngine->GetTickTimeRemaining() {0}", physicsEngine->GetTickTimeRemaining());
 			physicsEngine->Integrate(physicsEngine->GetTickTimeRemaining());
 			//physicsEngine->ResetTickTimeRemaining();
 		}
