@@ -30,9 +30,9 @@ namespace PXG
 		//returns the cross of a and b
 		static Vector3 Cross(Vector3 a, Vector3 b);
 		//returns the dot product of a and b
-		static float Dot(Vector3 a, Vector3 b);
+		static float Dot(const Vector3& a,const Vector3&  b) ;
 		//compares 2 floats
-		static bool FloatCompare(float a, float b);
+		static bool FloatCompare(float a, float b, float tolerance = FLT_EPSILON);
 
 		static bool FloatVectorCompare(Vector3 a, Vector3 b);
 

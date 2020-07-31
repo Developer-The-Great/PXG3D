@@ -17,15 +17,23 @@ namespace PXG
 
 		void AddForceAt(Vector3 force, Vector3 worldPosition);
 		
-		void AddImpulse(Vector3 velocity);
+		void AddVelocity(Vector3 velocity);
+
+		void AddAngularVelocity(Vector3 angularVelocity);
 
 		void Integrate(float dt);
 
 		void SetInertia(glm::mat3 inertiaTensor);
 
+		glm::mat3 GetInverseInertiaTensor();
+
 		void SetMass(float newMass);
 
 		Vector3 GetVelocity() const;
+
+		Vector3 GetAngularVelocity() const;
+
+		float GetInverseMass() const;
 
 		Vector3 GetAcceleration() const;
 

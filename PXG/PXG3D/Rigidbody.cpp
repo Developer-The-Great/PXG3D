@@ -27,10 +27,21 @@ namespace PXG
 		torqueAccumulator = torqueAccumulator + torque;
 
 	}
-
-	void Rigidbody::AddImpulse(Vector3 velocity)
+	//TODO override += operator
+	void Rigidbody::AddVelocity(Vector3 velocity)
 	{
+		this->velocity = this->velocity + velocity;
+		//Debug::Log(" velocity after addition {0} ", this->velocity.ToString());
+
 	}
+
+	void Rigidbody::AddAngularVelocity(Vector3 angularVelocity)
+	{
+		this->angularVelocity = this->angularVelocity + angularVelocity;
+	}
+
+	
+
 	void PXG::Rigidbody::Integrate(float dt)
 	{
 		if (isAsleep || Mathf::FloatCompare(0.0f,inverseMass)) { return; }
@@ -42,6 +53,11 @@ namespace PXG
 
 	void Rigidbody::SetInertia(glm::mat3 inertiaTensor)
 	{
+	}
+
+	glm::mat3 Rigidbody::GetInverseInertiaTensor()
+	{
+		return inverseInertiaTensor;
 	}
 
 	void Rigidbody::SetMass(float newMass)
@@ -59,6 +75,16 @@ namespace PXG
 	Vector3 Rigidbody::GetVelocity() const
 	{
 		return velocity;
+	}
+
+	Vector3 Rigidbody::GetAngularVelocity() const
+	{
+		return angularVelocity;
+	}
+
+	float Rigidbody::GetInverseMass() const
+	{
+		return inverseMass;
 	}
 
 	Vector3 Rigidbody::GetAcceleration() const
@@ -82,6 +108,7 @@ namespace PXG
 		acceleration =  newAcceleration;
 		
 		velocity = velocity + (newAcceleration + PhysicsEngine::GetGravity()) * dt;
+		Debug::Log("velocity {0}", velocity.ToString());
 
 		transform->translate(velocity * dt);
 
@@ -98,7 +125,6 @@ namespace PXG
 		angularVelocity = angularVelocity * (0.999f);
 
 		Quaternion quat;
-
 
 		if (!angularVelocity.IsZeroVector())
 		{

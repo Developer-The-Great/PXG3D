@@ -7,7 +7,9 @@ namespace PXG
 	{
 	public:
 
-		CameraMover(float speed = 3.0f);
+		CameraMover(float speed = 0.001f);
+
+		void Update() override;
 
 		void FixedUpdate(float tick) override;
 

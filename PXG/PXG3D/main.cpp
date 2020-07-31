@@ -127,9 +127,11 @@ int main()
 	//--------------------------------- Initialize Debug Mesh Object------------------------------//
 
 	std::shared_ptr<PXG::DebugDrawingManager> debugDrawingManager = std::make_shared<PXG::DebugDrawingManager>();
-	debugDrawingManager->SetShouldDraw(false);
+	debugDrawingManager->SetShouldDraw(true);
 	debugDrawingManager->SetWorld(gamePtr->GetWorld());
 	gamePtr->GetWorld()->SetDebugDrawingManager(debugDrawingManager);
+
+	PXG::DebugDrawingManager::drawingManagerStaticPtr = debugDrawingManager.get();
 
 	gamePtr->GetWorld()->SetTimeSystem(time);
 
@@ -168,32 +170,55 @@ int main()
 		PXG::Input::PollEvents();
 
 		//Debug::Log(" accumulating {0}", time->GetAverageDeltaTime());
-		physicsEngine->AccumulateTickTime(time->GetAverageDeltaTime());
-		physicsEngine->ResetTickCount();
+		
 		gamePtr->Update();
 
-		
+		//TODO removet this
+		if (PXG::Input::GetKeyDown(KeyCode::Q))
 		{
-			float remainingTick;
-			PXG::BenchmarkTimer gameLoopTimer("The physics loop");
-			while (physicsEngine->IsTicking())
+			physicsEngine->jDebugAt++;
+		}
+		if (PXG::Input::GetKeyDown(KeyCode::E))
+		{
+			physicsEngine->iDebugAt++;
+			physicsEngine->jDebugAt = 0;
+		}
+		if (PXG::Input::GetKeyDown(KeyCode::B))
+		{
+			__debugbreak();
+		}
+
+		bool isPhysicsTriggerPressed = PXG::Input::GetKeyDown(KeyCode::N);
+
+		{
+			if (isPhysicsTriggerPressed)
 			{
+				physicsEngine->AccumulateTickTime(time->GetAverageDeltaTime());
+				physicsEngine->ResetTickCount();
 
-				float tick = physicsEngine->DecreaseRemainingTickTime();
-				//Debug::Log("tick Amount {0}" , tick);
-				//fixed update on game
-				gamePtr->FixedUpdate(tick);
+				float remainingTick;
+				PXG::BenchmarkTimer gameLoopTimer("The physics loop");
 
-				physicsEngine->Integrate(tick);
+				while (physicsEngine->IsTicking())
+				{
 
-				physicsEngine->CheckCollisions();
+					float tick = physicsEngine->DecreaseRemainingTickTime();
+					//Debug::Log("tick Amount {0}" , tick);
+					//fixed update on game
+					gamePtr->FixedUpdate(tick);
 
-				physicsEngine->IncrementTickCount();
+					physicsEngine->Integrate(tick);
 
+					physicsEngine->CheckCollisions();
+
+					physicsEngine->IncrementTickCount();
+
+				}
+				//Debug::Log("physicsEngine->GetTickTimeRemaining() {0}", physicsEngine->GetTickTimeRemaining());
+				//physicsEngine->Integrate(physicsEngine->GetTickTimeRemaining());
+				//physicsEngine->ResetTickTimeRemaining();
 			}
-			//Debug::Log("physicsEngine->GetTickTimeRemaining() {0}", physicsEngine->GetTickTimeRemaining());
-			physicsEngine->Integrate(physicsEngine->GetTickTimeRemaining());
-			//physicsEngine->ResetTickTimeRemaining();
+			
 		}
 		
 

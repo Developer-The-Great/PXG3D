@@ -63,7 +63,7 @@ namespace PXG
 		font = new Font(config::PXG_FONT_PATH + "Roboto-Regular.ttf", 20);
 
 		Input::AddKeysToTrack(
-			KeyCode::A, KeyCode::W, KeyCode::S, KeyCode::D, KeyCode::Q, KeyCode::E, KeyCode::K, KeyCode::J, KeyCode::Z,KeyCode::F,
+			KeyCode::A, KeyCode::W, KeyCode::S, KeyCode::D, KeyCode::Q, KeyCode::E, KeyCode::K, KeyCode::J, KeyCode::Z,KeyCode::F, KeyCode::N, KeyCode::B,
 			KeyCode::LeftMouse, KeyCode::RightMouse, KeyCode::MiddleMouse
 			, KeyCode::Enter
 			,KeyCode::KeyUp,KeyCode::KeyRight,KeyCode::KeyDown,KeyCode::KeyLeft
@@ -107,7 +107,7 @@ namespace PXG
 		auto camera = std::make_shared<CameraComponent>();
 		auto raycaster = std::make_shared<RayCastShooter>();
 		auto cameraRotator = std::make_shared<CameraRotator>();
-		auto cameraMover = std::make_shared<CameraMover>(10.0f);
+		auto cameraMover = std::make_shared<CameraMover>(0.5f);
 		
 		GameObj cameraObj = Instantiate();
 		cameraObj->name = "cameraObj";
@@ -325,45 +325,48 @@ namespace PXG
 
 		//
 		////--------------------Physics Test OBB EdgeToEdge --------------------------//
+
+
 		
 		GameObj yellowObject = Instantiate();
 		yellowObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
 		yellowObject->GetMeshComponent()->SetMaterial(yellowColorMat);
 		yellowObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		yellowObject->AddComponent(std::make_shared<Rigidbody>());
 		yellowObject->name = "yellowObject";
 
-		yellowObject->GetTransform()->SetLocalPosition(Vector3(0.0, -2.0, -6.0));
+		yellowObject->GetTransform()->SetLocalPosition(Vector3(0, 0, -6.2));
 		yellowObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
 
+		world->AddToChildren(yellowObject);
 
-		yellowObject->GetTransform()->rotate(Vector3(0, 1, 0),45.0f);
+		//yellowObject->GetTransform()->rotate(Vector3(0, 1, 0),45.0f);
 		
 
-		world->AddToChildren(yellowObject);
+		
 
 		GameObj orangeObject = Instantiate();
 		orangeObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
 		orangeObject->GetMeshComponent()->SetMaterial(orangeColorMat);
 		orangeObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 		orangeObject->name = "orangeObj";
-		orangeObject->AddComponent(std::make_shared<Rigidbody>());
-		orangeObject->AddComponent(std::make_shared<ForceAdderTestComponent>(PhysicsEngine::GetGravity() * -10.0f));
+		//orangeObject->AddComponent(std::make_shared<Rigidbody>());
+		//orangeObject->AddComponent(std::make_shared<ForceAdderTestComponent>(PhysicsEngine::GetGravity() * -10.0f));
 
 		orangeObject->GetTransform()->SetLocalPosition(Vector3(1.0, -2.0, -6.0));
-		orangeObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
-		orangeObject->GetTransform()->rotate(Vector3(0, 1, 0), 45.0f);
-		orangeObject->GetTransform()->rotate(Vector3(1, 0, 0), 90.0f);
+		orangeObject->GetTransform()->Scale(Vector3(2.0, 1.0, 2.0));
+		//orangeObject->GetTransform()->rotate(Vector3(0, 1, 0), 45.0f);
+		//orangeObject->GetTransform()->rotate(Vector3(1, 0, 0), 90.0f);
 
 		world->AddToChildren(orangeObject);
 
-
+		//PhysicsEngine::SetGravity(Vector3());
 
 
 		//*/
 
 		////--------------------Physics Test OBB  --------------------------//
 		//
-
 		/*
 		
 		GameObj OBBTestObjectPurple = Instantiate();
@@ -418,9 +421,6 @@ namespace PXG
 		world->AddToChildren(secondObj);
 		//*/
 
-		
-		
-		
 		//------------------------More Objects---------------------------------------//
 
 		/*

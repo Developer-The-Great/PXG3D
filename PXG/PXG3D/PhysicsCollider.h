@@ -5,6 +5,8 @@
 #include "Vector3.h"
 #include <memory>
 #include "PhysicsComponent.h"
+#include "DepthPenetrationInfo.h"
+#include "PhysicsContact.h"
 
 namespace PXG
 {
@@ -23,7 +25,12 @@ namespace PXG
 		std::shared_ptr<PhysicsComponent> physicsComponentB;
 
 		bool isColliding;
-		
+
+		std::vector<PhysicsContact> contactData;
+
+		DepthPenetrationInfo penetrationInfo;
+
+		//void PopulateContactList(std::vector<)
 
 	};
 
@@ -55,7 +62,10 @@ namespace PXG
 
 		virtual void FillInManifoldWith(SphereCollider* sphereCollider, Manifold& manifold) { }
 
-		
+		void SetPhysicsComponentOwner(PhysicsComponent * physicsComponentOwner);
+
+		PhysicsComponent * GetPhysicsComponentContainer();
+
 
 
 		std::shared_ptr<Mesh> GetMesh() const;
@@ -66,7 +76,9 @@ namespace PXG
 
 	protected:
 
+		PhysicsComponent * physicsComponentOwner;
 		std::shared_ptr<Mesh> mesh;
+
 	private:
 
 		

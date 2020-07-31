@@ -2,10 +2,10 @@
 #include <memory>
 #include <vector>
 #include <functional>
+#include "DepthPenetrationInfo.h"
 
 namespace PXG
 {
-
 	struct HalfEdgeEdge;
 	struct Vector3;
 	struct HitInfo;
@@ -80,6 +80,9 @@ namespace PXG
 		*/
 		static void SetGravity(Vector3 newGravity);
 
+		static float GetBaumgarteCoefficient();
+
+		//TODO document this
 		void SetDebugDrawer(std::shared_ptr< DebugDrawingManager> debugDrawer);
 
 
@@ -102,23 +105,12 @@ namespace PXG
 
 		static std::function<void(const std::vector<PhysicsSceneGraphIterationInfo>&, std::vector<PhysicsComponentContainer>&)> CheckFaceNormalsOfMeshForSeperationAxis;
 
+		static float PointDistanceToPlane(const Vector3& planeNormal, const Vector3& planePosition, const Vector3& point);
 
+		static bool IsPointAbovePlane(const Vector3& planeNormal, const Vector3& planePosition, const Vector3& point);
 
-		//------------------------------------------------- Collision Detection Helper functions  ----------------------------------------//
-
-
-
-		/**@brief Finds the seperating axis between 2 meshes by iterating through the face normals of 'collisionMeshA' and
-		projecting the support points of collisionMeshA and collisionMeshB and checking for colllision under the projection
-		Returns a true if a seperation axis is found. The function will also seperation amount if a seperation axis if found.
-		 *@param [in] collisionMeshA,collisionMeshB : the meshes that will be projected into the face normals of 'collisionMeshA'
-		 *@param [in] transformA,transformB : the world transforms of collisionMeshA and collisionMeshB
-		 *@param [in] positionA,positionB : the world position of collisionMeshA and collisionMeshB
-		 *@param [out] seperationFound: the result of substracting the supportPoint of A and B projected into the seperating Axis from the vector
-		 coming from positionA to positionB, projected into the seperating Axis
-		*/
-		static bool FindSeperatingAxisByProjectingMeshAandBToFaceNormals(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
-			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound);
+		static bool FindLineToPlaneIntersectionPoint(const Vector3& planeNormal, const Vector3& planePosition
+			, const Vector3& startPoint, const Vector3& endPoint, Vector3& intersectionPoint);
 
 		/**@brief Attempts to find the seperating axis between 2 meshes by iterating through the face normals of 'collisionMeshA' and
 		projecting the support point of collisionMeshB and projecting it into the normals to check for a positive value
@@ -130,7 +122,36 @@ namespace PXG
 		 coming from positionA to positionB, projected into the seperating Axis
 		*/
 		static bool FindSeperatingAxisByExtremePointProjection(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
-			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, int& index);
+			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, int& index, float& seperationFound);
+
+		/**@brief Attempts to find the seperating axis between 2 meshes by iterating through only the edges that create a valid seperating axis.
+		Returns true id a seperating axis is found.The function will also output the seperation amount if a seperation axis if found.
+		 *@param [in] collisionMeshA,collisionMeshB : the meshes that will be projected into the face normals of 'collisionMeshA'
+		 *@param [in] transformA,transformB : the world transforms of collisionMeshA and collisionMeshB
+		 *@param [in] positionA,positionB : the world position of collisionMeshA and collisionMeshB
+		 *@param [out] seperationFound: the result of substracting the supportPoint of A and B projected into the seperating Axis from the vector
+		*/
+		static bool FindSeparatingAxisByGaussMapEdgeToEdgeCheck(ConvexCollider * colliderA, ConvexCollider * colliderB,
+			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB,
+			float& seperationFound, Vector3& seperatingNormal,Vector3& seperationPosition);
+		
+
+		
+		//------------------------------------------------- Collision Detection Helper functions  ----------------------------------------//
+
+		/**@brief Finds the seperating axis between 2 meshes by iterating through the face normals of 'collisionMeshA' and
+		projecting the support points of collisionMeshA and collisionMeshB and checking for colllision under the projection
+		Returns true if a seperation axis is found. The function will also return seperation amount if a seperation axis if found.
+		 *@param [in] collisionMeshA,collisionMeshB : the meshes that will be projected into the face normals of 'collisionMeshA'
+		 *@param [in] transformA,transformB : the world transforms of collisionMeshA and collisionMeshB
+		 *@param [in] positionA,positionB : the world position of collisionMeshA and collisionMeshB
+		 *@param [out] seperationFound: the result of substracting the supportPoint of A and B projected into the seperating Axis from the vector
+		 coming from positionA to positionB, projected into the seperating Axis
+		*/
+		static bool FindSeperatingAxisByProjectingMeshAandBToFaceNormals(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
+			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound);
+
+		
 
 		/**@brief Attempts to find the seperating axis between 2 meshes by iterating through all of the edges of 'collisionMeshA' and 'collisionMeshB'
 		and testing the vector that is perpendicular to both edges and using it as a potential seperating axis.
@@ -144,16 +165,7 @@ namespace PXG
 		static bool FindSeparatingAxisByBruteForceEdgeToEdgeCheck(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB,
 			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound);
 
-		/**@brief Attempts to find the seperating axis between 2 meshes by iterating through only the edges that create a valid seperating axis.
-		Returns true id a seperating axis is found.The function will also output the seperation amount if a seperation axis if found.
-		 *@param [in] collisionMeshA,collisionMeshB : the meshes that will be projected into the face normals of 'collisionMeshA'
-		 *@param [in] transformA,transformB : the world transforms of collisionMeshA and collisionMeshB
-		 *@param [in] positionA,positionB : the world position of collisionMeshA and collisionMeshB
-		 *@param [out] seperationFound: the result of substracting the supportPoint of A and B projected into the seperating Axis from the vector
-		*/
-		static bool FindSeparatingAxisByGaussMapEdgeToEdgeCheck(ConvexCollider * colliderA, ConvexCollider * colliderB,
-			const Mat4& transformA, const Mat4& transformB, const Vector3& positionA, const Vector3& positionB, float& seperationFound,
-			HalfEdgeEdge * firstEdge, HalfEdgeEdge *secondEdge);
+
 
 		/**@brief finds the furthest vertex in a certain direction of a mesh with a certain transform.
 		 *@param [in] mesh : the given mesh that we would like to know its furthest point
@@ -216,7 +228,7 @@ namespace PXG
 		 *param [in] transformA: the world transform of the first Mesh
 		 *@param [in] transformB: the world transform of the second Mesh
 		*/
-		static bool AttemptBuildMinkowskiFace(HalfEdgeEdge* edgeA, HalfEdgeEdge* edgeB,const Mat4& transformA,const Mat4& transformB);
+		static bool AttemptBuildMinkowskiFace(HalfEdgeEdge* edgeA, HalfEdgeEdge* edgeB,const Mat4& transformA,const Mat4& transformB, int j);//TODO j was for testing,remove it
 
 		/** @brief returns true if given 2 arcs of a sphere, one represented by transformedNormalA1 and transformedA2,
 		and another arc represented by transformedNormalB1 and transformedNormalB2 are intersecting
@@ -232,10 +244,18 @@ namespace PXG
 		*/
 		static void SutherlandHodgmanClipping(ConvexCollider* referencePolyhedron, ConvexCollider* incidentPolyhedron, std::vector<Vector3>& contactPoints);
 
+		static int jDebugAt;
+		static int iDebugAt;
 
+
+		//------------------------------------------------ Debugging related functions ------------------------------------------//
+
+		static void DEBUG_PreviewPolyhedronEdges(ConvexCollider * collider, const Mat4& transform);
 
 
 	private:
+
+		
 		/**
 		*/
 		void recursiveRetrievePhysicsComponent(std::shared_ptr<GameObject> rootObj, std::vector<PhysicsSceneGraphIterationInfo>& physicsComponents, Mat4 transform,int id = 0);
@@ -280,19 +300,25 @@ namespace PXG
 
 		const float tickTime = 0.02f;
 
-		const int maxTickCountPerFrame = 3;
-		int currentFrameTickCount = 0;
+		
 
 
 		static Vector3 gravity;
-
+		
+		float currentDt;
 		float tickTimeRemaining;
 
 		std::shared_ptr<World> world = nullptr;
 		std::shared_ptr<DebugDrawingManager> debugDrawer = nullptr;
 
+
+		const int maxTickCountPerFrame = 3;
+		int currentFrameTickCount = 0;
+
 		const int minObjectCount = 4;
 		const int maxDepthCount = 5;
+
+		static float baumgarteCoeff;
 
 
 	};

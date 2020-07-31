@@ -29,17 +29,17 @@ namespace PXG
 			return  Vector3(glm::vec3(Matrix * v));
 		}*/
 
-		Vector3 multiplyPoint(const Vector3& vec3) const
+		Vector3 MultiplyPoint(const Vector3& vec3) const
 		{
-			return multiplyVector3(vec3, 1);
+			return MultiplyVector3(vec3, 1);
 		}
 
-		Vector3 multiplyDirection(const Vector3& vec3) const
+		Vector3 MultiplyDirection(const Vector3& vec3) const
 		{
-			return multiplyVector3(vec3, 0);
+			return MultiplyVector3(vec3, 0);
 		}
 
-		Vector3 multiplyVector3(const Vector3& vec3,float fourthNumber) const
+		Vector3 MultiplyVector3(const Vector3& vec3,float fourthNumber) const
 		{
 			glm::vec4 v(vec3.ToGLMVec3(), fourthNumber);
 			return  Vector3(glm::vec3(Matrix * v));

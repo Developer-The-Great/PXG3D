@@ -12,6 +12,8 @@
 #include <algorithm>
 namespace PXG
 {
+	DebugDrawingManager* DebugDrawingManager::drawingManagerStaticPtr = nullptr;
+
 	void DebugDrawingManager::InstantiateLine(Vector3 start, Vector3 end, Vector3 color, float lifetime)
 	{
 		if (!shouldDraw) { return; }

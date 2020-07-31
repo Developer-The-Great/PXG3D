@@ -45,7 +45,13 @@ namespace PXG
 	}
 	void Time::UpdateAverageTime()
 	{
+		
 		float frameDelta = GetCurrentDeltaTime();
+
+		if (frameDelta > maxTimePassed)
+		{
+			frameDelta = GetAverageDeltaTime();
+		}
 
 		averageTimes.push_front(frameDelta);
 		averageTimes.pop_back();

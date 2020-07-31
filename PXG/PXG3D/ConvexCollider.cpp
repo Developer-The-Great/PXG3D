@@ -10,6 +10,8 @@
 #include "Time.h"
 #include <chrono>
 #include "BenchmarkTimer.h"
+#include "DepthPenetrationInfo.h"
+#include "ContactPointPenetrationInfo.h"
 
 namespace PXG
 {
@@ -48,8 +50,6 @@ namespace PXG
 	void ConvexCollider::CheckCollisionWith(SphereCollider* sphereCollider, Manifold& manifold)
 	{
 		Debug::Log("checking collision with sphereCollider and convexCollider");
-
-
 	}
 
 	void ConvexCollider::CheckCollisionWith(ConvexCollider* convexCollider, Manifold& manifold)
@@ -60,34 +60,32 @@ namespace PXG
 		auto meshA = this->GetMesh();
 		auto meshB = convexCollider->GetMesh();
 
-		float seperationAB;
-
 		//------------------------------------------- Do face normal checking --------------------------------------------------------//
-
+		float seperationAB;
 		int indexA = -1;
 		if (PhysicsEngine::FindSeperatingAxisByExtremePointProjection(meshA, meshB, manifold.transformA, manifold.transformB, positionA,
-			positionB, indexA))
+			positionB, indexA, seperationAB))
 		{
 			manifold.isColliding = false;
 			return;
 		}
 
+		float seperationBA;
 		int indexB = -1;
 		if (PhysicsEngine::FindSeperatingAxisByExtremePointProjection(meshB, meshA, manifold.transformB, manifold.transformA, positionB,
-			positionA, indexB))
+			positionA, indexB, seperationBA))
 		{
 			manifold.isColliding = false;
 			return;
 		}
 			
-
 		//------------------------------------------- Do edge checking --------------------------------------------------------//
-
-		HalfEdgeEdge* edge1 = nullptr;
-		HalfEdgeEdge* edge2 = nullptr;
+		float edgeToedgeSeperation;
+		Vector3 edgeSeperationNormal;
+		Vector3 edgeSeperationPosition;
 
 		if (PhysicsEngine::FindSeparatingAxisByGaussMapEdgeToEdgeCheck(this, convexCollider, manifold.transformA, manifold.transformB, positionA,
-			positionB, seperationAB, edge1, edge2))
+			positionB, edgeToedgeSeperation,edgeSeperationNormal, edgeSeperationPosition))
 		{
 			manifold.isColliding = false;
 			return;
@@ -95,13 +93,27 @@ namespace PXG
 
 		manifold.isColliding = true;
 
-		//Debug::Log("No Seperating Axis was found");
-		/*Debug::Log("Collision found between gameObject: {0} and gameObject: {1}"
-			, manifold.physicsComponentA->GetOwner()->name
-			, manifold.physicsComponentB->GetOwner()->name);*/
-		
+		/*Debug::Log("seperationAB {0} ", seperationAB);
+		Debug::Log("seperationBA {0} ", seperationBA);
+		Debug::Log("edgeToedgeSeperation {0} ", edgeToedgeSeperation);*/
 
-	}
+		Vector3 seperationPosA = manifold.transformA.MultiplyPoint(meshA->Vertices.at(indexA).position);
+		Vector3 seperationNormalA = manifold.transformA.MultiplyDirection( meshA->Vertices.at(indexA).normal).Normalized();
+
+		Vector3 seperationPosB = manifold.transformB.MultiplyPoint(meshB->Vertices.at(indexB).position);
+		Vector3 seperationNormalB = manifold.transformB.MultiplyDirection(meshB->Vertices.at(indexB).normal).Normalized();
+
+		DepthPenetrationInfo APenetrationInfo(seperationPosA, seperationNormalA, seperationAB,false);
+		DepthPenetrationInfo BPenetrationInfo(seperationPosB, seperationNormalB, seperationBA, true);
+		DepthPenetrationInfo EdgePenetrationInfo(edgeSeperationPosition, edgeSeperationNormal, edgeToedgeSeperation,false);
+
+		DepthPenetrationInfo penetrationInfos[] = { APenetrationInfo,BPenetrationInfo,EdgePenetrationInfo };
+		manifold.penetrationInfo =  *std::max_element(penetrationInfos, penetrationInfos + 3);
+
+		Debug::Log("ColliderAIsRef {0} ", manifold.penetrationInfo.isColliderARef);
+		
+		//Debug::Log("chosen seperation {0} ", manifold.penetrationInfo.penetration);
+}
 
 	void ConvexCollider::FillInManifold(std::shared_ptr<PhysicsCollider> otherPhysicsCollider, Manifold & manifold)
 	{
@@ -110,14 +122,154 @@ namespace PXG
 
 	void ConvexCollider::FillInManifoldWith(ConvexCollider * convexCollider, Manifold & manifold)
 	{
+		ConvexCollider* refCollider = nullptr;
+		ConvexCollider* incidentCollider = nullptr;
+
+		float drawTime = 3.0f;
+
+		DebugDrawingManager::drawingManagerStaticPtr->InstantiateCube
+		(manifold.penetrationInfo.seperationPlanePosition, Vector3(), Vector3(0.1), Vector3(1, 0, 1), drawTime);
+		//use sutherland-hodgman to get the clipping points of the polygon
+
+		DebugDrawingManager::drawingManagerStaticPtr->InstantiateLine
+		(manifold.penetrationInfo.seperationPlanePosition
+			, manifold.penetrationInfo.seperationPlanePosition + manifold.penetrationInfo.seperationPlaneNormal,
+			Vector3(1, 0, 1), drawTime);
 
 		//decide which collider would be the reference polygon
+		if (manifold.penetrationInfo.isColliderARef)
+		{
+			refCollider = this;
+			incidentCollider = convexCollider;
+		}
+		else
+		{
+			refCollider = convexCollider;
+			incidentCollider = this;
+			
+		}
+
+		/*Debug::Log(" ------------- Declaring Ref and Inc -------------------------------------");
+
+		Debug::Log("ref collider is {0} ", refCollider->GetPhysicsComponentContainer()->GetOwner()->name);
+		Debug::Log("inc collider is {0} ", incidentCollider->GetPhysicsComponentContainer()->GetOwner()->name);*/
+
+		//clip incident collider with reference collider
 		std::vector<Vector3> contactPoints;
+		PhysicsEngine::SutherlandHodgmanClipping(refCollider, incidentCollider,  contactPoints);
+		PhysicsEngine::SutherlandHodgmanClipping(incidentCollider,refCollider,  contactPoints);
+		//seperate the elements of contactPoints into 2 list, one containing all the elements in the seperating axis and the ones that are not
 
-		PhysicsEngine::SutherlandHodgmanClipping(this, convexCollider, contactPoints);
+		std::vector<Vector3*> pointsOnPLane;
+		std::vector<ContactPointPenetrationInfo> pointsUnderPlane;
+
+		for (Vector3& contactPoint : contactPoints)
+		{
+			float distanceToPlane = PhysicsEngine::PointDistanceToPlane(
+				manifold.penetrationInfo.seperationPlaneNormal
+				, manifold.penetrationInfo.seperationPlanePosition,
+				contactPoint
+			);
+
+			if (Mathf::FloatCompare(Mathf::Abs(distanceToPlane), 0.0f,0.01))
+			{
+				pointsOnPLane.push_back(&contactPoint);
+			}
+			else if (distanceToPlane < -0.01f)
+			{
+				ContactPointPenetrationInfo newContactPenetration(&contactPoint, distanceToPlane);
+				pointsUnderPlane.push_back(newContactPenetration);
+			}
+		}
+
+		//TODO this is for debugging only , remove it later
+		for (auto contactPoint : pointsOnPLane)
+		{
+			//Debug::Log("contact at {0} ", contactPoint.ToString());
+			DebugDrawingManager::drawingManagerStaticPtr->InstantiateCube(
+				*contactPoint, Vector3(0, 0, 0), Vector3(0.01, 0.01, 0.01), Vector3(0, 0.5, 0), drawTime);
+		}
+
+		for (auto contactPoint : pointsUnderPlane)
+		{
+			//Debug::Log("contact at {0} ", contactPoint.ToString());
+			DebugDrawingManager::drawingManagerStaticPtr->InstantiateCube(
+				*contactPoint.contactPoint, Vector3(0, 0, 0), Vector3(0.01, 0.01, 0.01), Vector3(0, 1.0,0), drawTime);
+		}
 
 
-		//use sutherland-hodgman to get the clipping points of the polygon
+		//sort contacts with biggest penetration depth from cutting plane
+		std::sort(pointsUnderPlane.begin(), pointsUnderPlane.end());
+
+		//starting from the first element of the sorted list find the contacts that have a penetration depth equal to the biggest element 
+
+		if (pointsUnderPlane.size() < 1) { return; }
+		
+		float furthestPenetration = pointsUnderPlane.at(0).penetration;
+		std::vector<Vector3*> furthestPenetrationContacts;
+
+		for (const auto& contactPenetrationInfo : pointsUnderPlane)
+		{
+			furthestPenetrationContacts.push_back(contactPenetrationInfo.contactPoint);
+			//if (Mathf::FloatCompare(furthestPenetration, contactPenetrationInfo.penetration))
+			//{
+			//	furthestPenetrationContacts.push_back(contactPenetrationInfo.contactPoint);
+			//}
+			//else
+			//{
+			//	//since we already sorted the std::vector, if end up with contact point not equal to the furthest penetration, we can just exit early
+			//	break;
+			//}
+		}
+	
+		Vector3 inverseNormal = -manifold.penetrationInfo.seperationPlaneNormal;
+
+		auto gameObjA = refCollider->GetPhysicsComponentContainer()->GetOwner();
+		auto gameObjB = incidentCollider->GetPhysicsComponentContainer()->GetOwner();
+
+
+		auto rigidbodyA = gameObjA->GetComponent<Rigidbody>();
+		auto rigidbodyB = gameObjB->GetComponent<Rigidbody>();
+
+		Vector3 colliderAWorldPosition = manifold.penetrationInfo.isColliderARef ? manifold.transformB.Matrix[3] : manifold.transformA.Matrix[3] ;
+		Vector3 colliderBWorldPosition = manifold.penetrationInfo.isColliderARef ? manifold.transformA.Matrix[3] :manifold.transformB.Matrix[3] ;
+
+		for (const auto onPlaneContactPoint : pointsOnPLane)
+		{
+			float closestDotProductToNormal = -FLT_MAX;
+			Vector3* closestContact = nullptr;
+
+			for (const auto contactPoint : furthestPenetrationContacts)
+			{
+				float currentDistanceFromInverseNormal = Mathf::Dot((*contactPoint - *onPlaneContactPoint).Normalized(), inverseNormal);
+
+				if (currentDistanceFromInverseNormal > closestDotProductToNormal)
+				{
+					closestContact = contactPoint;
+					closestDotProductToNormal = currentDistanceFromInverseNormal;
+				}
+			}
+
+			if (closestContact)
+			{
+
+				DebugDrawingManager::drawingManagerStaticPtr->InstantiateLine(*onPlaneContactPoint, *closestContact, Vector3(), 2.0);
+
+				PhysicsContact newContact;
+
+				newContact.worldContactPositionA = *onPlaneContactPoint;
+				newContact.worldContactPositionB = *closestContact;
+				newContact.collisionNormal = manifold.penetrationInfo.seperationPlaneNormal;
+				newContact.rigidbodyA = rigidbodyA;
+				newContact.rigidbodyB = rigidbodyB;
+				newContact.colliderAWorldPosition = colliderAWorldPosition;
+				newContact.colliderBWorldPosition = colliderBWorldPosition;
+				newContact.penetrationDepth = manifold.penetrationInfo.penetration;
+
+				manifold.contactData.push_back(newContact);
+
+			}
+		}
 
 
 	}
@@ -130,9 +282,18 @@ namespace PXG
 	{
 		PhysicsCollider::SetMesh(mesh);
 
-		///*
+		initializeColliderMesh();
+	}
 
+	void ConvexCollider::initializeColliderMesh()
+	{
+		initializeHalfEdgeList();
 
+		initializeFaceList();
+	}
+
+	void ConvexCollider::initializeHalfEdgeList()
+	{
 		// holds the "pointer" to the unique indices inside mesh->Indices
 		std::vector<int> uniqueIndex;
 		// stores the unique vertices of the mesh
@@ -148,7 +309,7 @@ namespace PXG
 			//have we found this vector before?
 			for (int j = 0; j < uniquePositions.size(); j++)
 			{
-				
+
 				if (Mathf::FloatVectorCompare(uniquePositions.at(j), position))
 				{
 					//we have seen this vector before
@@ -163,75 +324,64 @@ namespace PXG
 				//we have not seen this position before,add it 
 				uniqueIndexCount++;
 				uniqueIndex.push_back(uniqueIndexCount);
-				
+
 				uniquePositions.push_back(position);
-				
+
 			}
 		}
 
-
-
-
-		
 		VertexIndexToHalfEdgePtr vertexIndexToHalfEdge;
 
 		//-------------instantiate Half edges and set their respective vertices and next edges----------------------//
 		//vertex
-		for (int i =0; i < mesh->Indices.size();i+=3)
+		for (int i = 0; i < mesh->Indices.size(); i += 3)
 		{
 			unsigned int firstVertIndex = mesh->Indices.at(i);
-			unsigned int secondVertIndex = mesh->Indices.at(i+1);
-			unsigned int thirdVertIndex = mesh->Indices.at(i+2);
+			unsigned int secondVertIndex = mesh->Indices.at(i + 1);
+			unsigned int thirdVertIndex = mesh->Indices.at(i + 2);
 
 			unsigned int uniqueFirstIndex = uniqueIndex.at(firstVertIndex);
 			unsigned int uniqueSecondIndex = uniqueIndex.at(secondVertIndex);
 			unsigned int uniqueThirdIndex = uniqueIndex.at(thirdVertIndex);
-			
-			//instantiate first half edge
-			edges.push_back(new HalfEdgeEdge(uniqueFirstIndex));
+
+			//-----------------instantiate first half edge---------------------//
+			HalfEdgeEdge* firstEdge = new HalfEdgeEdge(uniqueFirstIndex);
+			edges.push_back(firstEdge);
 			edges.back()->vert = &mesh->Vertices.at(firstVertIndex);
 
-			//std::map<std::pair<unsigned int, unsigned int>, HalfEdgeEdge*> ;
-
 			std::pair<unsigned int, unsigned int> firstPairing(uniqueFirstIndex, uniqueSecondIndex);
-			vertexIndexToHalfEdge.insert(std::map<edgeVertexIndexPair, HalfEdgeEdge*>::value_type(firstPairing, edges.back()));
+			vertexIndexToHalfEdge.insert(std::map<edgeVertexIndexPair, HalfEdgeEdge*>::value_type(firstPairing, firstEdge));
 
 
-			//instantiate second half edge
-			edges.push_back(new HalfEdgeEdge(uniqueSecondIndex));
+			//-----------------instantiate second half edge---------------------//
+			HalfEdgeEdge* secondEdge = new HalfEdgeEdge(uniqueSecondIndex);
+			edges.push_back(secondEdge);
 			edges.back()->vert = &mesh->Vertices.at(secondVertIndex);
 
 			edgeVertexIndexPair secondPairing(uniqueSecondIndex, uniqueThirdIndex);
-			vertexIndexToHalfEdge.insert(VertexIndexToHalfEdgePtr::value_type(secondPairing, edges.back()));
+			vertexIndexToHalfEdge.insert(VertexIndexToHalfEdgePtr::value_type(secondPairing, secondEdge));
 
-			//link first half edge to second half edge
-			edges.at(edges.size() - 2)->nextEdge = edges.back();
-
-
-			//instantiate third half edge
-			edges.push_back(new HalfEdgeEdge(uniqueThirdIndex));
+			//-----------------instantiate third half edge---------------------//
+			HalfEdgeEdge* thirdEdge = new HalfEdgeEdge(uniqueThirdIndex);
+			edges.push_back(thirdEdge);
 			edges.back()->vert = &mesh->Vertices.at(thirdVertIndex);
 
 			edgeVertexIndexPair thirdPairing(uniqueThirdIndex, uniqueFirstIndex);
-			vertexIndexToHalfEdge.insert(VertexIndexToHalfEdgePtr::value_type(thirdPairing, edges.back()));
+			vertexIndexToHalfEdge.insert(VertexIndexToHalfEdgePtr::value_type(thirdPairing, thirdEdge));
 
-			//link second half edge to third half edge
-			edges.at(edges.size() - 2)->nextEdge = edges.back();
+			//-------------------- link half edges to each other
+			firstEdge->nextEdge = secondEdge;
+			secondEdge->nextEdge = thirdEdge;
+			thirdEdge->nextEdge = firstEdge;
 
-			//link third half edge to first half edge
-			edges.back()->nextEdge = edges.at(edges.size() - 3);
-
-			//Debug::Log("mapped {0} and {1}", uniqueIndex.at(firstVertIndex), uniqueIndex.at(secondVertIndex));
-			//Debug::Log("mapped {0} and {1}", uniqueIndex.at(secondVertIndex), uniqueIndex.at(thirdVertIndex));
-			//Debug::Log("mapped {0} and {1}", uniqueIndex.at(thirdVertIndex), uniqueIndex.at(firstVertIndex));
 		}
 
 
 		//-------------set each halfEdges's edge pairing----------------------//
-		
+
 		for (auto indexEdgePair : vertexIndexToHalfEdge)
 		{
-			
+
 			unsigned int u = indexEdgePair.first.first;
 			unsigned int v = indexEdgePair.first.second;
 
@@ -251,22 +401,86 @@ namespace PXG
 			}
 
 		}
-		
-		//test
-		
-
-		//*/
-
 	}
 
-	void ConvexCollider::SetPhysicsComponentOwner(PhysicsComponent* physicsComponentOwner)
+	void ConvexCollider::initializeFaceList()
 	{
-		this->physicsComponentOwner = physicsComponentOwner;
-	}
+		std::vector<PhysicsMeshFace> polyhedronFaces;
 
-	PhysicsComponent* ConvexCollider::GetPhysicsComponentContainer()
-	{
-		return physicsComponentOwner;
+		for (const auto& edge : edges)
+		{
+			if (edge->isPairingEqualNormal())
+			{
+				continue;
+			}
+
+			const Vector3& currentEdgeNormal = *edge->GetNormal();
+
+			bool isNormalSeenBefore = false;
+			PhysicsMeshFace* meshFacePtr = nullptr;
+
+			for (auto& meshFace : polyhedronFaces)
+			{
+				if (Mathf::FloatVectorCompare(currentEdgeNormal, meshFace.normal))
+				{
+					meshFacePtr = &meshFace;
+					isNormalSeenBefore = true;
+					break;
+				}
+			}
+
+			if (isNormalSeenBefore)
+			{
+				meshFacePtr->AddEdge(edge);
+			}
+			else
+			{
+				PhysicsMeshFace newPhysicsMeshFace(edge);
+				polyhedronFaces.push_back(newPhysicsMeshFace);
+			}
+		}
+
+
+
+		//for each face 
+		for (auto& face : polyhedronFaces)
+		{
+			HalfEdgeEdge* initialEdge = face.EdgesOnFace.at(0);
+			HalfEdgeEdge* iterationEdge = initialEdge;
+
+			int iterationCount = 0;
+
+			bool circularListNotCreated = true;
+
+			std::vector<HalfEdgeEdge*> circularHalfEdges;
+
+			while (iterationCount <= edges.size() && circularListNotCreated)
+			{
+				HalfEdgeEdge* edgeAfterIterationEdge = iterationEdge->nextEdge;
+
+				if (edgeAfterIterationEdge->isPairingEqualNormal())
+				{
+					HalfEdgeEdge* neighborNext = edgeAfterIterationEdge;
+
+					while (neighborNext->isPairingEqualNormal())
+					{
+						neighborNext = neighborNext->pairingEdge->nextEdge;
+					}
+
+					edgeAfterIterationEdge = neighborNext;
+				}
+
+				circularHalfEdges.push_back(edgeAfterIterationEdge);
+				iterationEdge = edgeAfterIterationEdge;
+
+				circularListNotCreated = iterationEdge != initialEdge;
+
+				iterationCount++;
+			}
+			face.EdgesOnFace = circularHalfEdges;
+		}
+
+		this->polyhedronFaces = polyhedronFaces;
 	}
 
 	const std::vector<HalfEdgeEdge*>& ConvexCollider::GetEdges()
@@ -274,15 +488,10 @@ namespace PXG
 		return edges;
 	}
 
-
-
-
-
-	
-
-
-
-
+	const std::vector<PhysicsMeshFace>& ConvexCollider::GetFaces()
+	{
+		return polyhedronFaces;
+	}
 
 }
 

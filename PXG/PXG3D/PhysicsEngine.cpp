@@ -18,6 +18,8 @@
 #include "World.h"
 #include "DebugDrawingManager.h"
 #include "ClippintIterInfo.h"
+#include "Input.h"
+#include "KeyCode.h"
 
 #include <array>
 #include <limits>
@@ -33,16 +35,24 @@
 namespace PXG
 {
 	Vector3 PhysicsEngine::gravity = Vector3(0,-9.8,0);
+	float PhysicsEngine::baumgarteCoeff = 0.375f;
+
+	int PhysicsEngine::jDebugAt = 0;
+	int PhysicsEngine::iDebugAt = 0;
 
 	PhysicsEngine::PhysicsEngine()
 	{
+		//Debug::SetDebugState(false);
 		//OptimizeBroadPhase = std::bind(&PhysicsEngine::BruteForceBroadPhase,this,std::placeholders::_1,std::placeholders::_2);
 		OptimizeBroadPhase = std::bind(&PhysicsEngine::BroadPhaseOctreeOptimization, this, std::placeholders::_1, std::placeholders::_2);
-	
+		
 	}
 
 	void PhysicsEngine::Integrate(float dt)
 	{
+		currentDt = dt;
+
+
 		if (!world) 
 		{ 
 			Debug::Log("world ptr is empty!");
@@ -124,7 +134,6 @@ namespace PXG
 
 	void PhysicsEngine::CheckCollisions()
 	{
-		//BenchmarkTimer timer("CheckCollisions()");
 		std::vector<PhysicsSceneGraphIterationInfo> iterationResult;
 		Mat4 transform = world->GetTransform()->GetWorldTransform();
 
@@ -136,6 +145,7 @@ namespace PXG
 		
 
 		std::vector<PhysicsComponentContainer> physicsComponentContainers;
+
 		{
 			//BenchmarkTimer timer("OptimizeBroadPhase");
 			OptimizeBroadPhase(iterationResult, physicsComponentContainers);
@@ -164,6 +174,10 @@ namespace PXG
 						auto PSGIIA = physicsComponentContainer.PSGIIContainer.at(i);
 						auto PSGIIB = physicsComponentContainer.PSGIIContainer.at(j);
 
+						//TODO check for the following combinations
+							//one of them is a non trigger object and the other is a trigger object
+							//at least of them is a rigidbody
+							
 						auto searchResult = collisionPairings.find(std::pair<unsigned int, unsigned int>(PSGIIA.id, PSGIIB.id));
 
 						//check if this pair has not been checked for collision
@@ -198,14 +212,48 @@ namespace PXG
 			}
 		}
 		
-		//Debug::Log("------------------------------------------- END Iterating through physics containers--------------");
+		//-------------------------- Resolve collisions with sequential impulse --------------------------//
 
-		for (const auto& manifold : resultingManifolds)
+		//for each manifold in resulting manifolds 
+		for (Manifold& manifold : resultingManifolds)
 		{
-			//if its a collision between triggers
-			//if(manifold)
-
+			for (PhysicsContact& contact : manifold.contactData)
+			{
+				contact.PreCalculateEffectiveMass();
+			}
 		}
+			//precalculate Effective Mass
+
+
+		//-------------------------- Apply sequential impulse -------------------------------------------//
+
+		Debug::Log("");
+		Debug::Log(" --------- Apply sequential impulse --------------");
+		Debug::Log("");
+		for (int i = 0; i < 4; i++)
+		{
+			for (auto& manifold : resultingManifolds)
+			{
+				int iter = 0;
+
+				Debug::Log(" --------- resolving {0} contacts in manifold --------------" , manifold.contactData.size());
+
+				for (PhysicsContact& contact : manifold.contactData)
+				{
+					//Debug::Log("----resolving {0} contact", iter);
+					contact.ResolveCollision(currentDt);
+
+					//Debug::Log("****impulse sum after resolution {0} ",contact.impulseSum);
+					iter++;
+				}
+			}
+		}
+		
+
+		//while iter count is smaller than max iter count
+
+			//resolve contacts
+
 	}
 
 	Vector3 PhysicsEngine::GetGravity()
@@ -217,6 +265,11 @@ namespace PXG
 	{
 		gravity = newGravity;
 
+	}
+
+	float PhysicsEngine::GetBaumgarteCoefficient()
+	{
+		return baumgarteCoeff;
 	}
 
 	void PhysicsEngine::SetDebugDrawer(std::shared_ptr<DebugDrawingManager> debugDrawer)
@@ -260,7 +313,6 @@ namespace PXG
 		}
 
 		
-
 		for (const auto& child : rootObj->GetChildren())
 		{
 			colliderId++;
@@ -373,7 +425,7 @@ namespace PXG
 		//------------------------------------------ Fill the PhysicsComponentContainer with PSGIIs from the split nodes---------------------------------//
 		for(const auto& node : finalNodes)
 		{
-			world->GetDebugDrawingManager()->InstantiateAABBRepresentation(node->Box.get(), Vector3(0, 1, 0), world->GetTimeSystem()->GetAverageDeltaTime());
+			//world->GetDebugDrawingManager()->InstantiateAABBRepresentation(node->Box.get(), Vector3(0, 1, 0), world->GetTimeSystem()->GetAverageDeltaTime());
 
 			PhysicsComponentContainer physicsComponentContainer;
 
@@ -442,7 +494,7 @@ namespace PXG
 	}
 
 	bool PhysicsEngine::FindSeperatingAxisByExtremePointProjection(std::shared_ptr<Mesh> collisionMeshA, std::shared_ptr<Mesh> collisionMeshB, 
-		const Mat4 & transformA, const Mat4 & transformB, const Vector3 & positionA, const Vector3 & positionB, int& index)
+		const Mat4 & transformA, const Mat4 & transformB, const Vector3 & positionA, const Vector3 & positionB, int& index,float& seperationFound)
 	{
 		index = -1;
 		float greatestSeperation = -FLT_MAX;
@@ -474,12 +526,15 @@ namespace PXG
 			
 			if (seperation > 0)
 			{
+				
 				//Debug::Log("Get Support Point Called {0} ", gsCount);
 				return true;
 			}
 
 
 		}
+
+		seperationFound = greatestSeperation;
 		//Debug::Log("Get Support Point Called {0} ", gsCount);
 		return false;
 	}
@@ -569,26 +624,30 @@ namespace PXG
 	}
 
 	bool PhysicsEngine::FindSeparatingAxisByGaussMapEdgeToEdgeCheck(ConvexCollider * colliderA, ConvexCollider * colliderB, 
-		const Mat4 & transformA, const Mat4 & transformB, const Vector3 & positionA, const Vector3 & positionB, float & seperationFound,
-		HalfEdgeEdge * firstEdge, HalfEdgeEdge *secondEdge)
+		const Mat4 & transformA, const Mat4 & transformB, const Vector3 & positionA, const Vector3 & positionB, float & seperationFound, Vector3& seperatingNormal, Vector3& seperationPosition)
 	{
-
+		float greatestSeperation = -FLT_MAX;
+		HalfEdgeEdge* seperationEdge = nullptr;
+		
 		for (auto edge : colliderA->GetEdges())
 		{
+			int j = 0;
 			for (auto otherEdge : colliderB->GetEdges())
 			{
 				if (edge->isPairingEqualNormal() || otherEdge->isPairingEqualNormal()) { continue; }
-
+				
 				//check if both edges create a minkowski difference face
-				if (AttemptBuildMinkowskiFace(edge, otherEdge, transformA, transformB))
+				if (AttemptBuildMinkowskiFace(edge, otherEdge, transformA, transformB,j))
 				{
 
 					glm::vec3 transformedEdgeA = transformA.ToGLM() * glm::vec4(edge->GetEdgeDirection().ToGLMVec3(), 0);
 					glm::vec3 transformedEdgeB = transformB.ToGLM() * glm::vec4(otherEdge->GetEdgeDirection().ToGLMVec3(), 0);
 
-					Vector3 normal = Mathf::Cross(transformedEdgeA, transformedEdgeB).Normalized();
+					Vector3 normal = Mathf::Cross(transformedEdgeA, transformedEdgeB);
 
-					if (Mathf::FloatCompare(normal.Length(), 0.0f)) { continue; }
+					if (normal.IsZeroVector()) { continue; }
+
+					normal.Normalize();
 
 					glm::vec3 EdgeAVertexPosition = transformA.ToGLM() * glm::vec4(edge->vert->position.ToGLMVec3(), 1);
 					glm::vec3 EdgeBVertexPosition = transformB.ToGLM() * glm::vec4(otherEdge->vert->position.ToGLMVec3(), 1);
@@ -601,22 +660,31 @@ namespace PXG
 					}
 
 					float distance = Mathf::Dot(normal, EdgeBVertexPosition - EdgeAVertexPosition);
-					seperationFound = distance;
+
+					if (distance > greatestSeperation)
+					{
+						seperationEdge = edge;
+						seperatingNormal = normal;
+						greatestSeperation = distance;
+					}
 
 					if (distance > 0)
 					{
 						return true;
 					}
 
-					/*if (TestAxisDirection(axis, colliderA->GetMesh(), colliderB->GetMesh(), transformA, transformB, positionA, positionB, seperationFound))
-					{
-						return true;
-					}*/
-
+					
 				}
+
 			}
 		}
-
+		
+		if (seperationEdge)
+		{
+			seperationPosition = transformA.ToGLM() * glm::vec4(seperationEdge->vert->position.ToGLMVec3(), 1);
+		}
+		
+		seperationFound = greatestSeperation;
 	
 		return false;
 	}
@@ -632,7 +700,7 @@ namespace PXG
 		
 		for (const auto& mesh : meshes)
 		{
-			Debug::Log("raycast on {0}", gameObject->name);
+			
 			rayToMeshIntersection(position, direction, hitInfo, mesh, Transform, gameObject);
 		}
 		
@@ -1011,7 +1079,7 @@ namespace PXG
 
 	}
 
-	bool PhysicsEngine::AttemptBuildMinkowskiFace(HalfEdgeEdge* edgeA, HalfEdgeEdge* edgeB, const Mat4& transformA, const Mat4& transformB)
+	bool PhysicsEngine::AttemptBuildMinkowskiFace(HalfEdgeEdge* edgeA, HalfEdgeEdge* edgeB, const Mat4& transformA, const Mat4& transformB,int j = -1)
 	{
 		Vector3 transformedNormalA1 = glm::vec3(transformA.ToGLM() * glm::vec4(edgeA->GetNormal()->ToGLMVec3(), 0));
 		Vector3 transformedNormalA2 = glm::vec3(transformA.ToGLM() * glm::vec4(edgeA->GetPairingNormal()->ToGLMVec3(), 0));
@@ -1033,14 +1101,14 @@ namespace PXG
 			* Mathf::Dot(transformedNormalB2, edgeANormalPlane);
 
 		//normals of B are found to be in the same side of the plane ,gauss Map arcs do not intersect
-		if (normalPlaneAToBNormalsResult > 0) { return false; }
+		if (normalPlaneAToBNormalsResult > 0 || Mathf::FloatCompare(normalPlaneAToBNormalsResult,0.0f)) { return false; }
 
 		//check if plane created from the cross products of the normals of edgeB divides the normals of edgeA
 		float normalPlaneBToANormalsResult = Mathf::Dot(transformedNormalA1, edgeBNormalPlane)
 			* Mathf::Dot(transformedNormalA2, edgeBNormalPlane);
 
 		//normals of A are found to be in the same side of the plane ,gauss Map arcs do not intersect
-		if (normalPlaneBToANormalsResult > 0) { return false; }
+		if (normalPlaneBToANormalsResult > 0 || Mathf::FloatCompare(normalPlaneBToANormalsResult,0.0f)) { return false; }
 
 
 		//check if normals are in the same hemisphere
@@ -1051,7 +1119,7 @@ namespace PXG
 
 		//normals of A are found to be on different sides of the plane, 
 		//gauss Map arcs are in different sides of the hemisphere
-		if (edgeAEdgeBNormalPlaneToOtherNormals < 0) { return false; }
+		if (edgeAEdgeBNormalPlaneToOtherNormals < 0 || Mathf::FloatCompare(edgeAEdgeBNormalPlaneToOtherNormals,0.0f)) { return false; }
 
 		return true;
 	}
@@ -1059,65 +1127,169 @@ namespace PXG
 	void PhysicsEngine::SutherlandHodgmanClipping(ConvexCollider* referencePolyhedron, ConvexCollider* incidentPolyhedron, std::vector<Vector3>& contactPoints)
 	{
 
-		float floatMax = std::numeric_limits<float>::max();
+		//DebugDrawingManager::drawingManagerStaticPtr->SetShouldDraw(false);
+		//Debug::SetDebugState(false);
+		//BenchmarkTimer SH("SutherlandHodgmanClipping");
 
-		//output list = an std::vector for the edges of the incidentPolyhedron
+		//Debug::Log("SH between {0} and {1} ", referencePolyhedron->GetPhysicsComponentContainer()->GetOwner()->name, incidentPolyhedron->GetPhysicsComponentContainer()->GetOwner()->name);
+		//Debug::Log("jDebugAt {0} ", jDebugAt);
 
-		std::vector<ClippingIterInfo> outputResult;
+		auto faces = incidentPolyhedron->GetFaces();
 
-		for (auto edge : incidentPolyhedron->GetEdges())
-		{
-			ClippingIterInfo iterInfo(edge, std::make_shared<std::array<Vector3, 2>>());
-			outputResult.push_back(iterInfo);
-		}
 
-		//for each face in reference polygon (iterated as an indice array)
 		auto referenceMesh = referencePolyhedron->GetMesh();
 
-		for (int i = 0; i < referenceMesh->Indices.size(); i+=3)
+		auto refPolyhedronPhysicsComponent = referencePolyhedron->GetPhysicsComponentContainer();
+		const auto& refTransform = refPolyhedronPhysicsComponent->GetOwner()->GetTransform()->GetWorldTransform();
+
+		auto refIncidentPhysicsComponent = incidentPolyhedron->GetPhysicsComponentContainer();
+		const auto& incTransform = refIncidentPhysicsComponent->GetOwner()->GetTransform()->GetWorldTransform();
+
+		auto referenceFaces = referencePolyhedron->GetFaces();
+		auto incidentFaces = incidentPolyhedron->GetFaces();
+
+		//DEBUG_PreviewPolyhedronEdges(incidentPolyhedron, incTransform);
+		
+
+		std::vector<Vector3> resultingClippingPoints;
+
+		int k = 0;
+
+		for (const auto& incidentFace : incidentFaces)
 		{
-			Vector3 planePosition = referenceMesh->Vertices.at(i).position;
-			Vector3 planeNormal = referenceMesh->Vertices.at(i).normal;
+			std::vector<Vector3> resultingPolygon;
 
-			auto inputResult = outputResult;
+			//--------------------------- populate list of Vector3s --------------------
 
-			for (ClippingIterInfo iterInfo : inputResult)
+			for (const HalfEdgeEdge* edge : incidentFace.EdgesOnFace)
 			{
-				bool isCurrentPointAbovePlane = false;
-				bool isNextPointAbovePlane = false;
+				Vector3 worldSpaceEdgePosition = incTransform.ToGLM() * glm::vec4(edge->GetPosition().ToGLMVec3(), 1);
+				resultingPolygon.push_back(worldSpaceEdgePosition);
+			}
+
+			int l = 0;
+			//-------------------- Split incident face with reference face -----------------------------------//
+			for (const auto& face : referenceFaces)
+			{
+				glm::vec3 planePosition = refTransform.ToGLM() * glm::vec4(face.position.ToGLMVec3(), 1);
+				glm::vec3 planeNormal = glm::transpose(glm::inverse(refTransform.ToGLM()))  * glm::vec4(face.normal.ToGLMVec3(), 0);
+
+				auto inputPolygon = resultingPolygon;
+				resultingPolygon.clear();
+
+				int j = 0;
+
+				for (int i = 0; i < inputPolygon.size(); i++)
+				{
+					Vector3 worldEdgePosition = inputPolygon.at(i);
+
+					int nextPolygonIndex = (i + 1 >= inputPolygon.size()) ? 0 : i + 1;
+
+					Vector3 worldNextEdgePosition = inputPolygon.at(nextPolygonIndex);
 
 
+					bool isCurrentPointUnderPlane = !PhysicsEngine::IsPointAbovePlane(planeNormal, planePosition, worldEdgePosition);
+					bool isNextPointUnderPlane = !PhysicsEngine::IsPointAbovePlane(planeNormal, planePosition, worldNextEdgePosition);
+
+					const Vector3& pointUnderPlane = isCurrentPointUnderPlane ? worldEdgePosition : worldNextEdgePosition;
+					const Vector3& pointAbovePlane = isCurrentPointUnderPlane ? worldNextEdgePosition : worldEdgePosition;
 
 
+					if (isCurrentPointUnderPlane && isNextPointUnderPlane)
+					{
+						resultingPolygon.push_back(worldNextEdgePosition);
+					}
+					else if (!isCurrentPointUnderPlane && isNextPointUnderPlane)
+					{
+						Vector3 intersectionPoint;
+						//intersection point
+						if (PhysicsEngine::FindLineToPlaneIntersectionPoint(planeNormal, planePosition,
+							pointUnderPlane, pointAbovePlane, intersectionPoint))
+						{
+							resultingPolygon.push_back(intersectionPoint);
+						}
+
+						resultingPolygon.push_back(worldNextEdgePosition);
+
+					}
+					else if (isCurrentPointUnderPlane && !isNextPointUnderPlane)
+					{
+
+						Vector3 intersectionPoint;
+						//intersection point
+						if (PhysicsEngine::FindLineToPlaneIntersectionPoint(planeNormal, planePosition,
+							pointUnderPlane, pointAbovePlane, intersectionPoint))
+						{
+							resultingPolygon.push_back(intersectionPoint);
+						}
+					}
+					/*else if (!isCurrentPointUnderPlane && !isNextPointUnderPlane)
+					{
+
+					}*/
+					j++;
+				}
+				l++;
+			}
+			
+			resultingClippingPoints.insert(resultingClippingPoints.end(), resultingPolygon.begin(), resultingPolygon.end());
+
+			k++;
+		}
+
+
+		//--------------------------------- Ensure contact points are unique and put them in the 'contactPoints' collection --------------------------------//
+
+		std::vector<Vector3> encounteredContactPoints;
+
+		for (const Vector3& polygonClippingPoint : resultingClippingPoints)
+		{
+			bool isContactPointEncountered = false;
+
+			for (const Vector3& encounteredContactPoint : encounteredContactPoints)
+			{
+				if (Mathf::FloatVectorCompare(encounteredContactPoint, polygonClippingPoint))
+				{
+					isContactPointEncountered = true;
+					break;
+				}
 
 			}
 
-
-
+			if (!isContactPointEncountered)
+			{
+				contactPoints.push_back(polygonClippingPoint);
+				encounteredContactPoints.push_back(polygonClippingPoint);
+			}
+		
 		}
-			//input list 
 
-			//get triangle normal and position
-			
-			//for each edge in inputlist 
+	}
 
-				//if both points of the edges are inside the plane
-					//store next point
+	void PhysicsEngine::DEBUG_PreviewPolyhedronEdges(ConvexCollider * collider,const Mat4& transform)
+	{
+		auto faces = collider->GetFaces();
 
-				//if first point is outside and second point is inside
-					//store intersection point
-					//store second point
-				
-				//if first point is inside and second point is outside 
-					//store intersection point
+		for (size_t i = 0; i < faces.size(); i++)
+		{
+			auto halfEdges = faces.at(i).EdgesOnFace;
 
-				//if both points are outside 
-					//store none of them
+			for (size_t j = 0; j < halfEdges.size(); j++)
+			{
+				if (i == iDebugAt && j == jDebugAt)
+				{
+					glm::vec3 worldSpaceEdgePosition = transform.ToGLM() * glm::vec4(halfEdges.at(j)->GetPosition().ToGLMVec3(), 1);
+					glm::vec3 nextWorldSpaceEdgePosition = transform.ToGLM() * glm::vec4(halfEdges.at(j)->nextEdge->GetPosition().ToGLMVec3(), 1);
 
-					
-		//debugDrawer->dr
-				
+					DebugDrawingManager::drawingManagerStaticPtr->InstantiateCube(
+						worldSpaceEdgePosition, Vector3(0, 0, 0), Vector3(0.1, 0.1, 0.1), Vector3(0, 1, 0), PXG_THIS_FRAME_ONLY);
 
+					DebugDrawingManager::drawingManagerStaticPtr->InstantiateCube(
+						nextWorldSpaceEdgePosition, Vector3(0, 0, 0), Vector3(0.1, 0.1, 0.1), Vector3(0, 0.5, 0), PXG_THIS_FRAME_ONLY);
+				}
+
+			}
+		}
 	}
 
 	Vector3 PhysicsEngine::GetOrthographicCameraWorldPosition(float x, float y, float screenWidth, float screenHeight, std::shared_ptr<World> world)
@@ -1136,5 +1308,57 @@ namespace PXG
 
 		return topLeftPosition;
 	}
+	float PhysicsEngine::PointDistanceToPlane(const Vector3 & planeNormal, const Vector3 & planePosition, const Vector3 & point)
+	{
+		return Mathf::Dot(point - planePosition, planeNormal);
+	}
+	bool PhysicsEngine::IsPointAbovePlane(const Vector3 & planeNormal, const Vector3 & planePosition, const Vector3 & point)
+	{
+		return PointDistanceToPlane(planeNormal,planePosition,point) > 0.0f;
+	}
+	bool PhysicsEngine::FindLineToPlaneIntersectionPoint(const Vector3 & planeNormal, const Vector3 & planePosition, const Vector3 & startPoint, const Vector3 & endPoint, Vector3 & intersectionPoint)
+	{
+		Vector3 direction = endPoint - startPoint;
+
+		if(Mathf::FloatCompare(Mathf::Dot(direction, planeNormal),0.0f))
+		{
+			return false;
+		}
+
+
+		float t = PhysicsEngine::FindVectorToPlaneInterpolation(startPoint, endPoint, planePosition, planeNormal);
+
+		intersectionPoint = startPoint + direction.Normalized() * t;
+
+		return true;
+	}
+
+
+	/*
+		//TODO make this an actual function for future testing
+		for (size_t i = 0; i < faces.size(); i++)
+		{
+			auto halfEdges = faces.at(i).EdgesOnFace;
+
+			for (size_t j = 0; j < halfEdges.size(); j++)
+			{
+				if (i == iDebugAt && j == jDebugAt)
+				{
+					glm::vec3 worldSpaceEdgePosition = incTransform.ToGLM() * glm::vec4(halfEdges.at(j)->GetPosition().ToGLMVec3(), 1);
+					glm::vec3 nextWorldSpaceEdgePosition = incTransform.ToGLM() * glm::vec4(halfEdges.at(j)->nextEdge-> GetPosition().ToGLMVec3(), 1);
+
+					DebugDrawingManager::drawingManagerStaticPtr->InstantiateCube(
+						worldSpaceEdgePosition, Vector3(0, 0, 0), Vector3(0.1, 0.1, 0.1), Vector3(0, 1, 0), PXG_THIS_FRAME_ONLY);
+
+					DebugDrawingManager::drawingManagerStaticPtr->InstantiateCube(
+						nextWorldSpaceEdgePosition, Vector3(0, 0, 0), Vector3(0.1, 0.1, 0.1), Vector3(0, 0.5, 0), PXG_THIS_FRAME_ONLY);
+				}
+
+			}
+		}
+	
+	
+	
+	*/
 }
 

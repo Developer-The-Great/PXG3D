@@ -27,7 +27,17 @@ namespace PXG
 
 		Vector3 GetEdgeDirection()
 		{
-			return nextEdge->vert->position - vert->position;
+			return GetNextEdgePosition() - GetPosition();
+		}
+
+		Vector3 GetPosition() const
+		{
+			return vert->position;
+		}
+
+		Vector3 GetNextEdgePosition()
+		{
+			return nextEdge->vert->position;
 		}
 
 		Vector3* GetNormal()

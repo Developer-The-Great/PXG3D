@@ -50,7 +50,6 @@ namespace PXG
 
 		std::shared_ptr<AABBBox> CreateAABBFromTransformedColliders(const Mat4& transform);
 
-
 		void SetIsTrigger(bool newTriggerState);
 
 		bool IsTrigger() const;

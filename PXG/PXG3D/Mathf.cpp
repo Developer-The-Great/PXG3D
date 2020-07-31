@@ -12,9 +12,9 @@ namespace PXG
 
 	//TODO replace GLM functions with custom functions
 
-	bool Mathf::FloatCompare(float a, float b)
+	bool Mathf::FloatCompare(float a, float b,float tolerance)
 	{
-		return glm::abs(a - b) < Epsilon;
+		return glm::abs(a - b) < tolerance;
 	}
 
 	bool Mathf::FloatVectorCompare(Vector3 a, Vector3 b)
@@ -50,7 +50,7 @@ namespace PXG
 		return glm::cross(glm::vec3(a.x, a.y, a.z), glm::vec3(b.x, b.y, b.z));
 	}
 
-	float Mathf::Dot(Vector3 a, Vector3 b)
+	float Mathf::Dot(const Vector3& a,const Vector3& b) 
 	{
 		return glm::dot(glm::vec3(a.x, a.y, a.z), glm::vec3(b.x, b.y, b.z));
 	}

@@ -34,11 +34,18 @@ namespace PXG
 			z = val;
 		}
 
-		Vector3(glm::vec3 GLMVec3)
+		Vector3(const glm::vec3& GLMVec3)
 		{
 			x = GLMVec3.x;
 			y = GLMVec3.y;
 			z = GLMVec3.z;
+		}
+
+		Vector3(const glm::vec4& GLMVec4)
+		{
+			x = GLMVec4.x;
+			y = GLMVec4.y;
+			z = GLMVec4.z;
 		}
 
 		Vector3 Normalized() const
@@ -130,6 +137,20 @@ namespace PXG
 
 			return *this;
 		}
+
+		Vector3& operator= (const glm::vec4& vec4)
+		{
+			x = vec4.x;
+			y = vec4.y;
+			z = vec4.z;
+
+			return *this;
+		}
+		//used when putting a Vector3 in an std::set
+		/*bool operator<(const Vector3& t) const
+		{
+			return Mathf::Dot((*this).Normalized(),t.Normalized()) < 1.0f;
+		}*/
 
 		float& operator[](std::size_t location)
 		{

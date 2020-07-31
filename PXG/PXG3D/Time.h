@@ -25,6 +25,8 @@ namespace PXG
 
 	private:
 
+		const float maxTimePassed = 1.0f;
+
 		float averageDeltaTick;
 
 		float timePassed;

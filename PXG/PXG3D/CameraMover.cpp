@@ -9,7 +9,7 @@ namespace PXG
 	{
 		SetSpeed(speed);
 	}
-	void CameraMover::FixedUpdate(float tick)
+	void CameraMover::Update()
 	{
 		auto transform = GetOwner()->GetTransform();
 
@@ -19,32 +19,32 @@ namespace PXG
 
 			if (Input::GetKey(KeyCode::W))
 			{
-				Debug::Log("w pressed");
+				Debug::Log("speed {0} ",speed);
 				Vector3 forward = transform->GetForward();
-				transform->translate(forward * speed * tick);
+				transform->translate(forward * speed );
 			}
 
 			if (Input::GetKey(KeyCode::A))
 			{
 				Vector3 left = transform->GetRight() * -1;
-				transform->translate(left * speed * tick);
+				transform->translate(left * speed );
 			}
 
 			if (Input::GetKey(KeyCode::S))
 			{
 				Vector3 backward = transform->GetForward() * -1;
-				transform->translate(backward * speed * tick);
+				transform->translate(backward * speed );
 			}
 
 			if (Input::GetKey(KeyCode::D))
 			{
 				Vector3 right = transform->GetRight();
-				transform->translate(right * speed * tick);
+				transform->translate(right * speed );
 			}
 
-		
+
 			//if(Input::GetKey(KeyCode::scr))
-			if (Input::GetMouseWheelScroll() > 0.1f)
+		/*	if (Input::GetMouseWheelScroll() > 0.1f)
 			{
 				speed += 1.0f;
 			}
@@ -52,12 +52,16 @@ namespace PXG
 			if (Input::GetMouseWheelScroll() < -0.1f)
 			{
 				speed += -1.0f;
-			}
+			}*/
 
 
 
 
 		}
+	}
+	void CameraMover::FixedUpdate(float tick)
+	{
+		
 
 	}
 	void CameraMover::SetSpeed(float newSpeed)

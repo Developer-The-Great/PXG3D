@@ -1,6 +1,7 @@
 #pragma once
 #include "PhysicsCollider.h"
 #include "HalfEdgeEdge.h"
+#include "PhysicsMeshFace.h"
 #include <map>
 namespace PXG
 {
@@ -32,23 +33,27 @@ namespace PXG
 
 		virtual void FillInManifoldWith(ConvexCollider* convexCollider, Manifold& manifold) override;
 		virtual void FillInManifoldWith(SphereCollider* sphereCollider, Manifold& manifold)  override;
-
 		
 		void SetMesh(std::shared_ptr<Mesh> mesh) override;
 
-		void SetPhysicsComponentOwner(PhysicsComponent * physicsComponentOwner);
-		PhysicsComponent * GetPhysicsComponentContainer();
-		
 		const std::vector<HalfEdgeEdge*>& GetEdges();
+
+		const std::vector< PhysicsMeshFace>& GetFaces();
 		
 
 		
 	private:
 
-		PhysicsComponent * physicsComponentOwner;
+		void initializeColliderMesh();
+
+		void initializeHalfEdgeList();
+
+		void initializeFaceList();
+
+		
 		//VertexIndexToHalfEdgePtr vertexIndexToHalfEdge;
 		std::vector<HalfEdgeEdge*> edges;
-		
+		std::vector<PhysicsMeshFace> polyhedronFaces;
 
 	};
 
