@@ -188,7 +188,7 @@ int main()
 			__debugbreak();
 		}
 
-		bool isPhysicsTriggerPressed = PXG::Input::GetKeyDown(KeyCode::N);
+		bool isPhysicsTriggerPressed = PXG::Input::GetKey(KeyCode::N) || PXG::Input::GetKeyDown(KeyCode::M);
 
 		{
 			if (isPhysicsTriggerPressed)

@@ -35,7 +35,7 @@
 namespace PXG
 {
 	Vector3 PhysicsEngine::gravity = Vector3(0,-9.8,0);
-	float PhysicsEngine::baumgarteCoeff = 0.375f;
+	float PhysicsEngine::baumgarteCoeff = 0.33f;
 
 	int PhysicsEngine::jDebugAt = 0;
 	int PhysicsEngine::iDebugAt = 0;
@@ -227,16 +227,16 @@ namespace PXG
 
 		//-------------------------- Apply sequential impulse -------------------------------------------//
 
-		Debug::Log("");
-		Debug::Log(" --------- Apply sequential impulse --------------");
-		Debug::Log("");
-		for (int i = 0; i < 4; i++)
+		//Debug::Log("");
+		//Debug::Log(" --------- Apply sequential impulse --------------");
+		//Debug::Log("");
+		for (int i = 0; i < 15; i++)
 		{
 			for (auto& manifold : resultingManifolds)
 			{
 				int iter = 0;
 
-				Debug::Log(" --------- resolving {0} contacts in manifold --------------" , manifold.contactData.size());
+				//Debug::Log(" --------- resolving {0} contacts in manifold --------------" , manifold.contactData.size());
 
 				for (PhysicsContact& contact : manifold.contactData)
 				{
@@ -247,6 +247,8 @@ namespace PXG
 					iter++;
 				}
 			}
+
+
 		}
 		
 

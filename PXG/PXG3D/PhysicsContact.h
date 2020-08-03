@@ -29,6 +29,8 @@ namespace PXG
 
 		void PreCalculateEffectiveMass()
 		{
+			impulseSum = 0.0f;
+
 			//if both rigidbody pointers are empty there's no point to doing this calculation
 			if (IsBothRigidbodyPtrEmpty()) { return; }
 
@@ -120,14 +122,14 @@ namespace PXG
 
 			float inverseJV = -(JVx + JVy + JVz + JVw) + baumgartePositionalConstraint/dt;
 
-			Debug::Log("----------inverse jv calculation-----------------");
-			Debug::Log("JVx {0} , -collisionNormal {1}  dot va {2}",JVx, (-collisionNormal).ToString(),va.ToString());
-			Debug::Log("JVy {0} ra {1} wa {2}", JVy,ra.ToString(),wa.ToString());
-			Debug::Log("JVz {0} ", JVz);
-			Debug::Log("JVw {0} ", JVw);
+			//Debug::Log("----------inverse jv calculation-----------------");
+			//Debug::Log("JVx {0} , -collisionNormal {1}  dot va {2}",JVx, (-collisionNormal).ToString(),va.ToString());
+			//Debug::Log("JVy {0} ra {1} wa {2}", JVy,ra.ToString(),wa.ToString());
+			//Debug::Log("JVz {0} ", JVz);
+			//Debug::Log("JVw {0} ", JVw);
 
-			Debug::Log("baumgartePositionalConstraint/dt {0} ", baumgartePositionalConstraint / dt);
-			Debug::Log("inverseJV {0} ", inverseJV);
+			//Debug::Log("baumgartePositionalConstraint/dt {0} ", baumgartePositionalConstraint / dt);
+			//Debug::Log("inverseJV {0} ", inverseJV);
 
 			// calculate - J.V * inverseEffectiveMass,denoted as lambda
 			float lambda = inverseJV * inverseEffectiveMass ;
@@ -142,13 +144,14 @@ namespace PXG
 				impulseSum = 0.0f;
 			}
 
-			Debug::Log("raw lambda {0} ", lambda);
+			//Debug::Log("raw lambda {0} ", lambda);
 
 			lambda = impulseSum - oldTotalLambda;
 
 			
-			Debug::Log("impulseSum {0} ", impulseSum);
-			Debug::Log("actual lambda applied {0} ", lambda);
+			/*Debug::Log("impulseSum {0} ", impulseSum);
+			Debug::Log("oldTotalLambda {0} ", oldTotalLambda);
+			Debug::Log("actual lambda applied {0} ", lambda);*/
 
 			//apply linear impulse 
 			Vector3 linearImpulse = collisionNormal * lambda;
@@ -165,7 +168,6 @@ namespace PXG
 			if (rigidbodyA)
 			{
 				
-
 				//Debug::Log("add vel {0} to bodyA ", (-linearImpulse * rigidbodyA->GetInverseMass()).ToString());
 				rigidbodyA->AddVelocity(-linearImpulse * rigidbodyA->GetInverseMass());
 				Vector3 addedAngularVelocity = rigidbodyA->GetInverseInertiaTensor() * angularImpulseA.ToGLMVec3();
@@ -173,6 +175,8 @@ namespace PXG
 
 				/*Debug::Log("ra length: {0} rb length: {1}  ", ra.Length(),rb.Length());
 				Debug::Log("add angvel {0} to bodyA ", addedAngularVelocity.ToString());*/
+
+				//Debug::Log("velocity A  after resolution {0} ", rigidbodyA->GetVelocity().ToString());
 			}
 
 			/*Debug::Log("inverseEffectiveMass {0} ", (inverseEffectiveMass));
@@ -186,7 +190,7 @@ namespace PXG
 				Vector3 addedAngularVelocity = rigidbodyB->GetInverseInertiaTensor() * angularImpulseB.ToGLMVec3();
 				rigidbodyB->AddAngularVelocity(addedAngularVelocity);
 
-				//Debug::Log("add angvel {0} to bodyB ", addedAngularVelocity.ToString());
+				//Debug::Log("velocity B  after resolution {0} ", rigidbodyB->GetVelocity().ToString());
 			}
 
 		}

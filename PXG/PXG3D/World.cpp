@@ -3,7 +3,7 @@
 
 namespace PXG
 {
-	bool World::needToDrawPhysicsComponentMesh = true;
+	bool World::needToDrawPhysicsComponentMesh = false;
 
 	World::World():GameObject()
 	{

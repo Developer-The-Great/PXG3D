@@ -63,7 +63,7 @@ namespace PXG
 		font = new Font(config::PXG_FONT_PATH + "Roboto-Regular.ttf", 20);
 
 		Input::AddKeysToTrack(
-			KeyCode::A, KeyCode::W, KeyCode::S, KeyCode::D, KeyCode::Q, KeyCode::E, KeyCode::K, KeyCode::J, KeyCode::Z,KeyCode::F, KeyCode::N, KeyCode::B,
+			KeyCode::A, KeyCode::W, KeyCode::S, KeyCode::D, KeyCode::Q, KeyCode::E, KeyCode::K, KeyCode::J, KeyCode::Z,KeyCode::F, KeyCode::N, KeyCode::B, KeyCode::M,
 			KeyCode::LeftMouse, KeyCode::RightMouse, KeyCode::MiddleMouse
 			, KeyCode::Enter
 			,KeyCode::KeyUp,KeyCode::KeyRight,KeyCode::KeyDown,KeyCode::KeyLeft
@@ -120,8 +120,9 @@ namespace PXG
 
 		world->AddToChildren(cameraObj);
 
-		cameraObj->GetTransform()->SetLocalPosition(Vector3(0, 8, 4));
+		cameraObj->GetTransform()->SetLocalPosition(Vector3(-5, 5, -1));
 		cameraObj->GetTransform()->rotate(Vector3(1, 0, 0), -45.0f);
+		cameraObj->GetTransform()->rotate(Vector3(0, 1, 0), -45.0f);
 		
 		/*
 		////--------------------------SetUp ceiling--------------------------------//
@@ -326,28 +327,57 @@ namespace PXG
 		//
 		////--------------------Physics Test OBB EdgeToEdge --------------------------//
 
+		GameObj rotObj = Instantiate();
+		rotObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		rotObj->GetMeshComponent()->SetMaterial(textureMaterial);
+		rotObj->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "bricks.jpg", TextureType::DIFFUSE), 0);
+		rotObj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		rotObj->AddComponent(std::make_shared<Rigidbody>());
+		rotObj->name = "yellowObject";
+		rotObj->GetTransform()->SetLocalPosition(Vector3(0.7, 5, -6.2));
+		rotObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+		world->AddToChildren(rotObj);
+		rotObj->GetTransform()->rotate(Vector3(0, 1, 0), 30.0f);
+		rotObj->GetTransform()->rotate(Vector3(1, 0, 0), 30.0f);
+		
+
+		GameObj greenObject = Instantiate();
+		greenObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		greenObject->GetMeshComponent()->SetMaterial(textureMaterial);
+		greenObject->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "bricks.jpg", TextureType::DIFFUSE), 0);
+		greenObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		greenObject->AddComponent(std::make_shared<Rigidbody>());
+		greenObject->name = "yellowObject";
+
+		greenObject->GetTransform()->SetLocalPosition(Vector3(0.8, 0.5, -6.2));
+		greenObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
+
+		world->AddToChildren(greenObject);
+		
 
 		
 		GameObj yellowObject = Instantiate();
 		yellowObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
-		yellowObject->GetMeshComponent()->SetMaterial(yellowColorMat);
+		yellowObject->GetMeshComponent()->SetMaterial(textureMaterial);
+		yellowObject->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "bricks.jpg", TextureType::DIFFUSE), 0);
 		yellowObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 		yellowObject->AddComponent(std::make_shared<Rigidbody>());
 		yellowObject->name = "yellowObject";
 
-		yellowObject->GetTransform()->SetLocalPosition(Vector3(0, 0, -6.2));
+		yellowObject->GetTransform()->SetLocalPosition(Vector3(0.8, -1, -6.2));
 		yellowObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
 
 		world->AddToChildren(yellowObject);
 
-		//yellowObject->GetTransform()->rotate(Vector3(0, 1, 0),45.0f);
-		
+		yellowObject->GetTransform()->rotate(Vector3(0, 1, 0),45.0f);
+
 
 		
 
 		GameObj orangeObject = Instantiate();
 		orangeObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
-		orangeObject->GetMeshComponent()->SetMaterial(orangeColorMat);
+		orangeObject->GetMeshComponent()->SetMaterial(textureMaterial);
+		orangeObject->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "diffuse2.jpg", TextureType::DIFFUSE), 0);
 		orangeObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
 		orangeObject->name = "orangeObj";
 		//orangeObject->AddComponent(std::make_shared<Rigidbody>());
@@ -360,101 +390,28 @@ namespace PXG
 
 		world->AddToChildren(orangeObject);
 
+
+
+		GameObj orangeObject2 = Instantiate();
+		orangeObject2->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
+		orangeObject2->GetMeshComponent()->SetMaterial(textureMaterial);
+		orangeObject2->GetMeshComponent()->AddTextureToMeshAt(Texture(PXG::config::PXG_INDEPENDENT_TEXTURES_PATH + "diffuse3.jpg", TextureType::DIFFUSE), 0);
+		orangeObject2->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
+		orangeObject2->name = "orangeObj";
+		//orangeObject->AddComponent(std::make_shared<Rigidbody>());
+		//orangeObject->AddComponent(std::make_shared<ForceAdderTestComponent>(PhysicsEngine::GetGravity() * -10.0f));
+
+		orangeObject2->GetTransform()->SetLocalPosition(Vector3(1.0, -4.0, -6.0));
+		orangeObject2->GetTransform()->Scale(Vector3(6.0, 1.0, 6.0));
+		//orangeObject->GetTransform()->rotate(Vector3(0, 1, 0), 45.0f);
+		//orangeObject->GetTransform()->rotate(Vector3(1, 0, 0), 90.0f);
+
+		world->AddToChildren(orangeObject2);
+
 		//PhysicsEngine::SetGravity(Vector3());
 
 
-		//*/
-
-		////--------------------Physics Test OBB  --------------------------//
-		//
-		/*
 		
-		GameObj OBBTestObjectPurple = Instantiate();
-		OBBTestObjectPurple->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
-		OBBTestObjectPurple->GetMeshComponent()->SetMaterial(purpleColorMat);
-		OBBTestObjectPurple->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
-		OBBTestObjectPurple->name = "OBBTestObjectPurple";
-		
-		OBBTestObjectPurple->GetTransform()->SetLocalPosition(Vector3(0.0, 0.0, -3.0));
-		OBBTestObjectPurple->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
-		world->AddToChildren(OBBTestObjectPurple);
-
-		GameObj OBBTestObjectGreen = Instantiate();
-		OBBTestObjectGreen->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
-		OBBTestObjectGreen->GetMeshComponent()->SetMaterial(greenColorMat);
-		OBBTestObjectGreen->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
-		OBBTestObjectGreen->name = "OBBTestObjectGreen";
-
-		OBBTestObjectGreen->GetTransform()->SetLocalPosition(Vector3(3.0, -0.5, -2.0));
-		OBBTestObjectGreen->GetTransform()->rotate(Vector3(1, 0, 0), 45.0f);
-		OBBTestObjectGreen->GetTransform()->rotate(Vector3(0, 1, 0), 45.0f);
-		OBBTestObjectGreen->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
-		world->AddToChildren(OBBTestObjectGreen);
-
-		//*/
-
-		////--------------------Physics Test AABB --------------------------//
-
-		/*
-		
-		GameObj firstObj = Instantiate();
-		firstObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
-		firstObj->GetMeshComponent()->SetMaterial(redColorMat);
-		firstObj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
-		firstObj->name = "redObj";
-		
-		firstObj->GetTransform()->SetLocalPosition(Vector3(1.0, 0.5, 1.5));
-		firstObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
-		world->AddToChildren(firstObj);
-
-		//*/
-
-		/*
-		GameObj secondObj = Instantiate();
-		secondObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
-		secondObj->GetMeshComponent()->SetMaterial(bluetColorMat);
-		secondObj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
-		secondObj->name = "blueObj";
-
-		secondObj->GetTransform()->SetLocalPosition(Vector3(3.0, 0.0, 2.0));
-		secondObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
-		world->AddToChildren(secondObj);
-		//*/
-
-		//------------------------More Objects---------------------------------------//
-
-		/*
-		
-		GameObj slategrayObject = Instantiate();
-		slategrayObject->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
-		slategrayObject->GetMeshComponent()->SetMaterial(slateGrayColorMat);
-		slategrayObject->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
-		slategrayObject->name = "slategrayObjectObj ";
-
-		slategrayObject->GetTransform()->SetLocalPosition(Vector3(-0, 1.5, 0.0));
-		slategrayObject->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
-		slategrayObject->GetTransform()->rotate(Vector3(1.0, 1.0, 0.0), 80.0f);
-		world->AddToChildren(slategrayObject);
-
-		GameObj cremeObj = Instantiate();
-		cremeObj->GetMeshComponent()->Load3DModel(PXG::config::PXG_MODEL_PATH + "_cube.obj");
-		cremeObj->GetMeshComponent()->SetMaterial(cremeColorMat);
-		cremeObj->GetPhysicsComponent()->ConstructPhysicsRepresentationFromMeshComponent();
-		cremeObj->name = "cremeObj ";
-
-		cremeObj->GetTransform()->SetLocalPosition(Vector3(2.0, 1.5, 0.0));
-		cremeObj->GetTransform()->Scale(Vector3(1.0, 1.0, 1.0));
-		cremeObj->GetTransform()->rotate(Vector3(1.0, 1.0, 1.0), 45.0f);
-		world->AddToChildren(cremeObj);
-
-		auto cremeWorldTransform = cremeObj->GetTransform()->GetWorldTransform();
-		auto aabbTest = cremeObj->GetPhysicsComponent()->CreateAABBFromTransformedColliders(cremeWorldTransform);
-		//world->GetDebugDrawingManager()->InstantiateAABBRepresentation(aabbTest.get(), Vector3(1, 0, 0), 30.0f);
-
-		
-		//*/
-		//Vector3(0.77, 0.77, 0.77); Vector3(1, 0, 0); Vector3(0, 1, 0); Vector3(0, 0, 1); 
-		//Vector3(0.77, 0.77, 0); Vector3(0, 0.77, 0.77); Vector3(0.8, 0, 0.6); Vector3(0, 0.6, 0.8); 
 		
 		std::vector<Vector3> positions;
 		std::vector<Vector3> axis;
@@ -592,7 +549,7 @@ namespace PXG
 		Debug::Log("it took {0} ", finalTime);
 
 
-		world->SetPhysicsComponentDrawActive(true);
+		world->SetPhysicsComponentDrawActive(false);
 
 
 	}

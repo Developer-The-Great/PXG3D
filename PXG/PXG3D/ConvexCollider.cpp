@@ -54,6 +54,7 @@ namespace PXG
 
 	void ConvexCollider::CheckCollisionWith(ConvexCollider* convexCollider, Manifold& manifold)
 	{
+	
 		Vector3 positionA = glm::vec3(manifold.transformA.Matrix[3]);
 		Vector3 positionB = glm::vec3(manifold.transformB.Matrix[3]);
 
@@ -110,7 +111,7 @@ namespace PXG
 		DepthPenetrationInfo penetrationInfos[] = { APenetrationInfo,BPenetrationInfo,EdgePenetrationInfo };
 		manifold.penetrationInfo =  *std::max_element(penetrationInfos, penetrationInfos + 3);
 
-		Debug::Log("ColliderAIsRef {0} ", manifold.penetrationInfo.isColliderARef);
+		//Debug::Log("ColliderAIsRef {0} ", manifold.penetrationInfo.isColliderARef);
 		
 		//Debug::Log("chosen seperation {0} ", manifold.penetrationInfo.penetration);
 }
@@ -122,6 +123,10 @@ namespace PXG
 
 	void ConvexCollider::FillInManifoldWith(ConvexCollider * convexCollider, Manifold & manifold)
 	{
+		DebugDrawingManager::drawingManagerStaticPtr->SetShouldDraw(false);
+
+		//BenchmarkTimer SH("FillInManifold");
+
 		ConvexCollider* refCollider = nullptr;
 		ConvexCollider* incidentCollider = nullptr;
 
@@ -156,8 +161,11 @@ namespace PXG
 
 		//clip incident collider with reference collider
 		std::vector<Vector3> contactPoints;
-		PhysicsEngine::SutherlandHodgmanClipping(refCollider, incidentCollider,  contactPoints);
-		PhysicsEngine::SutherlandHodgmanClipping(incidentCollider,refCollider,  contactPoints);
+
+		PhysicsEngine::SutherlandHodgmanClipping(refCollider, incidentCollider, contactPoints);
+		PhysicsEngine::SutherlandHodgmanClipping(incidentCollider, refCollider, contactPoints);
+		
+	
 		//seperate the elements of contactPoints into 2 list, one containing all the elements in the seperating axis and the ones that are not
 
 		std::vector<Vector3*> pointsOnPLane;
@@ -175,7 +183,7 @@ namespace PXG
 			{
 				pointsOnPLane.push_back(&contactPoint);
 			}
-			else if (distanceToPlane < -0.01f)
+			else 
 			{
 				ContactPointPenetrationInfo newContactPenetration(&contactPoint, distanceToPlane);
 				pointsUnderPlane.push_back(newContactPenetration);

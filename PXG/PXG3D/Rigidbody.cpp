@@ -108,7 +108,7 @@ namespace PXG
 		acceleration =  newAcceleration;
 		
 		velocity = velocity + (newAcceleration + PhysicsEngine::GetGravity()) * dt;
-		Debug::Log("velocity {0}", velocity.ToString());
+		//Debug::Log("velocity {0}", velocity.ToString());
 
 		transform->translate(velocity * dt);
 

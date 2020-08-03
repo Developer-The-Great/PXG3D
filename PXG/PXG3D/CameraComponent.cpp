@@ -13,7 +13,7 @@ namespace PXG
 		this->screenWidth = screenWidth;
 		this->screenHeight = screenHeight;
 
-		projection = glm::perspective(glm::radians(FOV), screenWidth / screenHeight, 1.0f, 100000.0f);
+		projection = glm::perspective(glm::radians(FOV), screenWidth / screenHeight, 0.5f, 1000.0f);
 
 
 
